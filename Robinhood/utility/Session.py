@@ -39,10 +39,17 @@ class Session:
         return payload
 
     def _getAccessToken(self, payload, qrCode):
-        if qrCode:
-            self._getAccessTokenWithQrCode(payload)
-        else:
-            self._getAccessTokenWithSmsCode(payload)
+        try:
+            if not qrCode:
+                self._performSmsChallenge(payload)
+
+            loginResponse = self.session.post(
+                endpoints.login(), data=payload, timeout=15
+            )
+            loginResponseData = loginResponse.json()
+            self._extractLoginDataTokens(loginResponseData)
+        except requests.exceptions.HTTPError:
+            raise exceptions.LoginFailed()
 
     def _generatePayloadWithQrCode(self, username, password, qrCode):
         multiFactorAuthToken = self.tokenFactory.generateMultiFactorAuthToken(
@@ -74,19 +81,6 @@ class Session:
 
         return payload
 
-    def _getAccessTokenWithQrCode(self, payload):
-        try:
-            loginResponse = self.session.post(
-                endpoints.login(), data=payload, timeout=15
-            )
-            loginResponseData = loginResponse.json()
-            self._extractLoginDataTokens(loginResponseData)
-        except requests.exceptions.HTTPError:
-            raise exceptions.LoginFailed()
-
-    def _getAccessTokenWithSmsCode(self, payload):
-        pass
-
     def _extractLoginDataTokens(self, loginResponseData):
         dataHasAccessToken = "access_token" in loginResponseData.keys()
         dataHasRefreshToken = "refresh_token" in loginResponseData.keys()
@@ -97,3 +91,19 @@ class Session:
             self.headers["Authorization"] = "Bearer: " + self.siteAuthToken
         else:
             raise exceptions.InvalidLogin()
+
+    def _performSmsChallenge(self, payload):
+        initialResponse = self.session.post(
+            endpoints.login(), data=payload, timeout=15
+        )
+        initialResponseData = initialResponse.json()
+        challengeID = initialResponseData["challenge"]["id"]
+        self.headers["X-ROBINHOOD-CHALLENGE-RESPONSE-ID"] = challengeID
+        smsCode = input("Type in SMS Code: ")
+        challengeResponse = {"response": smsCode}
+        smsChallengeResponse = self.session.post(
+            endpoints.smsChallenge(challengeID),
+            data=challengeResponse,
+            timeout=15,
+        )
+        smsChallengeResponse.raise_for_status()

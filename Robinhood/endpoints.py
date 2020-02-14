@@ -1,9 +1,13 @@
-apiUrl = "https://api.robinhood.com"
+api = "https://api.robinhood.com"
 
 
 def login():
-    return apiUrl + "/oauth2/token/"
+    return api + "/oauth2/token/"
 
 
 def logout():
-    return apiUrl + "/oauth2/revoke_token/"
+    return api + "/oauth2/revoke_token/"
+
+
+def smsChallenge(challengeID):
+    return api + f"/challenge/{challengeID}/respond/"
