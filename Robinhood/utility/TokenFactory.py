@@ -12,12 +12,12 @@ class TokenFactory:
         deviceToken = self._createDeviceToken(randomHexIndices, hexPairs)
         return deviceToken
 
-    def generateMultiFactorAuthToken(self, secret, currentTimeSeed=None):
+    def generateMultiFactorAuthToken(self, qrCode, currentTimeSeed=None):
         if currentTimeSeed is None:
             currentTimeSeed = int(time.time()) // 30
 
         cStructSeed = struct.pack(">Q", currentTimeSeed)
-        cStructKey = base64.b32decode(secret, True)
+        cStructKey = base64.b32decode(qrCode, True)
         hmacObject = hmac.new(cStructKey, cStructSeed, hashlib.sha1)
         hmacDigest = hmacObject.digest()
         authToken = self._getMultiFactorAuthToken(hmacDigest)
