@@ -1,6 +1,4 @@
 import pytest
-import shutil
-import os
 from Robinhood.config import getConfiguration, getQrCode
 
 
