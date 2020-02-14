@@ -123,4 +123,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# VSCode
 robinhoodTraderWorkspace.code-workspace
+
+# personal
+qrCode.txt
