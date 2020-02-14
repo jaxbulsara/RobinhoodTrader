@@ -6,5 +6,5 @@ class LoginFailed(RobinhoodException):
     pass
 
 
-class LoginResponseError(LoginFailed):
+class InvalidLogin(LoginFailed):
     pass

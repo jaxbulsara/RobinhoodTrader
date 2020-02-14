@@ -96,4 +96,4 @@ class Session:
             self.refreshToken = loginResponseData["refresh_token"]
             self.headers["Authorization"] = "Bearer: " + self.siteAuthToken
         else:
-            raise exceptions.LoginResponseError()
+            raise exceptions.InvalidLogin()
