@@ -1,5 +1,5 @@
 from Robinhood.utility import LogFactory, Session
-from Robinhood.config import getConfiguration
+from Robinhood.config import getConfiguration, getQrCode
 import getpass
 
 
@@ -14,18 +14,9 @@ class Robinhood:
         if username == None:
             username = input("Username: ")
             password = getpass.win_getpass(prompt="Password: ")
-        qrCode = self._getQrCode()
+        qrCode = getQrCode()
         self.session = Session()
         self.session.login(username, password, qrCode)
 
     def logout(self):
         pass
-
-    def _getQrCode(self):
-        try:
-            qrCode = self.config["login"]["qrCode"]
-
-        except KeyError:
-            qrCode = None
-
-        return qrCode

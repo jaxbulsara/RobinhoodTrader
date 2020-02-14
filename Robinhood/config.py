@@ -1,4 +1,5 @@
 from configparser import ConfigParser
+from Robinhood.utility import LogFactory
 import re
 
 
@@ -10,32 +11,23 @@ def getConfiguration():
 
 def getQrCode():
     config = getConfiguration()
-    qrCode = _readQrCode(config)
+    qrCode = config.get("login", "qrCode", fallback=None)
     qrCode = _checkQrCode(config, qrCode)
 
     return qrCode
 
 
-def _readQrCode(config):
-    try:
-        qrCode = config["login"]["qrCode"]
-
-    except KeyError:
-        print("QR code was not found in config.ini.")
-        qrCode = None
-
-    return qrCode
-
-
 def _checkQrCode(config, qrCode):
-    if qrCode is not None:
-        qrCodePattern = config["login"]["qrCodePattern"]
-        qrCodeIsValid = re.match(qrCodePattern, qrCode) is not None
+    logFactory = LogFactory()
+    log = logFactory.getLogger()
+    if qrCode:
+        qrCodePattern = config.get("login", "qrCodePattern")
+        qrCodeIsValid = re.match(qrCodePattern, qrCode)
         if qrCodeIsValid:
             qrCode = qrCode
         else:
-            print("QR code in config.ini is not in the correct format.")
-            print(
+            log.info("QR code in config.ini is not in the correct format.")
+            log.info(
                 "QR code must be a 32 bit string containing only the characters A-Z or 2-7"
             )
             qrCode = None
