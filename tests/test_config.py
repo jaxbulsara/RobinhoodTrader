@@ -36,10 +36,10 @@ def test_getQrCode_invalidCode(maintainConfig):
 
 def test_getQrCode_validCode(maintainConfig):
     config = getConfiguration()
-    config.set("login", "qrCode", "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567")
+    config.set("login", "qrCode", "AAAA1111BBBB2222")
     with open("config.ini", "w") as configFile:
         config.write(configFile)
 
     qrCode = getQrCode()
 
-    assert qrCode == "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567"
+    assert qrCode == "AAAA1111BBBB2222"

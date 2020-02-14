@@ -27,9 +27,6 @@ def _checkQrCode(config, qrCode):
             qrCode = qrCode
         else:
             log.info("QR code in config.ini is not in the correct format.")
-            log.info(
-                "QR code must be a 32 bit string containing only the characters A-Z or 2-7"
-            )
             qrCode = None
 
     return qrCode

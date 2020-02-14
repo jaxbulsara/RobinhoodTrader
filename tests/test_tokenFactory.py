@@ -13,11 +13,11 @@ def test_deviceToken():
 
 
 def test_multiFactorAuthToken():
-    encoded32BitKey = "AAAABBBBCCCCDDDDEEEEFFFFGGGGHHHH"
+    encoded16BitKey = "AAAABBBBCCCCDDDD"
     currentFormattedTime = 52723281
-    expectedAuthToken = "962722"
+    expectedAuthToken = "938439"
     tokenFactory = TokenFactory()
     authToken = tokenFactory.generateMultiFactorAuthToken(
-        encoded32BitKey, currentFormattedTime
+        encoded16BitKey, currentFormattedTime
     )
     assert authToken == expectedAuthToken
