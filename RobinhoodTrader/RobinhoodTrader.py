@@ -1,4 +1,9 @@
-from RobinhoodTrader.utility import LogFactory, Session, Broker
+from RobinhoodTrader.utility import (
+    LogFactory,
+    Session,
+    StockBroker,
+    CryptoBroker,
+)
 from RobinhoodTrader.config import getConfiguration, getQrCode
 import platform
 import getpass
@@ -9,7 +14,8 @@ class RobinhoodTrader:
         self.logFactory = LogFactory(isVerbose=isVerbose)
         self.log = self.logFactory.getLogger()
         self.config = getConfiguration()
-        self.broker = Broker()
+        self.stockBroker = StockBroker()
+        self.cryptoBroker = CryptoBroker()
         self.session = None
 
     def login(self, username=None, password=None):
@@ -22,8 +28,10 @@ class RobinhoodTrader:
         qrCode = getQrCode()
         self.session = Session()
         self.session.login(username, password, qrCode)
-        self.broker.addSession(self.session)
+        self.stockBroker.addSession(self.session)
+        self.cryptoBroker.addSession(self.session)
 
     def logout(self):
         self.session.logout()
-        self.broker.removeSession()
+        self.stockBroker.removeSession()
+        self.cryptoBroker.removeSession()
