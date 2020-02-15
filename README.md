@@ -100,7 +100,7 @@ If you are using an SMS authentication code, you will need to type in the code y
 SMS Code: {Type in SMS code}
 ```
 
-You are now logged in! 
+You are now logged in!
 The ```RobinhoodTrader``` object will hold your session authentication information to keep you logged in.
 
 ## Related
