@@ -20,13 +20,15 @@ def test_login_logout(maintainConfig):
     assert trader.session.refreshToken != None
     assert trader.session.headers["Authorization"].startswith("Bearer: ")
     assert trader.session.isLoggedIn == True
-    assert trader.broker.session == trader.session
+    assert trader.stockBroker.session == trader.session
+    assert trader.cryptoBroker.session == trader.session
 
     trader.logout()
     
     assert trader.session.siteAuthToken == None
     assert trader.session.headers["Authorization"] == None
     assert trader.session.isLoggedIn == False
-    assert trader.broker.session == None
+    assert trader.stockBroker.session == None
+    assert trader.cryptoBroker.session == None
 
 
