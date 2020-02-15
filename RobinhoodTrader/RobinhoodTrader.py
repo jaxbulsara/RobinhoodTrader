@@ -1,10 +1,8 @@
-from RobinhoodTrader.utility import (
-    LogFactory,
-    Session,
-    StockBroker,
-    CryptoBroker,
-)
+from RobinhoodTrader.utility import LogFactory
+from RobinhoodTrader.session import Session
+from RobinhoodTrader.broker import StockBroker, CryptoBroker
 from RobinhoodTrader.config import getConfiguration, getQrCode
+
 import platform
 import getpass
 
