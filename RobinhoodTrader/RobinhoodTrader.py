@@ -23,4 +23,4 @@ class RobinhoodTrader:
         self.session.login(username, password, qrCode)
 
     def logout(self):
-        pass
+        self.session.logout()

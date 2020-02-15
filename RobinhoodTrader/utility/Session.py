@@ -29,6 +29,9 @@ class Session:
         payload = self._generatePayload(username, password, qrCode=qrCode)
         self._getAccessToken(payload, qrCode)
 
+    def logout(self):
+        pass
+
     def _generatePayload(
         self, username, password, qrCode=None, manualCode=None
     ):
