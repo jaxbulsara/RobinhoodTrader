@@ -18,3 +18,4 @@ def test_login(maintainConfig):
     assert trader.session.siteAuthToken != None
     assert trader.session.refreshToken != None
     assert trader.session.headers["Authorization"].startswith("Bearer: ")
+    assert trader.session.isLoggedIn

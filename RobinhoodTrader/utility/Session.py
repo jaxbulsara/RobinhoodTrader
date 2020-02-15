@@ -23,6 +23,7 @@ class Session:
             "Connection": "keep-alive",
             "User-Agent": "Robinhood/823 (iPhone; iOS 7.1.2; Scale/2.00)",
         }
+        self.isLoggedIn = False
 
     def login(self, username, password, qrCode=None):
         payload = self._generatePayload(username, password, qrCode=qrCode)
@@ -48,6 +49,7 @@ class Session:
             loginResponseData = loginResponse.json()
             self._extractLoginDataTokens(loginResponseData)
         except requests.exceptions.HTTPError:
+            self.isLoggedIn = False
             raise exceptions.LoginFailed()
 
     def _generatePayloadForLogin(
@@ -94,7 +96,9 @@ class Session:
             self.siteAuthToken = loginResponseData["access_token"]
             self.refreshToken = loginResponseData["refresh_token"]
             self.headers["Authorization"] = "Bearer: " + self.siteAuthToken
+            self.isLoggedIn = True
         else:
+            self.isLoggedIn = False
             raise exceptions.InvalidLogin()
 
     def _performSmsChallenge(self, payload):
