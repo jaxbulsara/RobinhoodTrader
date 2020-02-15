@@ -5,7 +5,9 @@ from RobinhoodTrader.config import getConfiguration
 
 def test_login(maintainConfig):
     config = getConfiguration()
-    qrCode = input("QR Code (Leave blank for SMS challenge): ")
+    qrCode = input(
+        "QR Code (Leave blank to use SMS or Authenticator app code): "
+    )
     if qrCode == "":
         qrCode = "None"
     config.set("login", "qrCode", qrCode)

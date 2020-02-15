@@ -29,15 +29,21 @@ class Session:
         payload = self._generatePayload(username, password, qrCode=qrCode)
         self._getAccessToken(payload, qrCode)
 
-    def _generatePayload(self, username, password, qrCode=None, smsCode=None):
-        if qrCode or smsCode:
+    def _generatePayload(
+        self, username, password, qrCode=None, manualCode=None
+    ):
+        if qrCode or manualCode:
             payload = self._generatePayloadForLogin(
-                username, password, qrCode, smsCode
+                username, password, qrCode, manualCode
             )
         else:
-            payload = self._generatePayloadForSmsChallenge(username, password)
-            smsCode = self._performSmsChallenge(payload)
-            payload = self._generatePayload(username, password, smsCode=smsCode)
+            payload = self._generatePayloadForManualChallenge(
+                username, password
+            )
+            manualCode = self._performManualChallenge(payload)
+            payload = self._generatePayload(
+                username, password, manualCode=manualCode
+            )
 
         return payload
 
@@ -53,7 +59,7 @@ class Session:
             raise exceptions.LoginFailed()
 
     def _generatePayloadForLogin(
-        self, username, password, qrCode=None, smsCode=None
+        self, username, password, qrCode=None, manualCode=None
     ):
         payload = {
             "username": username,
@@ -69,12 +75,12 @@ class Session:
                 qrCode
             )
             payload["mfa_code"] = multiFactorAuthToken
-        elif smsCode:
-            payload["mfa_code"] = smsCode
+        elif manualCode:
+            payload["mfa_code"] = manualCode
 
         return payload
 
-    def _generatePayloadForSmsChallenge(self, username, password):
+    def _generatePayloadForManualChallenge(self, username, password):
         payload = {
             "username": username,
             "password": password,
@@ -101,7 +107,7 @@ class Session:
             self.isLoggedIn = False
             raise exceptions.InvalidLogin()
 
-    def _performSmsChallenge(self, payload):
+    def _performManualChallenge(self, payload):
         self.session.post(endpoints.login(), data=payload, timeout=15)
-        smsCode = input("Type in SMS Code: ")
-        return smsCode
+        manualCode = input("Type in code from SMS or Authenticator app: ")
+        return manualCode
