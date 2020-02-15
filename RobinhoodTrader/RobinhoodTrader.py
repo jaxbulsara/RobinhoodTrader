@@ -1,5 +1,6 @@
 from RobinhoodTrader.utility import LogFactory, Session
 from RobinhoodTrader.config import getConfiguration, getQrCode
+import platform
 import getpass
 
 
@@ -13,7 +14,10 @@ class RobinhoodTrader:
     def login(self, username=None, password=None):
         if username == None:
             username = input("Username: ")
-            password = getpass.win_getpass(prompt="Password: ")
+            if platform.system() == "Windows":
+                password = getpass.win_getpass(prompt="Password: ")
+            else:
+                password = getpass.getpass(prompt="Password: ")
         qrCode = getQrCode()
         self.session = Session()
         self.session.login(username, password, qrCode)
