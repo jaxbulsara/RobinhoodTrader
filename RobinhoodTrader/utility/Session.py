@@ -4,6 +4,7 @@ from RobinhoodTrader import endpoints
 
 import requests
 from urllib.request import getproxies
+import warnings
 
 
 class Session:
@@ -30,7 +31,20 @@ class Session:
         self._getAccessToken(payload, qrCode)
 
     def logout(self):
-        pass
+        try:
+            payload = {
+                "client_id": self.clientID,
+                "token": self.refreshToken,
+            }
+
+            logoutRequest = self.session.post(endpoints.logout(), data=payload, timeout=15)
+            logoutRequest.raise_for_status()
+        except requests.exceptions.HTTPError as errorMessage:
+            warnings.warn(f"Failed to logout {repr(errorMessage)}")
+        
+        self.headers["Authorization"] = None
+        self.siteAuthToken = None
+        self.isLoggedIn = False
 
     def _generatePayload(
         self, username, password, qrCode=None, manualCode=None
