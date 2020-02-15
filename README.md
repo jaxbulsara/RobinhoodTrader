@@ -107,5 +107,5 @@ The ```RobinhoodTrader``` object will hold your session authentication informati
 
 This module is based on:
 
-- [LichAmnesia's Robinhood module](https://github.com/LichAmnesia/Robinhood) that was based on [Jamonek's original version](https://github.com/Jamonek/Robinhood).
+- [LichAmnesia's Robinhood](https://github.com/LichAmnesia/Robinhood) module.
 - [wang-ye's robinhood-crypto](https://github.com/wang-ye/robinhood-crypto) module.
