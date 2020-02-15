@@ -26,10 +26,6 @@ class RobinhoodTrader:
         qrCode = getQrCode()
         self.session = Session()
         self.session.login(username, password, qrCode)
-        self.stockBroker.addSession(self.session)
-        self.cryptoBroker.addSession(self.session)
 
     def logout(self):
         self.session.logout()
-        self.stockBroker.removeSession()
-        self.cryptoBroker.removeSession()
