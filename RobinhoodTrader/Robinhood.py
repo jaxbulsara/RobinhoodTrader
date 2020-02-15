@@ -3,7 +3,7 @@ from RobinhoodTrader.config import getConfiguration, getQrCode
 import getpass
 
 
-class Robinhood:
+class RobinhoodTrader:
     def __init__(self, isVerbose=False):
         self.logFactory = LogFactory(isVerbose=isVerbose)
         self.log = self.logFactory.getLogger()
