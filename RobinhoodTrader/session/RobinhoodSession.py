@@ -7,9 +7,9 @@ from urllib.request import getproxies
 import warnings
 
 
-class Session:
+class RobinhoodSession(requests.Session):
     def __init__(self):
-        self.session = requests.session()
+        super(RobinhoodSession, self).__init__()
         self.tokenFactory = TokenFactory()
         self.deviceToken = self.tokenFactory.generateDeviceToken()
         self.clientID = "c82SH0WZOsabOXGP2sxqcj34FxkvfnWRZBKlBjFS"
@@ -37,7 +37,7 @@ class Session:
                 "token": self.refreshToken,
             }
 
-            logoutRequest = self.session.post(endpoints.logout(), data=payload, timeout=15)
+            logoutRequest = self.post(endpoints.logout(), data=payload, timeout=15)
             logoutRequest.raise_for_status()
         except requests.exceptions.HTTPError as errorMessage:
             warnings.warn(f"Failed to logout {repr(errorMessage)}")
@@ -66,7 +66,7 @@ class Session:
 
     def _getAccessToken(self, payload, qrCode):
         try:
-            loginResponse = self.session.post(
+            loginResponse = self.post(
                 endpoints.login(), data=payload, timeout=15
             )
             loginResponseData = loginResponse.json()
@@ -125,6 +125,6 @@ class Session:
             raise exceptions.InvalidLogin()
 
     def _performManualChallenge(self, payload):
-        self.session.post(endpoints.login(), data=payload, timeout=15)
+        self.post(endpoints.login(), data=payload, timeout=15)
         manualCode = input("Type in code from SMS or Authenticator app: ")
         return manualCode

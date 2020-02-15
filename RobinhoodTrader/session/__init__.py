@@ -1,2 +1,2 @@
-from .Session import Session
+from .RobinhoodSession import RobinhoodSession
 from .TokenFactory import TokenFactory
