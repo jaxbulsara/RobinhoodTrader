@@ -29,6 +29,15 @@ def robinhoodTrader(maintainConfig):
 
     trader = RobinhoodTrader()
 
+    trader.login()
+
+    assert trader.session.siteAuthToken != None
+    assert trader.session.refreshToken != None
+    assert trader.session.headers["Authorization"].startswith(
+        "Bearer: "
+    )
+    assert trader.session.isLoggedIn == True
+
     yield trader
 
     trader.logout()
