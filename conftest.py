@@ -1,6 +1,4 @@
-import pytest
-import shutil
-import os
+import pytest, shutil, os, re
 from RobinhoodTrader import RobinhoodTrader
 from RobinhoodTrader.config import getConfiguration
 
@@ -33,9 +31,7 @@ def robinhoodTrader(maintainConfig):
 
     assert trader.session.siteAuthToken != None
     assert trader.session.refreshToken != None
-    assert trader.session.headers["Authorization"].startswith(
-        "Bearer: "
-    )
+    assert re.match("Bearer .+", trader.session.headers["Authorization"])
     assert trader.session.isLoggedIn == True
 
     yield trader

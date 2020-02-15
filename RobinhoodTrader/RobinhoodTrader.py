@@ -29,3 +29,7 @@ class RobinhoodTrader:
 
     def logout(self):
         self.session.logout()
+
+    def getInvestmentProfile(self):
+        investmentProfile = self.stockBroker.getInvestmentProfile(self.session)
+        return investmentProfile

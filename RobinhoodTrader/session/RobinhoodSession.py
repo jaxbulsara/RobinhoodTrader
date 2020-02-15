@@ -10,6 +10,7 @@ import warnings
 class RobinhoodSession(requests.Session):
     def __init__(self):
         super(RobinhoodSession, self).__init__()
+        self.proxies = getproxies()
         self.tokenFactory = TokenFactory()
         self.deviceToken = self.tokenFactory.generateDeviceToken()
         self.clientID = "c82SH0WZOsabOXGP2sxqcj34FxkvfnWRZBKlBjFS"
@@ -118,7 +119,7 @@ class RobinhoodSession(requests.Session):
         if dataHasAccessToken and dataHasRefreshToken:
             self.siteAuthToken = loginResponseData["access_token"]
             self.refreshToken = loginResponseData["refresh_token"]
-            self.headers["Authorization"] = "Bearer: " + self.siteAuthToken
+            self.headers["Authorization"] = f"Bearer {self.siteAuthToken}"
             self.isLoggedIn = True
         else:
             self.isLoggedIn = False
