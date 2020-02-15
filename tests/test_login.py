@@ -1,6 +1,6 @@
 import pytest
-from Robinhood import Robinhood
-from Robinhood.config import getConfiguration
+from RobinhoodTrader import Robinhood
+from RobinhoodTrader.config import getConfiguration
 
 
 def test_login(maintainConfig):

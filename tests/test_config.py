@@ -1,5 +1,5 @@
 import pytest
-from Robinhood.config import getConfiguration, getQrCode
+from RobinhoodTrader.config import getConfiguration, getQrCode
 
 
 def test_getConfiguration(maintainConfig):

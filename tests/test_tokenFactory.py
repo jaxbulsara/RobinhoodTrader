@@ -1,4 +1,4 @@
-from Robinhood.utility import TokenFactory
+from RobinhoodTrader.utility import TokenFactory
 import re
 
 

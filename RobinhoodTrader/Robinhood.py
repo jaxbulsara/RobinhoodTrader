@@ -1,5 +1,5 @@
-from Robinhood.utility import LogFactory, Session
-from Robinhood.config import getConfiguration, getQrCode
+from RobinhoodTrader.utility import LogFactory, Session
+from RobinhoodTrader.config import getConfiguration, getQrCode
 import getpass
 
 
