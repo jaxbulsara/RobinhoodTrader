@@ -28,21 +28,20 @@ class Session:
         payload = self._generatePayload(username, password, qrCode=qrCode)
         self._getAccessToken(payload, qrCode)
 
-    def _generatePayload(self, username, password, qrCode=None):
-        if qrCode:
-            payload = self._generatePayloadWithQrCode(
-                username, password, qrCode
+    def _generatePayload(self, username, password, qrCode=None, smsCode=None):
+        if qrCode or smsCode:
+            payload = self._generatePayloadForLogin(
+                username, password, qrCode, smsCode
             )
         else:
-            payload = self._generatePayloadWithSmsCode(username, password)
+            payload = self._generatePayloadForSmsChallenge(username, password)
+            smsCode = self._performSmsChallenge(payload)
+            payload = self._generatePayload(username, password, smsCode=smsCode)
 
         return payload
 
     def _getAccessToken(self, payload, qrCode):
         try:
-            if not qrCode:
-                self._performSmsChallenge(payload)
-
             loginResponse = self.session.post(
                 endpoints.login(), data=payload, timeout=15
             )
@@ -51,10 +50,9 @@ class Session:
         except requests.exceptions.HTTPError:
             raise exceptions.LoginFailed()
 
-    def _generatePayloadWithQrCode(self, username, password, qrCode):
-        multiFactorAuthToken = self.tokenFactory.generateMultiFactorAuthToken(
-            qrCode
-        )
+    def _generatePayloadForLogin(
+        self, username, password, qrCode=None, smsCode=None
+    ):
         payload = {
             "username": username,
             "password": password,
@@ -62,12 +60,19 @@ class Session:
             "client_id": self.clientID,
             "scope": "internal",
             "device_token": self.deviceToken,
-            "mfa_code": multiFactorAuthToken,
         }
+
+        if qrCode:
+            multiFactorAuthToken = self.tokenFactory.generateMultiFactorAuthToken(
+                qrCode
+            )
+            payload["mfa_code"] = multiFactorAuthToken
+        elif smsCode:
+            payload["mfa_code"] = smsCode
 
         return payload
 
-    def _generatePayloadWithSmsCode(self, username, password):
+    def _generatePayloadForSmsChallenge(self, username, password):
         payload = {
             "username": username,
             "password": password,
@@ -93,17 +98,6 @@ class Session:
             raise exceptions.InvalidLogin()
 
     def _performSmsChallenge(self, payload):
-        initialResponse = self.session.post(
-            endpoints.login(), data=payload, timeout=15
-        )
-        initialResponseData = initialResponse.json()
-        challengeID = initialResponseData["challenge"]["id"]
-        self.headers["X-ROBINHOOD-CHALLENGE-RESPONSE-ID"] = challengeID
+        self.session.post(endpoints.login(), data=payload, timeout=15)
         smsCode = input("Type in SMS Code: ")
-        challengeResponse = {"response": smsCode}
-        smsChallengeResponse = self.session.post(
-            endpoints.smsChallenge(challengeID),
-            data=challengeResponse,
-            timeout=15,
-        )
-        smsChallengeResponse.raise_for_status()
+        return smsCode

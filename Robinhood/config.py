@@ -1,5 +1,4 @@
 from configparser import ConfigParser
-from Robinhood.utility import LogFactory
 import re
 
 
@@ -18,15 +17,12 @@ def getQrCode():
 
 
 def _checkQrCode(config, qrCode):
-    logFactory = LogFactory()
-    log = logFactory.getLogger()
     if qrCode:
         qrCodePattern = config.get("login", "qrCodePattern")
         qrCodeIsValid = re.match(qrCodePattern, qrCode)
         if qrCodeIsValid:
             qrCode = qrCode
         else:
-            log.info("QR code in config.ini is not in the correct format.")
             qrCode = None
 
     return qrCode
