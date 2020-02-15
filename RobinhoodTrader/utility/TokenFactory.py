@@ -86,9 +86,6 @@ class TokenFactory:
 
         return deviceToken
 
-    def _getCurrentTimeSeed(self):
-        pass
-
     def _getMultiFactorAuthToken(self, hmacDigest):
         authTokenStartPosition = hmacDigest[19] & 0b1111
         authTokenEndPosition = authTokenStartPosition + 4

@@ -1,5 +1,5 @@
 import pytest
-from RobinhoodTrader import Robinhood
+from RobinhoodTrader import RobinhoodTrader
 from RobinhoodTrader.config import getConfiguration
 
 
@@ -12,7 +12,7 @@ def test_login(maintainConfig):
     with open("config.ini", "w") as configFile:
         config.write(configFile)
 
-    trader = Robinhood()
+    trader = RobinhoodTrader()
     trader.login()
 
     assert trader.session.siteAuthToken != None

@@ -1,6 +1,6 @@
 from .TokenFactory import TokenFactory
-from Robinhood import exceptions
-from Robinhood import endpoints
+from RobinhoodTrader import exceptions
+from RobinhoodTrader import endpoints
 
 import requests
 from urllib.request import getproxies

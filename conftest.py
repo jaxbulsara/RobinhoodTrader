@@ -5,7 +5,7 @@ import os
 
 @pytest.fixture
 def maintainConfig():
-    os.chdir("Robinhood/")
+    os.chdir("RobinhoodTrader/")
     shutil.copy2("config.ini", "config.ini.bak")
     yield None
     os.remove("config.ini")

@@ -1,4 +1,4 @@
-from Robinhood import Robinhood
+from . import RobinhoodTrader
 
-trader = Robinhood()
+trader = RobinhoodTrader()
 trader.login()
