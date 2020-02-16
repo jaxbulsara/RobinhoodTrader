@@ -17,3 +17,7 @@ class RobinhoodTrader:
     def getInvestmentProfile(self):
         investmentProfile = self.stockBroker.getInvestmentProfile(self.session)
         return investmentProfile
+
+    def getWatchlists(self):
+        watchlists = self.stockBroker.getWatchlists(self.session)
+        return watchlists
