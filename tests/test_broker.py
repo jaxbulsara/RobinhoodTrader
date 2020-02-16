@@ -1,5 +1,6 @@
 from RobinhoodTrader import RobinhoodTrader
 
+
 def test_investmentProfile(robinhoodTrader: RobinhoodTrader):
     investmentProfile = robinhoodTrader.getInvestmentProfile()
 
