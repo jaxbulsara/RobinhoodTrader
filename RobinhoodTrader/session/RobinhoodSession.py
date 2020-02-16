@@ -1,9 +1,10 @@
 from .TokenFactory import TokenFactory
+from .wrappers import authRequired
 from RobinhoodTrader import exceptions
 from RobinhoodTrader import endpoints
 from RobinhoodTrader.config import getQrCode
 
-import requests, platform, warnings, sys
+import requests, platform, sys
 from getpass import getpass
 from urllib.request import getproxies
 
@@ -30,14 +31,6 @@ class RobinhoodSession(requests.Session):
         self.isLoggedIn = False
         self.sessionIsConsole = sys.stdout.isatty()
         self.accountNumbers = None
-
-    def authRequired(function):  # pylint: disable=E0213
-        def makeUserLogin(self, *args, **kwargs):
-            if not self.isLoggedIn:
-                self.login(self.credentials)
-            return function(self, *args, **kwargs)  # pylint: disable=E1102
-
-        return makeUserLogin
 
     def login(self, credentials=(None, None)):
         if None in credentials and self.sessionIsConsole:
@@ -66,9 +59,9 @@ class RobinhoodSession(requests.Session):
             )
             logoutRequest.raise_for_status()
         except requests.exceptions.HTTPError:
-            warnings.warn(f"Failed to logout.")
+            print(f"Failed to logout.")
         except requests.exceptions.ConnectionError:
-            warnings.warn(
+            print(
                 f"Failed to connect. Please check your internet and try again."
             )
 
@@ -104,10 +97,10 @@ class RobinhoodSession(requests.Session):
             loginData = loginResponse.json()
             self._extractLoginDataTokens(loginData)
         except requests.exceptions.HTTPError:
-            warnings.warn(f"Failed to login.")
+            print(f"Failed to login.")
             raise exceptions.LoginError()
         except requests.exceptions.ConnectionError:
-            warnings.warn(
+            print(
                 f"Failed to connect. Please check your internet and try again."
             )
 
@@ -162,7 +155,7 @@ class RobinhoodSession(requests.Session):
             self.headers["Authorization"] = f"Bearer {self.siteAuthToken}"
             self.isLoggedIn = True
         else:
-            warnings.warn(
+            print(
                 "Unable to login. Please enter different credentials and try again."
             )
             self.login()

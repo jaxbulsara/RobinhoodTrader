@@ -1,6 +1,5 @@
 from RobinhoodTrader import endpoints
 from RobinhoodTrader.session import RobinhoodSession
-import warnings, requests
 
 
 class Broker:
