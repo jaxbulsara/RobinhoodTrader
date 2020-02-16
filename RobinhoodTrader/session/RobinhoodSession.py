@@ -148,7 +148,7 @@ class RobinhoodSession(requests.Session):
             )
             self.login()
 
-    def self._getAccountNumbers(self):
+    def _getAccountNumbers(self):
         accountsResponse = self.get(endpoints.accounts(), timeout=15)
         accountsData = accountsResponse.json()
         self.accountNumbers = list(
