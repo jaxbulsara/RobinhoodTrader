@@ -30,6 +30,6 @@ class Broker:
 
         response = session.get(endpoints.userInvestmentProfile(), timeout=15,)
         response.raise_for_status()
-        responseData = response.json()
+        data = response.json()
 
-        return responseData
+        return data
