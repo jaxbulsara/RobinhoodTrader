@@ -15,13 +15,5 @@ class RobinhoodTrader:
         self.session.logout()
 
     def getInvestmentProfile(self):
-        pass
-
-    def getAccounts(self):
-        pass
-
-    def getStockQuote(self, stockSymbol):
-        pass
-
-    def getCrytoQuote(self, cryptoSymbol):
-        pass
+        investmentProfile = self.stockBroker.getInvestmentProfile(self.session)
+        return investmentProfile
