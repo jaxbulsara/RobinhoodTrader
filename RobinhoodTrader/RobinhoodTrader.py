@@ -17,3 +17,13 @@ class RobinhoodTrader:
     def getInvestmentProfile(self):
         investmentProfile = self.stockBroker.getInvestmentProfile(self.session)
         return investmentProfile
+
+    def getAccounts(self):
+        accounts = self.stockBroker.getAccounts(self.session)
+        return accounts
+
+    def getStockQuote(self, stockSymbol):
+        quoteData = self.stockBroker.getQuote(stockSymbol)
+        return quoteData
+
+    def getCrytoQuote(self, cryptoSymbol)
