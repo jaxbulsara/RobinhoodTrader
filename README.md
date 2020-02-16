@@ -102,10 +102,3 @@ SMS Code: {Type in SMS code}
 
 You are now logged in!
 The ```RobinhoodTrader``` object will hold your session authentication information to keep you logged in.
-
-## Related
-
-This module is based on:
-
-- [LichAmnesia's Robinhood](https://github.com/LichAmnesia/Robinhood) module.
-- [wang-ye's robinhood-crypto](https://github.com/wang-ye/robinhood-crypto) module.
