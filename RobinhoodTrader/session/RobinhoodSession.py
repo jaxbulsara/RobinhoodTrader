@@ -33,10 +33,10 @@ class RobinhoodSession(requests.Session):
         self.accountNumbers = None
 
     def login(self, credentials=(None, None)):
-        if None in credentials and self.sessionIsConsole:
+        if None in credentials:
             credentials = self._getCredentialsFromUser()
-        else:
-            raise exceptions.CredentialError()
+            if not self.sessionIsConsole:
+                raise exceptions.CredentialError()
 
         if None in credentials:
             print("Login cancelled.")

@@ -1,4 +1,5 @@
 from .RobinhoodTrader import RobinhoodTrader
+from RobinhoodTrader.config import getConfiguration
 import pprint, os, shutil
 
 printer = pprint.PrettyPrinter(indent=4)
@@ -10,10 +11,19 @@ if os.path.isfile("myConfig.ini"):
 
 try:
     trader = RobinhoodTrader()
-    output = trader.getInvestmentProfile()
+    config = getConfiguration()
+    username = config.get("login", "username", fallback=None)
+    password = config.get("login", "password", fallback=None)
+    credentials = (username, password)
+    trader.login(credentials)
+
+    output = trader.getWatchlistByName("Default")
     printer.pprint(output)
 
 except Exception:
+    raise Exception
+
+finally:
     os.remove("config.ini")
     os.rename("config.ini.bak", "config.ini")
     os.chdir("../")
