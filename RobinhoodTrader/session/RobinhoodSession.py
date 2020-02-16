@@ -58,10 +58,7 @@ class RobinhoodSession(requests.Session):
         except requests.exceptions.HTTPError as errorMessage:
             warnings.warn(f"Failed to logout {repr(errorMessage)}")
 
-        self.headers["Authorization"] = None
-        self.siteAuthToken = None
-        self.isLoggedIn = False
-        self.accountNumber = None
+        self._clearSessionInfo()
 
     def _getCredentialsFromUser(self):
         print("Press Enter to cancel.")
@@ -156,3 +153,9 @@ class RobinhoodSession(requests.Session):
         accountsData = accountsResponse.json()
         self.accountNumber = accountsData["results"]["account_number"]
         return self.accountNumber
+
+    def _clearSessionInfo(self):
+        self.headers["Authorization"] = None
+        self.siteAuthToken = None
+        self.isLoggedIn = False
+        self.accountNumber = None
