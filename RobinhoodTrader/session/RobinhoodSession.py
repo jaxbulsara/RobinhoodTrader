@@ -59,6 +59,7 @@ class RobinhoodSession(requests.Session):
         self.headers["Authorization"] = None
         self.siteAuthToken = None
         self.isLoggedIn = False
+        self.accountNumber = None
 
     def _getCredentialsFromUser(self):
         print("Press Enter to cancel.")
@@ -87,8 +88,8 @@ class RobinhoodSession(requests.Session):
             loginResponse = self.post(
                 endpoints.login(), data=payload, timeout=15
             )
-            loginResponseData = loginResponse.json()
-            self._extractLoginDataTokens(loginResponseData)
+            loginData = loginResponse.json()
+            self._extractLoginDataTokens(loginData)
         except requests.exceptions.HTTPError:
             raise exceptions.LoginFailed()
 
@@ -128,13 +129,18 @@ class RobinhoodSession(requests.Session):
 
         return payload
 
-    def _extractLoginDataTokens(self, loginResponseData):
-        dataHasAccessToken = "access_token" in loginResponseData.keys()
-        dataHasRefreshToken = "refresh_token" in loginResponseData.keys()
+    def _performManualChallenge(self, payload):
+        self.post(endpoints.login(), data=payload, timeout=15)
+        manualCode = input("Type in code from SMS or Authenticator app: ")
+        return manualCode
+
+    def _extractLoginDataTokens(self, loginData):
+        dataHasAccessToken = "access_token" in loginData.keys()
+        dataHasRefreshToken = "refresh_token" in loginData.keys()
 
         if dataHasAccessToken and dataHasRefreshToken:
-            self.siteAuthToken = loginResponseData["access_token"]
-            self.refreshToken = loginResponseData["refresh_token"]
+            self.siteAuthToken = loginData["access_token"]
+            self.refreshToken = loginData["refresh_token"]
             self.headers["Authorization"] = f"Bearer {self.siteAuthToken}"
             self.isLoggedIn = True
         else:
@@ -142,8 +148,3 @@ class RobinhoodSession(requests.Session):
                 "Unable to login. Please enter different credentials and try again."
             )
             self.login()
-
-    def _performManualChallenge(self, payload):
-        self.post(endpoints.login(), data=payload, timeout=15)
-        manualCode = input("Type in code from SMS or Authenticator app: ")
-        return manualCode
