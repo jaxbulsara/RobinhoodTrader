@@ -1,10 +1,11 @@
 from .TokenFactory import TokenFactory
 from RobinhoodTrader import exceptions
 from RobinhoodTrader import endpoints
+from RobinhoodTrader.config import getQrCode
 
-import requests
+import requests, platform, warnings
+from getpass import getpass
 from urllib.request import getproxies
-import warnings
 
 
 class RobinhoodSession(requests.Session):
@@ -27,9 +28,15 @@ class RobinhoodSession(requests.Session):
         }
         self.isLoggedIn = False
 
-    def login(self, username, password, qrCode=None):
-        payload = self._generatePayload(username, password, qrCode=qrCode)
-        self._getAccessToken(payload, qrCode)
+    def login(self, credentials=(None, None)):
+        if None in credentials:
+            credentials = self._getCredentialsFromUser()
+        if None in credentials:
+            print("Login cancelled.")
+        else:
+            qrCode = getQrCode()
+            payload = self._generatePayload(credentials, qrCode=qrCode)
+            self._getAccessToken(payload, qrCode)
 
     def logout(self):
         try:
@@ -38,30 +45,36 @@ class RobinhoodSession(requests.Session):
                 "token": self.refreshToken,
             }
 
-            logoutRequest = self.post(endpoints.logout(), data=payload, timeout=15)
+            logoutRequest = self.post(
+                endpoints.logout(), data=payload, timeout=15
+            )
             logoutRequest.raise_for_status()
         except requests.exceptions.HTTPError as errorMessage:
             warnings.warn(f"Failed to logout {repr(errorMessage)}")
-        
+
         self.headers["Authorization"] = None
         self.siteAuthToken = None
         self.isLoggedIn = False
 
-    def _generatePayload(
-        self, username, password, qrCode=None, manualCode=None
-    ):
+    def _getCredentialsFromUser(self):
+        print("Press Enter to cancel.")
+        username = input("Username: ")
+        if username != "":
+            password = getpass(prompt="Password: ")
+        else:
+            password = None
+
+        return (username, password)
+
+    def _generatePayload(self, credentials, qrCode=None, manualCode=None):
         if qrCode or manualCode:
             payload = self._generatePayloadForLogin(
-                username, password, qrCode, manualCode
+                credentials, qrCode, manualCode
             )
         else:
-            payload = self._generatePayloadForManualChallenge(
-                username, password
-            )
+            payload = self._generatePayloadForManualChallenge(credentials)
             manualCode = self._performManualChallenge(payload)
-            payload = self._generatePayload(
-                username, password, manualCode=manualCode
-            )
+            payload = self._generatePayload(credentials, manualCode=manualCode)
 
         return payload
 
@@ -73,15 +86,14 @@ class RobinhoodSession(requests.Session):
             loginResponseData = loginResponse.json()
             self._extractLoginDataTokens(loginResponseData)
         except requests.exceptions.HTTPError:
-            self.isLoggedIn = False
             raise exceptions.LoginFailed()
 
     def _generatePayloadForLogin(
-        self, username, password, qrCode=None, manualCode=None
+        self, credentials, qrCode=None, manualCode=None
     ):
         payload = {
-            "username": username,
-            "password": password,
+            "username": credentials[0],
+            "password": credentials[1],
             "grant_type": "password",
             "client_id": self.clientID,
             "scope": "internal",
@@ -98,10 +110,10 @@ class RobinhoodSession(requests.Session):
 
         return payload
 
-    def _generatePayloadForManualChallenge(self, username, password):
+    def _generatePayloadForManualChallenge(self, credentials):
         payload = {
-            "username": username,
-            "password": password,
+            "username": credentials[0],
+            "password": credentials[1],
             "grant_type": "password",
             "client_id": self.clientID,
             "expires_in": "86400",
@@ -122,8 +134,10 @@ class RobinhoodSession(requests.Session):
             self.headers["Authorization"] = f"Bearer {self.siteAuthToken}"
             self.isLoggedIn = True
         else:
-            self.isLoggedIn = False
-            raise exceptions.InvalidLogin()
+            warnings.warn(
+                "Unable to login. Please enter different credentials and try again."
+            )
+            self.login()
 
     def _performManualChallenge(self, payload):
         self.post(endpoints.login(), data=payload, timeout=15)
