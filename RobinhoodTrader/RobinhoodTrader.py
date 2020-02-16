@@ -1,7 +1,5 @@
-from RobinhoodTrader.utility import LogFactory
 from RobinhoodTrader.session import RobinhoodSession
 from RobinhoodTrader.broker import StockBroker, CryptoBroker
-from RobinhoodTrader.config import getConfiguration
 
 
 class RobinhoodTrader:
