@@ -3,7 +3,7 @@ from RobinhoodTrader import exceptions
 from RobinhoodTrader import endpoints
 from RobinhoodTrader.config import getQrCode
 
-import requests, platform, warnings
+import requests, platform, warnings, sys
 from getpass import getpass
 from urllib.request import getproxies
 
@@ -27,10 +27,14 @@ class RobinhoodSession(requests.Session):
             "User-Agent": "Robinhood/823 (iPhone; iOS 7.1.2; Scale/2.00)",
         }
         self.isLoggedIn = False
+        self.sessionIsConsole = sys.stdout.isatty()
 
     def login(self, credentials=(None, None)):
-        if None in credentials:
+        if None in credentials and self.sessionIsConsole:
             credentials = self._getCredentialsFromUser()
+        else:
+            raise exceptions.CredentialError()
+
         if None in credentials:
             print("Login cancelled.")
         else:
