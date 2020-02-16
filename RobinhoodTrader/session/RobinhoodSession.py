@@ -52,7 +52,7 @@ class RobinhoodSession(requests.Session):
             }
 
             logoutRequest = self.post(
-                endpoints.logout(), data=payload, timeout=15
+                endpoints.revokeToken(), data=payload, timeout=15
             )
             logoutRequest.raise_for_status()
         except requests.exceptions.HTTPError as errorMessage:
@@ -85,7 +85,7 @@ class RobinhoodSession(requests.Session):
     def _getAccessToken(self, payload, qrCode):
         try:
             loginResponse = self.post(
-                endpoints.login(), data=payload, timeout=15
+                endpoints.token(), data=payload, timeout=15
             )
             loginData = loginResponse.json()
             self._extractLoginDataTokens(loginData)
@@ -129,7 +129,7 @@ class RobinhoodSession(requests.Session):
         return payload
 
     def _performManualChallenge(self, payload):
-        self.post(endpoints.login(), data=payload, timeout=15)
+        self.post(endpoints.token(), data=payload, timeout=15)
         manualCode = input("Type in code from SMS or Authenticator app: ")
         return manualCode
 
