@@ -28,7 +28,7 @@ class RobinhoodSession(requests.Session):
         }
         self.isLoggedIn = False
         self.sessionIsConsole = sys.stdout.isatty()
-        self.accountNumber = None
+        self.accountNumbers = None
 
     def login(self, credentials=(None, None)):
         if None in credentials and self.sessionIsConsole:
@@ -42,7 +42,7 @@ class RobinhoodSession(requests.Session):
             qrCode = getQrCode()
             payload = self._generatePayload(credentials, qrCode=qrCode)
             self._getAccessToken(payload, qrCode)
-            self._getAccountNumber()
+            self.self._getAccountNumbers()
 
     def logout(self):
         try:
@@ -148,14 +148,19 @@ class RobinhoodSession(requests.Session):
             )
             self.login()
 
-    def _getAccountNumber(self):
+    def self._getAccountNumbers(self):
         accountsResponse = self.get(endpoints.accounts(), timeout=15)
         accountsData = accountsResponse.json()
-        self.accountNumber = accountsData["results"]["account_number"]
-        return self.accountNumber
+        self.accountNumbers = list(
+            map(
+                lambda account: account["account_number"],
+                accountsData["results"],
+            )
+        )
+        return self.accountNumbers
 
     def _clearSessionInfo(self):
         self.headers["Authorization"] = None
         self.siteAuthToken = None
         self.isLoggedIn = False
-        self.accountNumber = None
+        self.accountNumbers = None
