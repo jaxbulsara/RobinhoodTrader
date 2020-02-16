@@ -1,3 +1,6 @@
+import requests
+
+
 class RobinhoodException(Exception):
     pass
 
@@ -6,5 +9,6 @@ class CredentialError(RobinhoodException):
     pass
 
 
-class LoginFailed(RobinhoodException):
+class LoginError(RobinhoodException):
     pass
+

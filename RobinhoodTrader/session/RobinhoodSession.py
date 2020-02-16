@@ -15,6 +15,7 @@ class RobinhoodSession(requests.Session):
         self.tokenFactory = TokenFactory()
         self.deviceToken = self.tokenFactory.generateDeviceToken()
         self.clientID = "c82SH0WZOsabOXGP2sxqcj34FxkvfnWRZBKlBjFS"
+        self.credentials = (None, None)
         self.siteAuthToken = None
         self.refreshToken = None
         self.headers = {
@@ -30,6 +31,14 @@ class RobinhoodSession(requests.Session):
         self.sessionIsConsole = sys.stdout.isatty()
         self.accountNumbers = None
 
+    def authRequired(function):  # pylint: disable=E0213
+        def makeUserLogin(self, *args, **kwargs):
+            if not self.isLoggedIn:
+                self.login(self.credentials)
+            return function(self, *args, **kwargs)  # pylint: disable=E1102
+
+        return makeUserLogin
+
     def login(self, credentials=(None, None)):
         if None in credentials and self.sessionIsConsole:
             credentials = self._getCredentialsFromUser()
@@ -39,6 +48,7 @@ class RobinhoodSession(requests.Session):
         if None in credentials:
             print("Login cancelled.")
         else:
+            self.credentials = credentials
             qrCode = getQrCode()
             payload = self._generatePayload(credentials, qrCode=qrCode)
             self._getAccessToken(payload, qrCode)
@@ -55,8 +65,12 @@ class RobinhoodSession(requests.Session):
                 endpoints.revokeToken(), data=payload, timeout=15
             )
             logoutRequest.raise_for_status()
-        except requests.exceptions.HTTPError as errorMessage:
-            warnings.warn(f"Failed to logout {repr(errorMessage)}")
+        except requests.exceptions.HTTPError:
+            warnings.warn(f"Failed to logout.")
+        except requests.exceptions.ConnectionError:
+            warnings.warn(
+                f"Failed to connect. Please check your internet and try again."
+            )
 
         self._clearSessionInfo()
 
@@ -90,7 +104,12 @@ class RobinhoodSession(requests.Session):
             loginData = loginResponse.json()
             self._extractLoginDataTokens(loginData)
         except requests.exceptions.HTTPError:
-            raise exceptions.LoginFailed()
+            warnings.warn(f"Failed to login.")
+            raise exceptions.LoginError()
+        except requests.exceptions.ConnectionError:
+            warnings.warn(
+                f"Failed to connect. Please check your internet and try again."
+            )
 
     def _generatePayloadForLogin(
         self, credentials, qrCode=None, manualCode=None
@@ -148,8 +167,10 @@ class RobinhoodSession(requests.Session):
             )
             self.login()
 
+    @authRequired
     def _getAccountNumbers(self):
         accountsResponse = self.get(endpoints.accounts(), timeout=15)
+        accountsResponse.raise_for_status()
         accountsData = accountsResponse.json()
         self.accountNumbers = list(
             map(
