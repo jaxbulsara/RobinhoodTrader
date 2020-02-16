@@ -42,7 +42,7 @@ class RobinhoodSession(requests.Session):
             qrCode = getQrCode()
             payload = self._generatePayload(credentials, qrCode=qrCode)
             self._getAccessToken(payload, qrCode)
-            self.self._getAccountNumbers()
+            self._getAccountNumbers()
 
     def logout(self):
         try:
