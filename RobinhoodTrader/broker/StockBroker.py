@@ -3,4 +3,15 @@ from RobinhoodTrader import endpoints
 
 
 class StockBroker(Broker):
-    pass
+    def getInstruments(self, session, stockSymbol=None):
+        pass
+    
+    def getInstrumentByStock(self, session, stockSymbol):
+        pass
+
+    def getInstrumentByID(self, session, stockID):
+        pass
+
+
+
+
