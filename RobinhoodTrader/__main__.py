@@ -1,6 +1,7 @@
 from .RobinhoodTrader import RobinhoodTrader
 from RobinhoodTrader.config import getConfiguration
-import pprint, os, shutil
+from RobinhoodTrader import endpoints
+import pprint, os, shutil, requests, json
 
 printer = pprint.PrettyPrinter(indent=4)
 os.chdir("RobinhoodTrader/")
@@ -17,8 +18,16 @@ try:
     credentials = (username, password)
     trader.login(credentials)
 
-    output = trader.getWatchlistByName("Default")
-    printer.pprint(output)
+    data = trader.deleteFromWatchlist("f4d089b7-c822-48ac-884d-8ecb312ebb67")
+    printer.pprint(data)
+
+    data = trader.addToWatchList(
+        "https://api.robinhood.com/instruments/f4d089b7-c822-48ac-884d-8ecb312ebb67/"
+    )
+    printer.pprint(data)
+
+    watchlist = trader.getWatchlist()
+    printer.pprint(watchlist)
 
 except Exception:
     raise Exception

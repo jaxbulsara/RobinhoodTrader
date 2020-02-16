@@ -19,9 +19,21 @@ class RobinhoodTrader:
         return investmentProfile
 
     def getAllWatchlists(self):
-        watchlists = self.stockBroker.getAllWatchlists(self.session)
-        return watchlists
+        allWatchlists = self.stockBroker.getAllWatchlists(self.session)
+        return allWatchlists
 
-    def getWatchlistByName(self, watchlistName):
+    def getWatchlist(self, watchlistName: str = "Default"):
         watchlist = self.stockBroker.getWatchlist(self.session, watchlistName)
         return watchlist
+
+    def addToWatchList(self, instrumentUrl, watchlistName: str = "Default"):
+        response = self.stockBroker.addToWatchlist(
+            self.session, instrumentUrl, watchlistName
+        )
+        return response
+
+    def deleteFromWatchlist(self, instrumentID, watchlistName: str = "Default"):
+        response = self.stockBroker.deleteFromWatchlist(
+            self.session, instrumentID, watchlistName
+        )
+        return response

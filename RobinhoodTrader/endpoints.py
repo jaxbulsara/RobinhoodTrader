@@ -150,5 +150,13 @@ def userInvestmentProfile():
     return api + "user/investment_profile/"
 
 
-def watchlist(watchlistName: str = None):
+def watchlists():
+    return api + f"watchlists/"
+
+
+def watchlistName(watchlistName: str):
     return api + f"watchlists/{watchlistName}/"
+
+
+def watchlistInstrument(watchlistName: str, instrumentID: str):
+    return api + f"watchlists/{watchlistName}/{instrumentID}/"

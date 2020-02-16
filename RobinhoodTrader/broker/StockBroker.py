@@ -3,6 +3,8 @@ from RobinhoodTrader import endpoints
 from RobinhoodTrader.session import RobinhoodSession
 from RobinhoodTrader.session.wrappers import authRequired
 
+import requests
+
 
 class StockBroker(Broker):
     @authRequired
@@ -16,14 +18,16 @@ class StockBroker(Broker):
                             'user': 'api.robinhood.com/user/'}]} 
         """
 
-        response = session.get(endpoints.watchlist(), timeout=15)
+        response = session.get(endpoints.watchlists(), timeout=15)
         response.raise_for_status()
         data = response.json()
 
         return data
 
     @authRequired
-    def getWatchlist(self, session: RobinhoodSession, watchlistName: str):
+    def getWatchlist(
+        self, session: RobinhoodSession, watchlistName: str = "Default"
+    ):
         """
         Example response:
         [   {   'created_at': '2019-03-12T08:22:45.386349Z',
@@ -41,8 +45,53 @@ class StockBroker(Broker):
             ]
         """
 
-        response = session.get(endpoints.watchlist(watchlistName), timeout=15)
+        response = session.get(
+            endpoints.watchlistName(watchlistName), timeout=15
+        )
         response.raise_for_status()
         data = response.json()["results"]
 
         return data
+
+    @authRequired
+    def addToWatchlist(
+        self,
+        session: RobinhoodSession,
+        instrumentUrl: str,
+        watchlistName: str = "Default",
+    ):
+        try:
+            response = session.post(
+                endpoints.watchlistName(watchlistName),
+                data={"instrument": instrumentUrl},
+                timeout=15,
+            )
+            response.raise_for_status()
+        except requests.exceptions.HTTPError:
+            pass
+
+        data = response.json()
+
+        return data
+
+    @authRequired
+    def deleteFromWatchlist(
+        self,
+        session: RobinhoodSession,
+        instrumentID: str,
+        watchlistName: str = "Default",
+    ):
+        try:
+            response = session.delete(
+                endpoints.watchlistInstrument(watchlistName, instrumentID),
+                timeout=15,
+            )
+            response.raise_for_status()
+        except requests.exceptions.HTTPError:
+            print(
+                f"Cannot delete instrument. URL does not exist: {endpoints.watchlistInstrument(watchlistName, instrumentID)}"
+            )
+            return False
+
+        return True
+
