@@ -130,4 +130,4 @@ robinhoodTraderWorkspace.code-workspace
 # personal
 qrCode.txt
 .vscode/
-RobinhoodTrader/config.ini
+RobinhoodTrader/myConfig.ini

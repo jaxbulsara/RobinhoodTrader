@@ -3,7 +3,7 @@ from RobinhoodTrader import RobinhoodTrader
 from RobinhoodTrader.config import getConfiguration
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture
 def maintainConfig():
     os.chdir("RobinhoodTrader/")
     shutil.copy2("config.ini", "config.ini.bak")
@@ -14,19 +14,21 @@ def maintainConfig():
 
 
 @pytest.fixture(scope="session")
-def robinhoodTrader(maintainConfig):
-    config = getConfiguration()
-    qrCode = input(
-        "QR Code (Leave blank to use SMS or Authenticator app code): "
-    )
-    if qrCode == "":
-        qrCode = "None"
-    config.set("login", "qrCode", qrCode)
-    with open("config.ini", "w") as configFile:
-        config.write(configFile)
+def useMyConfig():
+    os.chdir("RobinhoodTrader/")
+    shutil.copy2("config.ini", "config.ini.bak")
+    if os.path.isfile("myConfig.ini"):
+        os.remove("config.ini")
+        shutil.copy2("myConfig.ini", "config.ini")
+    yield None
+    os.remove("config.ini")
+    os.rename("config.ini.bak", "config.ini")
+    os.chdir("../")
 
+
+@pytest.fixture(scope="session")
+def robinhoodTrader(useMyConfig):
     trader = RobinhoodTrader()
-
     trader.login()
 
     assert trader.session.siteAuthToken != None
