@@ -80,12 +80,18 @@ class StockBroker(Broker):
         instrumentUrls = self.getWatchlistInstrumentUrls(watchlistName)
         instrumentIds = list(
             map(
-                lambda instrumentUrl: instrumentUrl.rstrip("/").split("/")[-1],
+                lambda instrumentUrl: self.getInstrumentIdFromUrl(
+                    instrumentUrl
+                ),
                 instrumentUrls,
             )
         )
 
         return instrumentIds
+
+    def getInstrumentIdFromUrl(self, instrumentUrl):
+        instrumentId = instrumentUrl.rstrip("/").split("/")[-1]
+        return instrumentId
 
     @authRequired
     def addToWatchlist(
@@ -106,11 +112,30 @@ class StockBroker(Broker):
             )
             response.raise_for_status()
         except requests.exceptions.HTTPError:
-            pass
+            print(
+                f"Cannot add instrument. URL already exists: {endpoints.watchlistInstrument(self.getInstrumentIdFromUrl, watchlistName)}"
+            )
 
         data = response.json()
 
         return data
+
+    @authRequired
+    def addMultipleToWatchlist(
+        self, instrumentUrls: List[str], watchlistName: str = None
+    ):
+        """
+        Example Response:
+
+        """
+        response = list(
+            map(
+                lambda instrumentUrl: self.addToWatchlist(instrumentUrl),
+                instrumentUrls,
+            )
+        )
+
+        return response
 
     @authRequired
     def deleteFromWatchlist(
@@ -135,6 +160,23 @@ class StockBroker(Broker):
         return True
 
     @authRequired
+    def deleteMultipleFromWatchlist(
+        self, instrumentIds: List[str], watchlistName: str = None
+    ):
+        """
+        Example Response:
+
+        """
+        response = list(
+            map(
+                lambda instrumentId: self.deleteFromWatchlist(instrumentId),
+                instrumentIds,
+            )
+        )
+
+        return response
+
+    @authRequired
     def reorderWatchList(
         self, instrumentIds: List[str], watchlistName: str = None
     ):
@@ -145,13 +187,10 @@ class StockBroker(Broker):
         instrumentIdsField = ",".join(instrumentIds)
         payload = {"uuids": instrumentIdsField}
 
-        try:
-            response = self.session.post(
-                endpoints.watchlistReorder(), data=payload, timeout=15,
-            )
-            response.raise_for_status()
-        except requests.exceptions.HTTPError as error:
-            print(error)
+        response = self.session.post(
+            endpoints.watchlistReorder(), data=payload, timeout=15,
+        )
+        response.raise_for_status()
 
         data = response.json()
 

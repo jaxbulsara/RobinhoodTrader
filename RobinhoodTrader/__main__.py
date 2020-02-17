@@ -21,18 +21,28 @@ try:
     data = trader.getWatchlistInstrumentIds()
     printer.pprint(data)
 
-    data = trader.reorderWatchList(
+    data = trader.deleteMultipleFromWatchlist(
         [
             "e39ed23a-7bd1-4587-b060-71988d9ef483",
             "54db869e-f7d5-45fb-88f1-8d7072d4c8b2",
-            "50810c35-d215-4866-9758-0ada4ac79ffa",
-            "450dfc6d-5510-4d40-abfb-f633b7d9be3e",
         ]
     )
     printer.pprint(data)
 
     data = trader.getWatchlistInstrumentIds()
     printer.pprint(data)
+
+    data = trader.addMultipleToWatchlist(
+        [
+            endpoints.instruments() + "e39ed23a-7bd1-4587-b060-71988d9ef483/",
+            endpoints.instruments() + "54db869e-f7d5-45fb-88f1-8d7072d4c8b2/",
+        ]
+    )
+    printer.pprint(data)
+
+    data = trader.getWatchlistInstrumentIds()
+    printer.pprint(data)
+
 
 except Exception:
     raise Exception

@@ -1,14 +1,15 @@
 from RobinhoodTrader.session import RobinhoodSession
 from RobinhoodTrader.broker import StockBroker, CryptoBroker
+from typing import List, Tuple
 
 
 class RobinhoodTrader:
-    def __init__(self, isVerbose=False):
+    def __init__(self, isVerbose: bool = False):
         self.stockBroker = StockBroker()
         self.cryptoBroker = CryptoBroker()
         self.session = RobinhoodSession()
 
-    def login(self, credentials=(None, None)):
+    def login(self, credentials: Tuple[str] = (None, None)):
         self.session.login(credentials)
         self.stockBroker.addSession(self.session)
         self.cryptoBroker.addSession(self.session)
@@ -28,13 +29,29 @@ class RobinhoodTrader:
         watchlist = self.stockBroker.getWatchlist(watchlistName)
         return watchlist
 
-    def addToWatchList(self, instrumentUrl, watchlistName: str = None):
+    def addToWatchList(self, instrumentUrl: str, watchlistName: str = None):
         response = self.stockBroker.addToWatchlist(instrumentUrl, watchlistName)
         return response
 
-    def deleteFromWatchlist(self, instrumentID, watchlistName: str = None):
+    def addMultipleToWatchlist(
+        self, instrumentUrls: List[str], watchlistName: str = None
+    ):
+        response = self.stockBroker.addMultipleToWatchlist(
+            instrumentUrls, watchlistName
+        )
+        return response
+
+    def deleteFromWatchlist(self, instrumentID: str, watchlistName: str = None):
         response = self.stockBroker.deleteFromWatchlist(
             instrumentID, watchlistName
+        )
+        return response
+
+    def deleteMultipleFromWatchlist(
+        self, instrumentIds: List[str], watchlistName: str = None
+    ):
+        response = self.stockBroker.deleteMultipleFromWatchlist(
+            instrumentIds, watchlistName
         )
         return response
 
@@ -50,7 +67,9 @@ class RobinhoodTrader:
         )
         return instrumentIds
 
-    def reorderWatchList(self, instrumentIds, watchlistName: str = None):
+    def reorderWatchList(
+        self, instrumentIds: List[str], watchlistName: str = None
+    ):
         response = self.stockBroker.reorderWatchList(
             instrumentIds, watchlistName
         )

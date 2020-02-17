@@ -107,7 +107,7 @@ def tags():
 
 
 def instruments():
-    return api + "instruments"
+    return api + "instruments/"
 
 
 def token():
