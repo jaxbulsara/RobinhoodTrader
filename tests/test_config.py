@@ -7,7 +7,6 @@ def test_getConfiguration(maintainConfig):
 
     assert type(config).__name__ == "ConfigParser"
     assert "login" in config.keys()
-    assert "qrCode" in config["login"].keys()
     assert "qrCodePattern" in config["login"].keys()
 
 
