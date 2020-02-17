@@ -126,7 +126,14 @@ class StockBroker(Broker):
     ):
         """
         Example Response:
-
+        [   {   'created_at': '2020-02-17T01:12:58.590500Z',
+                'instrument': 'https://api.robinhood.com/instruments/e39ed23a-7bd1-4587-b060-71988d9ef483/',
+                'url': 'https://api.robinhood.com/watchlists/Default/e39ed23a-7bd1-4587-b060-71988d9ef483/',
+                'watchlist': 'https://api.robinhood.com/watchlists/Default/'},
+            {   'created_at': '2020-02-17T01:12:58.736878Z',
+                'instrument': 'https://api.robinhood.com/instruments/54db869e-f7d5-45fb-88f1-8d7072d4c8b2/',
+                'url': 'https://api.robinhood.com/watchlists/Default/54db869e-f7d5-45fb-88f1-8d7072d4c8b2/',
+                'watchlist': 'https://api.robinhood.com/watchlists/Default/'}]
         """
         response = list(
             map(
@@ -155,9 +162,8 @@ class StockBroker(Broker):
             print(
                 f"Cannot delete instrument. URL does not exist: {endpoints.watchlistInstrument(instrumentID, watchlistName)}"
             )
-            return False
 
-        return True
+        return response
 
     @authRequired
     def deleteMultipleFromWatchlist(
@@ -165,7 +171,7 @@ class StockBroker(Broker):
     ):
         """
         Example Response:
-
+        [<Response [204]>, <Response [204]>]
         """
         response = list(
             map(
