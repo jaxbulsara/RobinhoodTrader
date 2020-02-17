@@ -4,7 +4,7 @@ from RobinhoodTrader import exceptions
 from RobinhoodTrader import endpoints
 from RobinhoodTrader.config import getQrCode
 
-import requests, platform, sys
+import requests, platform, sys, uuid
 from getpass import getpass
 from urllib.request import getproxies
 
@@ -14,7 +14,7 @@ class RobinhoodSession(requests.Session):
         super(RobinhoodSession, self).__init__()
         self.proxies = getproxies()
         self.tokenFactory = TokenFactory()
-        self.deviceToken = self.tokenFactory.generateDeviceToken()
+        self.deviceToken = str(uuid.uuid4())
         self.clientID = "c82SH0WZOsabOXGP2sxqcj34FxkvfnWRZBKlBjFS"
         self.credentials = (None, None)
         self.siteAuthToken = None
