@@ -43,7 +43,7 @@ class StockBroker(Broker):
                 'watchlist': 'https://api.robinhood.com/watchlists/Default/'},
             ]
         """
-
+        watchlistName = self._watchlistNameOrDefault(watchlistName)
         response = self.session.get(
             endpoints.watchlistByName(watchlistName), timeout=15
         )
@@ -52,7 +52,33 @@ class StockBroker(Broker):
 
         return data
 
-    @authRequired
+    def _watchlistNameOrDefault(self, watchlistName):
+        allWatchlists = self.getAllWatchlists()
+
+        if allWatchlists["next"]:
+            nextUrl = allWatchlists["next"]
+            watchlists = [allWatchlists["results"]]
+
+            while nextUrl:
+                response = self.session.get(nextUrl, timeout=15)
+                response.raise_for_status()
+                data = response.json()
+                watchlist = data["results"]
+                watchlists.append(watchlist)
+
+            for watchlist in watchlists:
+                if watchlistName not in watchlist["name"]:
+                    watchlistName = "Default"
+
+        else:
+            watchlists = allWatchlists["results"]
+
+            for watchlist in watchlists:
+                if watchlistName not in watchlist["name"]:
+                    watchlistName = "Default"
+
+        return watchlistName
+
     def getWatchlistInstrumentUrls(self, watchlistName: str = None):
         """
         Example output:
@@ -68,7 +94,6 @@ class StockBroker(Broker):
 
         return instrumentUrls
 
-    @authRequired
     def getWatchlistInstrumentIds(self, watchlistName: str = None):
         """
         Example output:
@@ -104,6 +129,7 @@ class StockBroker(Broker):
             'url': 'https://api.robinhood.com/watchlists/Default/f4d089b7-c822-48ac-884d-8ecb312ebb67/',
             'watchlist': 'https://api.robinhood.com/watchlists/Default/'}
         """
+        watchlistName = self._watchlistNameOrDefault(watchlistName)
         try:
             response = self.session.post(
                 endpoints.watchlistByName(watchlistName),
@@ -120,7 +146,6 @@ class StockBroker(Broker):
 
         return data
 
-    @authRequired
     def addMultipleToWatchlist(
         self, instrumentUrls: List[str], watchlistName: str = None
     ):
@@ -152,6 +177,7 @@ class StockBroker(Broker):
         Example Response:
         <Response [204]>
         """
+        watchlistName = self._watchlistNameOrDefault(watchlistName)
         try:
             response = self.session.delete(
                 endpoints.watchlistInstrument(instrumentID, watchlistName),
@@ -165,7 +191,6 @@ class StockBroker(Broker):
 
         return response
 
-    @authRequired
     def deleteMultipleFromWatchlist(
         self, instrumentIds: List[str], watchlistName: str = None
     ):
@@ -190,6 +215,7 @@ class StockBroker(Broker):
         Example Response:
         {}
         """
+        watchlistName = self._watchlistNameOrDefault(watchlistName)
         instrumentIdsField = ",".join(instrumentIds)
         payload = {"uuids": instrumentIdsField}
 

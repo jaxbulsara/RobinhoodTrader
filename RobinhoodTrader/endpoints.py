@@ -46,6 +46,24 @@ def cryptoPortfolios():
     return nummus + "portfolios/"
 
 
+def cryptoWatchlists():
+    return nummus + f"watchlists/"
+
+
+def watchlistByNameCrypto(watchlistName: str = None):
+    if watchlistName is None:
+        watchlistName = "Default"
+    return nummus + f"watchlists/{watchlistName}/"
+
+
+def watchlistInstrumentCrypto(instrumentID: str, watchlistName: str = None):
+    return watchlistByNameCrypto(watchlistName) + f"{instrumentID}/"
+
+
+def watchlistReorderCrypto(watchlistName: str = None):
+    return watchlistByNameCrypto(watchlistName) + "reorder/"
+
+
 def forexQuotes():
     return api + "marketdata/forex/quotes/{}"
 
