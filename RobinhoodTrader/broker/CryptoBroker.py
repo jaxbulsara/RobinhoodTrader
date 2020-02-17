@@ -3,7 +3,7 @@ from RobinhoodTrader import nummusEndpoints
 from RobinhoodTrader.session import RobinhoodSession
 from RobinhoodTrader.session.wrappers import authRequired
 import requests
-from types import List
+from typing import List
 
 
 class CryptoBroker(Broker):
