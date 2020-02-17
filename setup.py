@@ -12,14 +12,14 @@ def getRequirements():
 
 
 setup(
-    name="Robinhood",
+    name="RobinhoodTrader",
     version="0.1.0",
     author="Jay Bulsara",
     author_email="jaxbulsara@gmail.com",
-    packages=["Robinhood"],
+    packages=["RobinhoodTrader"],
     license="MIT",
     include_package_data=True,
-    description="Class to interface with the Robinhood API.",
+    description="Package to interface with the Robinhood API.",
     classifiers=["Programming Language :: Python :: 3.5",],
     keywords="Robinhood trade buy sell API stocks crypto cryptocurrency",
     install_requires=getRequirements(),
