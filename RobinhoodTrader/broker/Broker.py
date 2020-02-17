@@ -1,4 +1,4 @@
-from RobinhoodTrader import endpoints
+from RobinhoodTrader import apiEndpoints
 from RobinhoodTrader.session import RobinhoodSession
 from RobinhoodTrader.session.wrappers import authRequired
 
@@ -35,7 +35,7 @@ class Broker:
         """
 
         response = self.session.get(
-            endpoints.userInvestmentProfile(), timeout=15
+            apiEndpoints.userInvestmentProfile(), timeout=15
         )
         response.raise_for_status()
         data = response.json()

@@ -1,7 +1,7 @@
 from .TokenFactory import TokenFactory
 from .wrappers import authRequired
 from RobinhoodTrader import exceptions
-from RobinhoodTrader import endpoints
+from RobinhoodTrader import apiEndpoints
 from RobinhoodTrader.config import getQrCode
 
 import requests, platform, sys, uuid
@@ -55,7 +55,7 @@ class RobinhoodSession(requests.Session):
             }
 
             logoutRequest = self.post(
-                endpoints.revokeToken(), data=payload, timeout=15
+                apiEndpoints.revokeToken(), data=payload, timeout=15
             )
             logoutRequest.raise_for_status()
         except requests.exceptions.HTTPError:
@@ -92,7 +92,7 @@ class RobinhoodSession(requests.Session):
     def _getAccessToken(self, payload, qrCode):
         try:
             loginResponse = self.post(
-                endpoints.token(), data=payload, timeout=15
+                apiEndpoints.token(), data=payload, timeout=15
             )
             loginData = loginResponse.json()
             self._extractLoginDataTokens(loginData)
@@ -141,7 +141,7 @@ class RobinhoodSession(requests.Session):
         return payload
 
     def _performManualChallenge(self, payload):
-        self.post(endpoints.token(), data=payload, timeout=15)
+        self.post(apiEndpoints.token(), data=payload, timeout=15)
         manualCode = input("Type in code from SMS or Authenticator app: ")
         return manualCode
 
@@ -162,7 +162,7 @@ class RobinhoodSession(requests.Session):
 
     @authRequired
     def _getAccountNumbers(self):
-        accountsResponse = self.get(endpoints.accounts(), timeout=15)
+        accountsResponse = self.get(apiEndpoints.accounts(), timeout=15)
         accountsResponse.raise_for_status()
         accountsData = accountsResponse.json()
         self.accountNumbers = list(

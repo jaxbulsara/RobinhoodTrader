@@ -1,5 +1,5 @@
 from .Broker import Broker
-from RobinhoodTrader import endpoints
+from RobinhoodTrader import apiEndpoints
 from RobinhoodTrader.session import RobinhoodSession
 from RobinhoodTrader.session.wrappers import authRequired
 
@@ -19,7 +19,7 @@ class StockBroker(Broker):
                             'user': 'api.robinhood.com/user/'}]} 
         """
 
-        response = self.session.get(endpoints.watchlists(), timeout=15)
+        response = self.session.get(apiEndpoints.watchlists(), timeout=15)
         response.raise_for_status()
         data = response.json()
 
@@ -45,7 +45,7 @@ class StockBroker(Broker):
         """
         watchlistName = self._watchlistNameOrDefault(watchlistName)
         response = self.session.get(
-            endpoints.watchlistByName(watchlistName), timeout=15
+            apiEndpoints.watchlistByName(watchlistName), timeout=15
         )
         response.raise_for_status()
         data = response.json()["results"]
@@ -55,33 +55,36 @@ class StockBroker(Broker):
     def _watchlistNameOrDefault(self, watchlistName):
         allWatchlists = self.getAllWatchlists()
 
-        if allWatchlists["next"]:
-            nextUrl = allWatchlists["next"]
-            watchlists = [allWatchlists["results"]]
+        if watchlistName is not None:
+            if allWatchlists["next"]:
+                nextUrl = allWatchlists["next"]
+                watchlists = [allWatchlists["results"]]
 
-            while nextUrl:
-                response = self.session.get(nextUrl, timeout=15)
-                response.raise_for_status()
-                data = response.json()
-                watchlist = data["results"]
-                watchlists.append(watchlist)
+                while nextUrl:
+                    response = self.session.get(nextUrl, timeout=15)
+                    response.raise_for_status()
+                    data = response.json()
+                    watchlist = data["results"]
+                    watchlists.append(watchlist)
 
-            for watchlist in watchlists:
-                if watchlistName not in watchlist["name"]:
-                    watchlistName = "Default"
+                for watchlist in watchlists:
+                    if watchlistName not in watchlist["name"]:
+                        watchlistName = "Default"
 
+            else:
+                watchlists = allWatchlists["results"]
+
+                for watchlist in watchlists:
+                    if watchlistName not in watchlist["name"]:
+                        watchlistName = "Default"
         else:
-            watchlists = allWatchlists["results"]
-
-            for watchlist in watchlists:
-                if watchlistName not in watchlist["name"]:
-                    watchlistName = "Default"
+            watchlistName = "Default"
 
         return watchlistName
 
     def getWatchlistInstrumentUrls(self, watchlistName: str = None):
         """
-        Example output:
+        Example Output:
         [   'https://api.robinhood.com/instruments/e39ed23a-7bd1-4587-b060-71988d9ef483/',
             'https://api.robinhood.com/instruments/54db869e-f7d5-45fb-88f1-8d7072d4c8b2/',
             'https://api.robinhood.com/instruments/50810c35-d215-4866-9758-0ada4ac79ffa/',
@@ -96,7 +99,7 @@ class StockBroker(Broker):
 
     def getWatchlistInstrumentIds(self, watchlistName: str = None):
         """
-        Example output:
+        Example Output:
         [   'e39ed23a-7bd1-4587-b060-71988d9ef483',
             '54db869e-f7d5-45fb-88f1-8d7072d4c8b2',
             '50810c35-d215-4866-9758-0ada4ac79ffa',
@@ -123,7 +126,7 @@ class StockBroker(Broker):
         self, instrumentUrl: str, watchlistName: str = None,
     ):
         """
-        Example Response:
+        Example Response Data:
         {   'created_at': '2020-02-16T22:56:18.685673Z',
             'instrument': 'https://api.robinhood.com/instruments/f4d089b7-c822-48ac-884d-8ecb312ebb67/',
             'url': 'https://api.robinhood.com/watchlists/Default/f4d089b7-c822-48ac-884d-8ecb312ebb67/',
@@ -132,14 +135,14 @@ class StockBroker(Broker):
         watchlistName = self._watchlistNameOrDefault(watchlistName)
         try:
             response = self.session.post(
-                endpoints.watchlistByName(watchlistName),
+                apiEndpoints.watchlistByName(watchlistName),
                 data={"instrument": instrumentUrl},
                 timeout=15,
             )
             response.raise_for_status()
         except requests.exceptions.HTTPError:
             print(
-                f"Cannot add instrument. URL already exists: {endpoints.watchlistInstrument(self.getInstrumentIdFromUrl, watchlistName)}"
+                f"Cannot add instrument. URL already exists: {apiEndpoints.watchlistInstrument(self.getInstrumentIdFromUrl, watchlistName)}"
             )
 
         data = response.json()
@@ -150,7 +153,7 @@ class StockBroker(Broker):
         self, instrumentUrls: List[str], watchlistName: str = None
     ):
         """
-        Example Response:
+        Example Response Data:
         [   {   'created_at': '2020-02-17T01:12:58.590500Z',
                 'instrument': 'https://api.robinhood.com/instruments/e39ed23a-7bd1-4587-b060-71988d9ef483/',
                 'url': 'https://api.robinhood.com/watchlists/Default/e39ed23a-7bd1-4587-b060-71988d9ef483/',
@@ -174,19 +177,19 @@ class StockBroker(Broker):
         self, instrumentID: str, watchlistName: str = None,
     ):
         """
-        Example Response:
+        Example Response Data:
         <Response [204]>
         """
         watchlistName = self._watchlistNameOrDefault(watchlistName)
         try:
             response = self.session.delete(
-                endpoints.watchlistInstrument(instrumentID, watchlistName),
+                apiEndpoints.watchlistInstrument(instrumentID, watchlistName),
                 timeout=15,
             )
             response.raise_for_status()
         except requests.exceptions.HTTPError:
             print(
-                f"Cannot delete instrument. URL does not exist: {endpoints.watchlistInstrument(instrumentID, watchlistName)}"
+                f"Cannot delete instrument. URL does not exist: {apiEndpoints.watchlistInstrument(instrumentID, watchlistName)}"
             )
 
         return response
@@ -195,7 +198,7 @@ class StockBroker(Broker):
         self, instrumentIds: List[str], watchlistName: str = None
     ):
         """
-        Example Response:
+        Example Response Data:
         [<Response [204]>, <Response [204]>]
         """
         response = list(
@@ -212,7 +215,7 @@ class StockBroker(Broker):
         self, instrumentIds: List[str], watchlistName: str = None
     ):
         """
-        Example Response:
+        Example Response Data:
         {}
         """
         watchlistName = self._watchlistNameOrDefault(watchlistName)
@@ -220,7 +223,7 @@ class StockBroker(Broker):
         payload = {"uuids": instrumentIdsField}
 
         response = self.session.post(
-            endpoints.watchlistReorder(), data=payload, timeout=15,
+            apiEndpoints.watchlistReorder(), data=payload, timeout=15,
         )
         response.raise_for_status()
 

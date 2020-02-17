@@ -1,6 +1,6 @@
 from .RobinhoodTrader import RobinhoodTrader
 from RobinhoodTrader.config import getConfiguration
-from RobinhoodTrader import endpoints
+from RobinhoodTrader import apiEndpoints, nummusEndpoints
 import pprint, os, shutil, requests, json
 
 printer = pprint.PrettyPrinter(indent=4)
@@ -18,7 +18,15 @@ try:
     credentials = (username, password)
     trader.login(credentials)
 
-    data = trader.cryptoBroker.getWatchlist("wrong")
+    data = trader.cryptoBroker.getWatchlistCurrencyPairIds()
+    printer.pprint(data)
+
+    data = trader.cryptoBroker.addToWatchlist(
+        "b9729798-2aec-4ca9-8637-4d9789d63764"
+    )
+    printer.pprint(data)
+
+    data = trader.cryptoBroker.getWatchlistCurrencyPairIds()
     printer.pprint(data)
 
 

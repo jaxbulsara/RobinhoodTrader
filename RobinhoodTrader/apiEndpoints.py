@@ -1,5 +1,4 @@
 api = "https://api.robinhood.com/"
-nummus = "https://nummus.robinhood.com/"
 
 
 def accounts():
@@ -16,52 +15,6 @@ def accountPortfolio(accountNumber):
 
 def accountPositions(accountNumber):
     return api + f"accounts/{accountNumber}/positions/"
-
-
-def cryptoAccounts():
-    return nummus + "accounts/"
-
-
-def cryptoCurrencyPairs():
-    return nummus + "currency_pairs"
-
-
-def cryptoHoldings():
-    return nummus + "holdings/"
-
-
-def cryptoOrders():
-    return nummus + "orders/"
-
-
-def cryptoOrderStatus():
-    return nummus + "orders/{}"
-
-
-def cryptoOrderCancel():
-    return nummus + "orders/{}/cancel/"
-
-
-def cryptoPortfolios():
-    return nummus + "portfolios/"
-
-
-def cryptoWatchlists():
-    return nummus + f"watchlists/"
-
-
-def watchlistByNameCrypto(watchlistName: str = None):
-    if watchlistName is None:
-        watchlistName = "Default"
-    return nummus + f"watchlists/{watchlistName}/"
-
-
-def watchlistInstrumentCrypto(instrumentID: str, watchlistName: str = None):
-    return watchlistByNameCrypto(watchlistName) + f"{instrumentID}/"
-
-
-def watchlistReorderCrypto(watchlistName: str = None):
-    return watchlistByNameCrypto(watchlistName) + "reorder/"
 
 
 def forexQuotes():
