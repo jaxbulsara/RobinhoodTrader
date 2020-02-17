@@ -4,11 +4,12 @@ from RobinhoodTrader.session import RobinhoodSession
 from RobinhoodTrader.session.wrappers import authRequired
 
 import requests
+from typing import List
 
 
 class StockBroker(Broker):
     @authRequired
-    def getAllWatchlists(self, session: RobinhoodSession):
+    def getAllWatchlists(self):
         """
         Example response:
         {   'next': None,
@@ -18,16 +19,14 @@ class StockBroker(Broker):
                             'user': 'api.robinhood.com/user/'}]} 
         """
 
-        response = session.get(endpoints.watchlists(), timeout=15)
+        response = self.session.get(endpoints.watchlists(), timeout=15)
         response.raise_for_status()
         data = response.json()
 
         return data
 
     @authRequired
-    def getWatchlist(
-        self, session: RobinhoodSession, watchlistName: str = "Default"
-    ):
+    def getWatchlist(self, watchlistName: str = None):
         """
         Example response:
         [   {   'created_at': '2019-03-12T08:22:45.386349Z',
@@ -45,8 +44,8 @@ class StockBroker(Broker):
             ]
         """
 
-        response = session.get(
-            endpoints.watchlistName(watchlistName), timeout=15
+        response = self.session.get(
+            endpoints.watchlistByName(watchlistName), timeout=15
         )
         response.raise_for_status()
         data = response.json()["results"]
@@ -54,15 +53,54 @@ class StockBroker(Broker):
         return data
 
     @authRequired
+    def getWatchlistInstrumentUrls(self, watchlistName: str = None):
+        """
+        Example output:
+        [   'https://api.robinhood.com/instruments/e39ed23a-7bd1-4587-b060-71988d9ef483/',
+            'https://api.robinhood.com/instruments/54db869e-f7d5-45fb-88f1-8d7072d4c8b2/',
+            'https://api.robinhood.com/instruments/50810c35-d215-4866-9758-0ada4ac79ffa/',
+            'https://api.robinhood.com/instruments/450dfc6d-5510-4d40-abfb-f633b7d9be3e/']  
+        """
+        watchlist = self.getWatchlist(watchlistName)
+        instrumentUrls = list(
+            map(lambda watchlistItem: watchlistItem["instrument"], watchlist)
+        )
+
+        return instrumentUrls
+
+    @authRequired
+    def getWatchlistInstrumentIds(self, watchlistName: str = None):
+        """
+        Example output:
+        [   'e39ed23a-7bd1-4587-b060-71988d9ef483',
+            '54db869e-f7d5-45fb-88f1-8d7072d4c8b2',
+            '50810c35-d215-4866-9758-0ada4ac79ffa',
+            '450dfc6d-5510-4d40-abfb-f633b7d9be3e']
+        """
+        instrumentUrls = self.getWatchlistInstrumentUrls(watchlistName)
+        instrumentIds = list(
+            map(
+                lambda instrumentUrl: instrumentUrl.rstrip("/").split("/")[-1],
+                instrumentUrls,
+            )
+        )
+
+        return instrumentIds
+
+    @authRequired
     def addToWatchlist(
-        self,
-        session: RobinhoodSession,
-        instrumentUrl: str,
-        watchlistName: str = "Default",
+        self, instrumentUrl: str, watchlistName: str = None,
     ):
+        """
+        Example Response:
+        {   'created_at': '2020-02-16T22:56:18.685673Z',
+            'instrument': 'https://api.robinhood.com/instruments/f4d089b7-c822-48ac-884d-8ecb312ebb67/',
+            'url': 'https://api.robinhood.com/watchlists/Default/f4d089b7-c822-48ac-884d-8ecb312ebb67/',
+            'watchlist': 'https://api.robinhood.com/watchlists/Default/'}
+        """
         try:
-            response = session.post(
-                endpoints.watchlistName(watchlistName),
+            response = self.session.post(
+                endpoints.watchlistByName(watchlistName),
                 data={"instrument": instrumentUrl},
                 timeout=15,
             )
@@ -76,22 +114,46 @@ class StockBroker(Broker):
 
     @authRequired
     def deleteFromWatchlist(
-        self,
-        session: RobinhoodSession,
-        instrumentID: str,
-        watchlistName: str = "Default",
+        self, instrumentID: str, watchlistName: str = None,
     ):
+        """
+        Example Response:
+        <Response [204]>
+        """
         try:
-            response = session.delete(
-                endpoints.watchlistInstrument(watchlistName, instrumentID),
+            response = self.session.delete(
+                endpoints.watchlistInstrument(instrumentID, watchlistName),
                 timeout=15,
             )
             response.raise_for_status()
         except requests.exceptions.HTTPError:
             print(
-                f"Cannot delete instrument. URL does not exist: {endpoints.watchlistInstrument(watchlistName, instrumentID)}"
+                f"Cannot delete instrument. URL does not exist: {endpoints.watchlistInstrument(instrumentID, watchlistName)}"
             )
             return False
 
         return True
+
+    @authRequired
+    def reorderWatchList(
+        self, instrumentIds: List[str], watchlistName: str = None
+    ):
+        """
+        Example Response:
+        {}
+        """
+        instrumentIdsField = ",".join(instrumentIds)
+        payload = {"uuids": instrumentIdsField}
+
+        try:
+            response = self.session.post(
+                endpoints.watchlistReorder(), data=payload, timeout=15,
+            )
+            response.raise_for_status()
+        except requests.exceptions.HTTPError as error:
+            print(error)
+
+        data = response.json()
+
+        return data
 

@@ -4,8 +4,14 @@ from RobinhoodTrader.session.wrappers import authRequired
 
 
 class Broker:
+    def __init__(self):
+        self.session = None
+
+    def addSession(self, session: RobinhoodSession):
+        self.session = session
+
     @authRequired
-    def getInvestmentProfile(self, session: RobinhoodSession):
+    def getInvestmentProfile(self):
         """
         Example response:
         {   'annual_income': '0_25000',
@@ -28,7 +34,9 @@ class Broker:
             'user': 'api.robinhood.com/user/'}
         """
 
-        response = session.get(endpoints.userInvestmentProfile(), timeout=15,)
+        response = self.session.get(
+            endpoints.userInvestmentProfile(), timeout=15
+        )
         response.raise_for_status()
         data = response.json()
 

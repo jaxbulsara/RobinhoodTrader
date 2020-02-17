@@ -4,13 +4,10 @@ from RobinhoodTrader import exceptions
 
 def authRequired(function):  # pylint: disable=E0213
     def makeUserLogin(self, *args, **kwargs):
-        session = list(
-            filter(lambda arg: type(arg).__name__ == "RobinhoodSession", args)
-        )
-        if session:
-            session = session[0]
-        else:
+        if type(self).__name__ == "RobinhoodSession":
             session = self
+        else:
+            session = self.session
         if not session.isLoggedIn:
             session.login(session.credentials)
         return function(self, *args, **kwargs)  # pylint: disable=E1102

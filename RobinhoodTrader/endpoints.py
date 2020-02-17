@@ -154,9 +154,15 @@ def watchlists():
     return api + f"watchlists/"
 
 
-def watchlistName(watchlistName: str):
+def watchlistByName(watchlistName: str = None):
+    if watchlistName is None:
+        watchlistName = "Default"
     return api + f"watchlists/{watchlistName}/"
 
 
-def watchlistInstrument(watchlistName: str, instrumentID: str):
-    return api + f"watchlists/{watchlistName}/{instrumentID}/"
+def watchlistInstrument(instrumentID: str, watchlistName: str = None):
+    return watchlistByName(watchlistName) + f"{instrumentID}/"
+
+
+def watchlistReorder(watchlistName: str = None):
+    return watchlistByName(watchlistName) + "reorder/"

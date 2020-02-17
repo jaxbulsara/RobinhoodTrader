@@ -18,16 +18,21 @@ try:
     credentials = (username, password)
     trader.login(credentials)
 
-    data = trader.deleteFromWatchlist("f4d089b7-c822-48ac-884d-8ecb312ebb67")
+    data = trader.getWatchlistInstrumentIds()
     printer.pprint(data)
 
-    data = trader.addToWatchList(
-        "https://api.robinhood.com/instruments/f4d089b7-c822-48ac-884d-8ecb312ebb67/"
+    data = trader.reorderWatchList(
+        [
+            "e39ed23a-7bd1-4587-b060-71988d9ef483",
+            "54db869e-f7d5-45fb-88f1-8d7072d4c8b2",
+            "50810c35-d215-4866-9758-0ada4ac79ffa",
+            "450dfc6d-5510-4d40-abfb-f633b7d9be3e",
+        ]
     )
     printer.pprint(data)
 
-    watchlist = trader.getWatchlist()
-    printer.pprint(watchlist)
+    data = trader.getWatchlistInstrumentIds()
+    printer.pprint(data)
 
 except Exception:
     raise Exception
