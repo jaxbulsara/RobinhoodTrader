@@ -1,6 +1,7 @@
 from RobinhoodTrader.session import RobinhoodSession
 from RobinhoodTrader.broker import StockBroker, CryptoBroker
 from typing import List, Tuple
+from pprint import PrettyPrinter
 
 
 class RobinhoodTrader:
@@ -8,6 +9,7 @@ class RobinhoodTrader:
         self.stockBroker = StockBroker()
         self.cryptoBroker = CryptoBroker()
         self.session = RobinhoodSession()
+        self.printer = PrettyPrinter(indent=4)
 
     def login(self, credentials: Tuple[str] = (None, None)):
         self.session.login(credentials)
@@ -16,3 +18,6 @@ class RobinhoodTrader:
 
     def logout(self):
         self.session.logout()
+
+    def printData(self, data):
+        self.printer.pprint(data)
