@@ -1,10 +1,18 @@
 from configparser import ConfigParser
-import re
+import re, os, pathlib
 
 
 def getConfiguration():
+    originalWorkingDirectory = os.getcwd()
+    thisFileDirectory = os.path.dirname(pathlib.Path(__file__))
+
+    os.chdir(thisFileDirectory)
+
     configParser = ConfigParser()
     configParser.read("config.ini")
+
+    os.chdir(originalWorkingDirectory)
+
     return configParser
 
 
@@ -26,4 +34,3 @@ def _checkQrCode(config, qrCode):
             qrCode = None
 
     return qrCode
-
