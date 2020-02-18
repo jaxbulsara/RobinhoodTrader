@@ -128,6 +128,5 @@ dmypy.json
 robinhoodTraderWorkspace.code-workspace
 
 # personal
-qrCode.txt
+examples/myConfig.txt
 .vscode/
-RobinhoodTrader/myConfig.ini
