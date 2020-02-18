@@ -128,5 +128,4 @@ dmypy.json
 robinhoodTraderWorkspace.code-workspace
 
 # personal
-examples/myConfig.txt
 .vscode/
