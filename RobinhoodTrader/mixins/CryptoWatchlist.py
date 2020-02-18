@@ -9,7 +9,6 @@ from typing import List, Callable
 
 class CryptoWatchlist:
     session: RobinhoodSession
-    _watchlistNameOrDefault: Callable[[str], str]
 
     @authRequired
     def getAllCryptoWatchlists(self):
@@ -169,3 +168,33 @@ class CryptoWatchlist:
         data = self.editCryptoWatchlist(currencyPairIds, watchlistName)
 
         return data
+
+    def _watchlistNameOrDefault(self, watchlistName):
+        allWatchlists = self.getAllWatchlists()
+
+        if watchlistName is not None:
+            if allWatchlists["next"]:
+                nextUrl = allWatchlists["next"]
+                watchlists = [allWatchlists["results"]]
+
+                while nextUrl:
+                    response = self.session.get(nextUrl, timeout=15)
+                    response.raise_for_status()
+                    data = response.json()
+                    watchlist = data["results"]
+                    watchlists.append(watchlist)
+
+                for watchlist in watchlists:
+                    if watchlistName not in watchlist["name"]:
+                        watchlistName = "Default"
+
+            else:
+                watchlists = allWatchlists["results"]
+
+                for watchlist in watchlists:
+                    if watchlistName not in watchlist["name"]:
+                        watchlistName = "Default"
+        else:
+            watchlistName = "Default"
+
+        return watchlistName

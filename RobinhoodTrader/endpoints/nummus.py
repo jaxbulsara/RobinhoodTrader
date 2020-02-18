@@ -7,6 +7,10 @@ def accounts():
     return nummus + "accounts/"
 
 
+def accountById(accountId):
+    return accounts() + accountId + "/"
+
+
 def currencyPairs():
     return nummus + "currency_pairs"
 

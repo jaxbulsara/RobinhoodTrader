@@ -7,16 +7,16 @@ def accounts():
     return api + "accounts/"
 
 
-def accountUrl(accountNumber):
-    return api + f"accounts/{accountNumber}/"
+def accountByNumber(accountNumber):
+    return accounts() + accountNumber + "/"
 
 
 def accountPortfolio(accountNumber):
-    return api + f"accounts/{accountNumber}/portfolio/"
+    return accountByNumber(accountNumber) + "/portfolio/"
 
 
 def accountPositions(accountNumber):
-    return api + f"accounts/{accountNumber}/positions/"
+    return accountByNumber(accountNumber) + "/positions/"
 
 
 def forexQuotes():
