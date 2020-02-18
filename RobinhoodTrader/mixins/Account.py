@@ -207,18 +207,18 @@ class Account:
 
         """
         allAccounts = self.getAllAccounts()
-        accounts = [allAccounts["results"][0]]
-        firstAccountNumber = accounts[0]["account_number"]
+        firstAccountNumber = allAccounts["results"][0]["account_number"]
 
         if accountNumber is not None:
             if allAccounts["next"]:
                 nextUrl = allAccounts["next"]
+                accounts = [allAccounts["results"][0]]
 
                 while nextUrl:
                     response = self.session.get(nextUrl, timeout=15)
                     response.raise_for_status()
                     data = response.json()
-                    account = data["results"]
+                    account = data["results"][0]
                     accounts.append(account)
 
                 for account in accounts:
@@ -226,6 +226,8 @@ class Account:
                         accountNumber = firstAccountNumber
 
             else:
+                accounts = allAccounts["results"]
+
                 for account in accounts:
                     if accountNumber not in account["account_number"]:
                         accountNumber = firstAccountNumber
