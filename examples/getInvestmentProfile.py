@@ -3,6 +3,6 @@ from RobinhoodTrader import RobinhoodTrader
 trader = RobinhoodTrader()
 trader.login()
 
-investmentProfile = trader.stockBroker.getInvestmentProfile()
+investmentProfile = trader.getInvestmentProfile()
 print("Investment Profile:")
 trader.printData(investmentProfile)

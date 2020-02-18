@@ -1,5 +1,6 @@
+from __future__ import absolute_import
 import requests
-from RobinhoodTrader import exceptions
+from . import exceptions
 
 
 def authRequired(function):  # pylint: disable=E0213

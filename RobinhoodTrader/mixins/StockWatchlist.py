@@ -1,13 +1,15 @@
-from .Broker import Broker
-from RobinhoodTrader import apiEndpoints
-from RobinhoodTrader.session import RobinhoodSession
-from RobinhoodTrader.session.wrappers import authRequired
+from __future__ import absolute_import
+from ..RobinhoodSession import RobinhoodSession
+from ..endpoints import api
+from ..wrappers import authRequired
 
 import requests
-from typing import List
+from typing import List, Callable
 
 
-class StockBroker(Broker):
+class StockWatchlist:
+    session: RobinhoodSession
+
     @authRequired
     def getAllWatchlists(self):
         """
@@ -19,7 +21,7 @@ class StockBroker(Broker):
                             'user': 'api.robinhood.com/user/'}]} 
         """
 
-        response = self.session.get(apiEndpoints.watchlists(), timeout=15)
+        response = self.session.get(api.watchlists(), timeout=15)
         response.raise_for_status()
         data = response.json()
 
@@ -45,42 +47,12 @@ class StockBroker(Broker):
         """
         watchlistName = self._watchlistNameOrDefault(watchlistName)
         response = self.session.get(
-            apiEndpoints.watchlistByName(watchlistName), timeout=15
+            api.watchlistByName(watchlistName), timeout=15
         )
         response.raise_for_status()
         data = response.json()["results"]
 
         return data
-
-    def _watchlistNameOrDefault(self, watchlistName):
-        allWatchlists = self.getAllWatchlists()
-
-        if watchlistName is not None:
-            if allWatchlists["next"]:
-                nextUrl = allWatchlists["next"]
-                watchlists = [allWatchlists["results"]]
-
-                while nextUrl:
-                    response = self.session.get(nextUrl, timeout=15)
-                    response.raise_for_status()
-                    data = response.json()
-                    watchlist = data["results"]
-                    watchlists.append(watchlist)
-
-                for watchlist in watchlists:
-                    if watchlistName not in watchlist["name"]:
-                        watchlistName = "Default"
-
-            else:
-                watchlists = allWatchlists["results"]
-
-                for watchlist in watchlists:
-                    if watchlistName not in watchlist["name"]:
-                        watchlistName = "Default"
-        else:
-            watchlistName = "Default"
-
-        return watchlistName
 
     def getWatchlistInstrumentUrls(self, watchlistName: str = None):
         """
@@ -135,14 +107,14 @@ class StockBroker(Broker):
         watchlistName = self._watchlistNameOrDefault(watchlistName)
         try:
             response = self.session.post(
-                apiEndpoints.watchlistByName(watchlistName),
+                api.watchlistByName(watchlistName),
                 data={"instrument": instrumentUrl},
                 timeout=15,
             )
             response.raise_for_status()
         except requests.exceptions.HTTPError:
             print(
-                f"Cannot add instrument. URL already exists: {apiEndpoints.watchlistInstrument(self.getInstrumentIdFromUrl, watchlistName)}"
+                f"Cannot add instrument. URL already exists: {api.watchlistInstrument(self.getInstrumentIdFromUrl, watchlistName)}"
             )
 
         data = response.json()
@@ -183,13 +155,13 @@ class StockBroker(Broker):
         watchlistName = self._watchlistNameOrDefault(watchlistName)
         try:
             response = self.session.delete(
-                apiEndpoints.watchlistInstrument(instrumentID, watchlistName),
+                api.watchlistInstrument(instrumentID, watchlistName),
                 timeout=15,
             )
             response.raise_for_status()
         except requests.exceptions.HTTPError:
             print(
-                f"Cannot delete instrument. URL does not exist: {apiEndpoints.watchlistInstrument(instrumentID, watchlistName)}"
+                f"Cannot delete instrument. URL does not exist: {api.watchlistInstrument(instrumentID, watchlistName)}"
             )
 
         return response
@@ -223,11 +195,41 @@ class StockBroker(Broker):
         payload = {"uuids": instrumentIdsField}
 
         response = self.session.post(
-            apiEndpoints.watchlistReorder(), data=payload, timeout=15,
+            api.watchlistReorder(), data=payload, timeout=15,
         )
         response.raise_for_status()
 
         data = response.json()
 
         return data
+
+    def _watchlistNameOrDefault(self, watchlistName):
+        allWatchlists = self.getAllWatchlists()
+
+        if watchlistName is not None:
+            if allWatchlists["next"]:
+                nextUrl = allWatchlists["next"]
+                watchlists = [allWatchlists["results"]]
+
+                while nextUrl:
+                    response = self.session.get(nextUrl, timeout=15)
+                    response.raise_for_status()
+                    data = response.json()
+                    watchlist = data["results"]
+                    watchlists.append(watchlist)
+
+                for watchlist in watchlists:
+                    if watchlistName not in watchlist["name"]:
+                        watchlistName = "Default"
+
+            else:
+                watchlists = allWatchlists["results"]
+
+                for watchlist in watchlists:
+                    if watchlistName not in watchlist["name"]:
+                        watchlistName = "Default"
+        else:
+            watchlistName = "Default"
+
+        return watchlistName
 

@@ -3,10 +3,10 @@ from RobinhoodTrader import RobinhoodTrader
 trader = RobinhoodTrader()
 trader.login()
 
-allWatchlists = trader.stockBroker.getAllWatchlists()
+allWatchlists = trader.getAllWatchlists()
 print("All watchlists:")
 trader.printData(allWatchlists)
 
-watchlist = trader.stockBroker.getWatchlist("Default")
+watchlist = trader.getWatchlist("Default")
 print("Single watchlist")
 trader.printData(watchlist)

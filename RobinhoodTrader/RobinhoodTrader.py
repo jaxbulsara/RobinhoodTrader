@@ -1,23 +1,21 @@
-from RobinhoodTrader.session import RobinhoodSession
-from RobinhoodTrader.broker import StockBroker, CryptoBroker
-from typing import List, Tuple
-from pprint import PrettyPrinter
+from __future__ import absolute_import
+from .mixins import (
+    Account,
+    StockWatchlist,
+    CryptoWatchlist,
+    Printer,
+)
+from . import RobinhoodSession
 
 
-class RobinhoodTrader:
-    def __init__(self, isVerbose: bool = False):
-        self.stockBroker = StockBroker()
-        self.cryptoBroker = CryptoBroker()
+class RobinhoodTrader(
+    Account, StockWatchlist, CryptoWatchlist, Printer,
+):
+    def __init__(self):
         self.session = RobinhoodSession()
-        self.printer = PrettyPrinter(indent=4)
 
-    def login(self, credentials: Tuple[str] = (None, None)):
-        self.session.login(credentials)
-        self.stockBroker.addSession(self.session)
-        self.cryptoBroker.addSession(self.session)
+    def login(self):
+        self.session.login()
 
     def logout(self):
         self.session.logout()
-
-    def printData(self, data):
-        self.printer.pprint(data)

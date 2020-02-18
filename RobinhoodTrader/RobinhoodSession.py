@@ -1,10 +1,10 @@
-from .TokenFactory import TokenFactory
+from __future__ import absolute_import
+from . import exceptions
 from .wrappers import authRequired
-from RobinhoodTrader import exceptions
-from RobinhoodTrader import apiEndpoints
-from RobinhoodTrader.config import getQrCode
+from .endpoints import api
+from .config import getQrCode
 
-import requests, platform, sys, uuid
+import requests, platform, sys, uuid, time, struct, base64, hmac, hashlib
 from getpass import getpass
 from urllib.request import getproxies
 
@@ -13,7 +13,6 @@ class RobinhoodSession(requests.Session):
     def __init__(self):
         super(RobinhoodSession, self).__init__()
         self.proxies = getproxies()
-        self.tokenFactory = TokenFactory()
         self.deviceToken = str(uuid.uuid4())
         self.clientID = "c82SH0WZOsabOXGP2sxqcj34FxkvfnWRZBKlBjFS"
         self.credentials = (None, None)
@@ -55,7 +54,7 @@ class RobinhoodSession(requests.Session):
             }
 
             logoutRequest = self.post(
-                apiEndpoints.revokeToken(), data=payload, timeout=15
+                api.revokeToken(), data=payload, timeout=15
             )
             logoutRequest.raise_for_status()
         except requests.exceptions.HTTPError:
@@ -85,15 +84,15 @@ class RobinhoodSession(requests.Session):
         else:
             payload = self._generatePayloadForManualChallenge(credentials)
             manualCode = self._performManualChallenge(payload)
-            payload = self._generatePayload(credentials, manualCode=manualCode)
+            payload = self._generatePayloadForLogin(
+                credentials, qrCode, manualCode
+            )
 
         return payload
 
     def _getAccessToken(self, payload, qrCode):
         try:
-            loginResponse = self.post(
-                apiEndpoints.token(), data=payload, timeout=15
-            )
+            loginResponse = self.post(api.token(), data=payload, timeout=15)
             loginData = loginResponse.json()
             self._extractLoginDataTokens(loginData)
         except requests.exceptions.HTTPError:
@@ -117,14 +116,36 @@ class RobinhoodSession(requests.Session):
         }
 
         if qrCode:
-            multiFactorAuthToken = self.tokenFactory.generateMultiFactorAuthToken(
-                qrCode
-            )
+            multiFactorAuthToken = self._generateMultiFactorAuthToken(qrCode)
             payload["mfa_code"] = multiFactorAuthToken
         elif manualCode:
             payload["mfa_code"] = manualCode
 
         return payload
+
+    def _generateMultiFactorAuthToken(self, qrCode, currentTimeSeed=None):
+        if currentTimeSeed is None:
+            currentTimeSeed = int(time.time()) // 30
+
+        cStructSeed = struct.pack(">Q", currentTimeSeed)
+        cStructKey = base64.b32decode(qrCode, True)
+        hmacObject = hmac.new(cStructKey, cStructSeed, hashlib.sha1)
+        hmacDigest = hmacObject.digest()
+        authToken = self._getMultiFactorAuthToken(hmacDigest)
+
+        return authToken
+
+    def _getMultiFactorAuthToken(self, hmacDigest):
+        authTokenStartPosition = hmacDigest[19] & 0b1111
+        authTokenEndPosition = authTokenStartPosition + 4
+        authToken = struct.unpack(
+            ">I", hmacDigest[authTokenStartPosition:authTokenEndPosition]
+        )[0]
+        authToken &= 0x7FFFFFFF
+        authToken %= 1000000
+        authToken = f"{authToken:06d}"
+
+        return authToken
 
     def _generatePayloadForManualChallenge(self, credentials):
         payload = {
@@ -141,7 +162,7 @@ class RobinhoodSession(requests.Session):
         return payload
 
     def _performManualChallenge(self, payload):
-        self.post(apiEndpoints.token(), data=payload, timeout=15)
+        self.post(api.token(), data=payload, timeout=15)
         manualCode = input("Type in code from SMS or Authenticator app: ")
         return manualCode
 
@@ -162,7 +183,7 @@ class RobinhoodSession(requests.Session):
 
     @authRequired
     def _getAccountNumbers(self):
-        accountsResponse = self.get(apiEndpoints.accounts(), timeout=15)
+        accountsResponse = self.get(api.accounts(), timeout=15)
         accountsResponse.raise_for_status()
         accountsData = accountsResponse.json()
         self.accountNumbers = list(

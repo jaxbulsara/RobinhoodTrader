@@ -1,14 +1,11 @@
-from RobinhoodTrader import apiEndpoints
-from RobinhoodTrader.session import RobinhoodSession
-from RobinhoodTrader.session.wrappers import authRequired
+from __future__ import absolute_import
+from ..RobinhoodSession import RobinhoodSession
+from ..endpoints import api, nummus
+from ..wrappers import authRequired
 
 
-class Broker:
-    def __init__(self):
-        self.session = None
-
-    def addSession(self, session: RobinhoodSession):
-        self.session = session
+class Account:
+    session: RobinhoodSession
 
     @authRequired
     def getInvestmentProfile(self):
@@ -34,9 +31,7 @@ class Broker:
             'user': 'api.robinhood.com/user/'}
         """
 
-        response = self.session.get(
-            apiEndpoints.userInvestmentProfile(), timeout=15
-        )
+        response = self.session.get(api.userInvestmentProfile(), timeout=15)
         response.raise_for_status()
         data = response.json()
 
