@@ -5,13 +5,12 @@ from .mixins import (
     CryptoWatchlist,
     Printer,
     Instruments,
-    Pages,
 )
 from . import RobinhoodSession
 
 
 class RobinhoodTrader(
-    Account, StockWatchlist, CryptoWatchlist, Printer, Instruments, Pages,
+    Account, StockWatchlist, CryptoWatchlist, Printer, Instruments,
 ):
     def __init__(self):
         self.session = RobinhoodSession()

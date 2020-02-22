@@ -2,12 +2,13 @@ from __future__ import absolute_import
 from ..RobinhoodSession import RobinhoodSession
 from ..endpoints import api
 from ..wrappers import authRequired
+from .Pages import Pages
 
 import requests
 from typing import List, Callable
 
 
-class StockWatchlist:
+class StockWatchlist(Pages):
     session: RobinhoodSession
 
     @authRequired
@@ -212,9 +213,8 @@ class StockWatchlist:
                 watchlists = [allWatchlists["results"]]
 
                 while nextUrl:
-                    response = self.session.get(nextUrl, timeout=15)
-                    response.raise_for_status()
-                    data = response.json()
+                    data = self.getNextData(nextUrl)
+                    nextUrl = data["next"]
                     watchlist = data["results"]
                     watchlists.append(watchlist)
 

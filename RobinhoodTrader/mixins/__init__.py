@@ -4,4 +4,4 @@ from .CryptoWatchlist import CryptoWatchlist
 from .StockWatchlist import StockWatchlist
 from .Printer import Printer
 from .Instruments import Instruments
-from .Pages import Pages
+from .PageSupport import PageSupport
