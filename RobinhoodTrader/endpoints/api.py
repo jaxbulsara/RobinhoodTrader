@@ -43,6 +43,18 @@ def historicals():
     return api + "quotes/historicals"
 
 
+def instruments():
+    return api + "instruments/"
+
+
+def instrumentBySymbol(instrumentSymbol):
+    return instruments + "?symbol=" + instrumentSymbol + "/"
+
+
+def instrumentById(instrumentId):
+    return instruments + instrumentId + "/"
+
+
 def markets():
     return api + "markets/"
 
@@ -77,10 +89,6 @@ def quotes():
 
 def tags():
     return api + "midland/tags/tag/"
-
-
-def instruments():
-    return api + "instruments/"
 
 
 def token():
