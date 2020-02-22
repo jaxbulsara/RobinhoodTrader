@@ -2,17 +2,17 @@ from __future__ import absolute_import
 from ..RobinhoodSession import RobinhoodSession
 from ..endpoints import api
 from ..wrappers import authRequired
-from .Pages import Pages
+from .PageSupport import PageSupport
 
 import requests
-from typing import List, Callable
+from typing import List
 
 
-class StockWatchlist(Pages):
+class StockWatchlist(PageSupport):
     session: RobinhoodSession
 
     @authRequired
-    def getAllWatchlists(self):
+    def getFirstWatchlistPage(self) -> dict:
         """
         Example response:
         {   'next': None,
@@ -29,7 +29,7 @@ class StockWatchlist(Pages):
         return data
 
     @authRequired
-    def getWatchlist(self, watchlistName: str = None):
+    def getWatchlist(self, watchlistName: str = "Default") -> List(dict):
         """
         Example response:
         [   {   'created_at': '2019-03-12T08:22:45.386349Z',
@@ -46,58 +46,32 @@ class StockWatchlist(Pages):
                 'watchlist': 'https://api.robinhood.com/watchlists/Default/'},
             ]
         """
-        watchlistName = self._watchlistNameOrDefault(watchlistName)
-        response = self.session.get(
-            api.watchlistByName(watchlistName), timeout=15
-        )
+        watchlistPage = self.getFirstWatchlistPage()
+        watchlist = self.searchForRecord(watchlistPage, "name", watchlistName)
+        if watchlist is None:
+            watchlist = self.searchForRecord(watchlistPage, "name", "Default")
+        response = self.session.get(watchlist.url, timeout=15)
         response.raise_for_status()
         data = response.json()["results"]
 
         return data
 
-    def getWatchlistInstrumentUrls(self, watchlistName: str = None):
+    def getWatchlistInstruments(self, watchlist: List[dict]) -> List[dict]:
         """
         Example Output:
-        [   'https://api.robinhood.com/instruments/e39ed23a-7bd1-4587-b060-71988d9ef483/',
-            'https://api.robinhood.com/instruments/54db869e-f7d5-45fb-88f1-8d7072d4c8b2/',
-            'https://api.robinhood.com/instruments/50810c35-d215-4866-9758-0ada4ac79ffa/',
-            'https://api.robinhood.com/instruments/450dfc6d-5510-4d40-abfb-f633b7d9be3e/']  
+
         """
-        watchlist = self.getWatchlist(watchlistName)
-        instrumentUrls = list(
-            map(lambda watchlistItem: watchlistItem["instrument"], watchlist)
-        )
+        instruments = []
+        for instrument in watchlist:
+            response = self.session.get(instrument.url, timeout=15)
+            response.raise_for_status()
+            data = response.json()
+            instruments.append(data)
 
-        return instrumentUrls
-
-    def getWatchlistInstrumentIds(self, watchlistName: str = None):
-        """
-        Example Output:
-        [   'e39ed23a-7bd1-4587-b060-71988d9ef483',
-            '54db869e-f7d5-45fb-88f1-8d7072d4c8b2',
-            '50810c35-d215-4866-9758-0ada4ac79ffa',
-            '450dfc6d-5510-4d40-abfb-f633b7d9be3e']
-        """
-        instrumentUrls = self.getWatchlistInstrumentUrls(watchlistName)
-        instrumentIds = list(
-            map(
-                lambda instrumentUrl: self.getInstrumentIdFromUrl(
-                    instrumentUrl
-                ),
-                instrumentUrls,
-            )
-        )
-
-        return instrumentIds
-
-    def getInstrumentIdFromUrl(self, instrumentUrl):
-        instrumentId = instrumentUrl.rstrip("/").split("/")[-1]
-        return instrumentId
+        return instruments
 
     @authRequired
-    def addToWatchlist(
-        self, instrumentUrl: str, watchlistName: str = None,
-    ):
+    def addToWatchlist(self, instrument: dict, watchlist: List[dict]) -> dict:
         """
         Example Response Data:
         {   'created_at': '2020-02-16T22:56:18.685673Z',
@@ -105,17 +79,14 @@ class StockWatchlist(Pages):
             'url': 'https://api.robinhood.com/watchlists/Default/f4d089b7-c822-48ac-884d-8ecb312ebb67/',
             'watchlist': 'https://api.robinhood.com/watchlists/Default/'}
         """
-        watchlistName = self._watchlistNameOrDefault(watchlistName)
         try:
             response = self.session.post(
-                api.watchlistByName(watchlistName),
-                data={"instrument": instrumentUrl},
-                timeout=15,
+                watchlist.url, data={"instrument": instrument.url}, timeout=15,
             )
             response.raise_for_status()
         except requests.exceptions.HTTPError:
             print(
-                f"Cannot add instrument. URL already exists: {api.watchlistInstrument(self.getInstrumentIdFromUrl, watchlistName)}"
+                f"Cannot add instrument. URL already exists: {watchlist.url + instrument.id + '/'}"
             )
 
         data = response.json()
@@ -123,8 +94,8 @@ class StockWatchlist(Pages):
         return data
 
     def addMultipleToWatchlist(
-        self, instrumentUrls: List[str], watchlistName: str = None
-    ):
+        self, instruments: List[dict], watchlist: List[dict]
+    ) -> List[dict]:
         """
         Example Response Data:
         [   {   'created_at': '2020-02-17T01:12:58.590500Z',
@@ -136,39 +107,37 @@ class StockWatchlist(Pages):
                 'url': 'https://api.robinhood.com/watchlists/Default/54db869e-f7d5-45fb-88f1-8d7072d4c8b2/',
                 'watchlist': 'https://api.robinhood.com/watchlists/Default/'}]
         """
-        response = list(
+        responses = list(
             map(
-                lambda instrumentUrl: self.addToWatchlist(instrumentUrl),
-                instrumentUrls,
+                lambda instrument: self.addToWatchlist(instrument, watchlist),
+                instruments,
             )
         )
 
-        return response
+        return responses
 
     @authRequired
     def deleteFromWatchlist(
-        self, instrumentID: str, watchlistName: str = None,
-    ):
+        self, instrument: dict, watchlist: List[dict],
+    ) -> requests.Response:
         """
         Example Response Data:
         <Response [204]>
         """
-        watchlistName = self._watchlistNameOrDefault(watchlistName)
         try:
             response = self.session.delete(
-                api.watchlistInstrument(instrumentID, watchlistName),
-                timeout=15,
+                watchlist.url + instrument.id + "/", timeout=15,
             )
             response.raise_for_status()
         except requests.exceptions.HTTPError:
             print(
-                f"Cannot delete instrument. URL does not exist: {api.watchlistInstrument(instrumentID, watchlistName)}"
+                f"Cannot delete instrument. URL does not exist: {watchlist.url + instrument.id + '/'}"
             )
 
         return response
 
     def deleteMultipleFromWatchlist(
-        self, instrumentIds: List[str], watchlistName: str = None
+        self, instruments: List[dict], watchlist: List[dict],
     ):
         """
         Example Response Data:
@@ -176,8 +145,10 @@ class StockWatchlist(Pages):
         """
         response = list(
             map(
-                lambda instrumentId: self.deleteFromWatchlist(instrumentId),
-                instrumentIds,
+                lambda instrument: self.deleteFromWatchlist(
+                    instrument, watchlist
+                ),
+                instruments,
             )
         )
 
@@ -185,51 +156,21 @@ class StockWatchlist(Pages):
 
     @authRequired
     def reorderWatchList(
-        self, instrumentIds: List[str], watchlistName: str = None
+        self, instruments: List[dict], watchlist: List[dict]
     ):
         """
         Example Response Data:
         {}
         """
-        watchlistName = self._watchlistNameOrDefault(watchlistName)
-        instrumentIdsField = ",".join(instrumentIds)
-        payload = {"uuids": instrumentIdsField}
+        instrumentIds = list(map(lambda instrument: instrument.id, instruments))
+        uuids = ",".join(instrumentIds)
+        payload = {"uuids": uuids}
 
         response = self.session.post(
             api.watchlistReorder(), data=payload, timeout=15,
         )
         response.raise_for_status()
-
         data = response.json()
 
         return data
-
-    def _watchlistNameOrDefault(self, watchlistName):
-        allWatchlists = self.getAllWatchlists()
-
-        if watchlistName is not None:
-            if allWatchlists["next"]:
-                nextUrl = allWatchlists["next"]
-                watchlists = [allWatchlists["results"]]
-
-                while nextUrl:
-                    data = self.getNextData(nextUrl)
-                    nextUrl = data["next"]
-                    watchlist = data["results"]
-                    watchlists.append(watchlist)
-
-                for watchlist in watchlists:
-                    if watchlistName not in watchlist["name"]:
-                        watchlistName = "Default"
-
-            else:
-                watchlists = allWatchlists["results"]
-
-                for watchlist in watchlists:
-                    if watchlistName not in watchlist["name"]:
-                        watchlistName = "Default"
-        else:
-            watchlistName = "Default"
-
-        return watchlistName
 
