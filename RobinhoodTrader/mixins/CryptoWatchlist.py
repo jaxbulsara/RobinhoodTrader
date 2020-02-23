@@ -12,7 +12,7 @@ class CryptoWatchlist:
     _watchlistNameOrDefault: Callable[[str], str]
 
     @authRequired
-    def getAllCryptoWatchlists(self):
+    def getFirstCryptoWatchlistPage(self):
         """
         Example response:
         {   'next': None,
@@ -34,7 +34,7 @@ class CryptoWatchlist:
         return data
 
     @authRequired
-    def getCryptoWatchlist(self, watchlistName: str = None):
+    def getCryptoWatchlist(self, watchlist: List[dict]):
         """
         Example response:
         {   'created_at': '2018-01-25T12:52:48.226482-05:00',
@@ -72,7 +72,7 @@ class CryptoWatchlist:
 
         return watchlist
 
-    def getCryptoWatchlistCurrencyPairIds(self, watchlistName: str = None):
+    def getCryptoWatchlistCurrencyPairIds(self, watchlist: List[dict]):
         """
         Example output:
         [   '3d961844-d360-45fc-989b-f6fca761d511',
@@ -87,7 +87,7 @@ class CryptoWatchlist:
 
     @authRequired
     def editCryptoWatchlist(
-        self, currencyPairIds: List[str], watchlistName: str = None
+        self, currencyPairIds: List[str], watchlist: List[dict]
     ):
         """
         Example Response Data:
@@ -110,7 +110,7 @@ class CryptoWatchlist:
         return data
 
     def addToCryptoWatchlist(
-        self, currencyPairId: str, watchlistName: str = None,
+        self, currencyPairId: str, watchlist: List[dict],
     ):
         """
         Example Response Data:
@@ -125,7 +125,7 @@ class CryptoWatchlist:
         return data
 
     def addMultipleToCryptoWatchlist(
-        self, currencyPairIdsToAdd: List[str], watchlistName: str = None,
+        self, currencyPairIdsToAdd: List[str], watchlist: List[dict],
     ):
         """
         Example Response Data:
@@ -140,7 +140,7 @@ class CryptoWatchlist:
         return data
 
     def deleteFromCryptoWatchlist(
-        self, currencyPairId: str, watchlistName: str = None,
+        self, currencyPairId: str, watchlist: List[dict],
     ):
         """
         Example Response Data:
@@ -155,7 +155,7 @@ class CryptoWatchlist:
         return data
 
     def deleteMultipleFromCryptoWatchlist(
-        self, currencyPairIdsToDelete: List[str], watchlistName: str = None,
+        self, currencyPairIdsToDelete: List[str], watchlist: List[dict],
     ):
         """
         Example Response Data:
