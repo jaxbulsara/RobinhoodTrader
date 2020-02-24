@@ -8,7 +8,11 @@ def accounts():
 
 
 def currencyPairs():
-    return nummus + "currency_pairs"
+    return nummus + "currency_pairs/"
+
+
+def currencyPairBySymbol(currencyPairSymbol):
+    return currencyPairs() + "?symbol=" + currencyPairSymbol
 
 
 def holdings():

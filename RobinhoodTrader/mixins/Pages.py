@@ -3,7 +3,7 @@ from typing import Union, List, Optional
 import math
 
 
-class PageSupport:
+class Pages:
     session: RobinhoodSession
 
     def getPages(

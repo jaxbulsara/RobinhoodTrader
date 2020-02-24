@@ -2,13 +2,13 @@ from __future__ import absolute_import
 from ..RobinhoodSession import RobinhoodSession
 from ..endpoints import api
 from ..wrappers import authRequired
-from .PageSupport import PageSupport
+from .Instruments import Instruments
 
 import requests
 from typing import List, Optional
 
 
-class StockWatchlist(PageSupport):
+class InstrumentWatchlists(Instruments):
     session: RobinhoodSession
 
     @authRequired
@@ -68,9 +68,10 @@ class StockWatchlist(PageSupport):
 
         return data
 
-
     @authRequired
-    def getWatchlistInstruments(self, watchlist: Optional[List[dict]] = None) -> List[dict]:
+    def getWatchlistInstruments(
+        self, watchlist: Optional[List[dict]] = None
+    ) -> List[dict]:
         """
         Example Output
         [   {   'bloomberg_unique': 'EQ0010174300001000',
@@ -137,7 +138,9 @@ class StockWatchlist(PageSupport):
         return instruments
 
     @authRequired
-    def addToWatchlist(self, instrument: dict, watchlist: Optional[List[dict]] = None) -> dict:
+    def addToWatchlist(
+        self, instrument: dict, watchlist: Optional[List[dict]] = None
+    ) -> dict:
         """
         Example Response Data:
         {   'created_at': '2020-02-16T22:56:18.685673Z',
@@ -149,7 +152,9 @@ class StockWatchlist(PageSupport):
             watchlist = self.getWatchlist()
         try:
             response = self.session.post(
-                watchlist["url"], data={"instrument": instrument["url"]}, timeout=15,
+                watchlist["url"],
+                data={"instrument": instrument["url"]},
+                timeout=15,
             )
             response.raise_for_status()
         except requests.exceptions.HTTPError:
@@ -229,14 +234,18 @@ class StockWatchlist(PageSupport):
         return response
 
     @authRequired
-    def reorderWatchList(self, instruments: List[dict], watchlist: Optional[List[dict]] = None):
+    def reorderWatchList(
+        self, instruments: List[dict], watchlist: Optional[List[dict]] = None
+    ):
         """
         Example Response Data:
         {}
         """
         if watchlist is None:
             watchlist = self.getWatchlist()
-        instrumentIds = list(map(lambda instrument: instrument["id"], instruments))
+        instrumentIds = list(
+            map(lambda instrument: instrument["id"], instruments)
+        )
         uuids = ",".join(instrumentIds)
         payload = {"uuids": uuids}
 

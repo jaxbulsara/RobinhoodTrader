@@ -1,12 +1,24 @@
 from RobinhoodTrader import RobinhoodTrader
-import pprint
 
 trader = RobinhoodTrader()
 trader.login()
 
-allInstruments = trader.getAllInstruments()
-with open("allInstruments.txt", "w") as instrumentFile:
-    pprint.pprint(allInstruments, instrumentFile, indent=4)
+print("Tesla Instrument:")
+teslaInstrument = trader.getInstrumentBySymbol("TSLA")
+teslaInstrument = trader.getInstrumentById(teslaInstrument["id"])
+teslaInstrument = trader.getInstrumentByUrl(teslaInstrument["url"])
+trader.printData(teslaInstrument)
 
+print("Tesla Fundamentals:")
+teslaFundamentals = trader.getFundamentalsByInstrument(teslaInstrument)
+teslaFundamentals = trader.getFundamentalsBySymbol("TSLA")
+trader.printData(teslaFundamentals)
 
+print("Tesla Quote:")
+teslaQuote = trader.getQuoteByInstrument(teslaInstrument)
+teslaQuote = trader.getQuoteBySymbol("TSLA")
+trader.printData(teslaQuote)
 
+print("Tesla Market:")
+teslaMarket = trader.getMarketByInstrument(teslaInstrument)
+trader.printData(teslaMarket)

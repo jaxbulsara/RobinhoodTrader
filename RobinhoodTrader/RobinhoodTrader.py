@@ -1,22 +1,31 @@
 from __future__ import absolute_import
 from .mixins import (
-    Account,
-    StockWatchlist,
-    CryptoWatchlist,
+    User,
+    Accounts,
+    CryptoAccounts,
+    Markets,
+    InstrumentWatchlists,
+    CryptoWatchlists,
     Printer,
-    Instruments,
 )
 from . import RobinhoodSession
+from typing import Tuple
 
 
 class RobinhoodTrader(
-    Account, StockWatchlist, CryptoWatchlist, Printer, Instruments,
+    User,
+    Accounts,
+    CryptoAccounts,
+    Markets,
+    InstrumentWatchlists,
+    CryptoWatchlists,
+    Printer,
 ):
     def __init__(self):
         self.session = RobinhoodSession()
 
-    def login(self):
-        self.session.login()
+    def login(self, credentials: Tuple[str] = (None, None)):
+        self.session.login(credentials)
 
     def logout(self):
         self.session.logout()

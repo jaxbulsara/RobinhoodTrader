@@ -1,3 +1,10 @@
-import RobinhoodTrader.endpoints
+from RobinhoodTrader import RobinhoodTrader
+from RobinhoodTrader.endpoints import api, nummus
 
-print(RobinhoodTrader.endpoints)
+trader = RobinhoodTrader()
+trader.login()
+
+response = trader.session.get(nummus.holdings())
+response.raise_for_status()
+data = response.json()
+trader.printData(data)
