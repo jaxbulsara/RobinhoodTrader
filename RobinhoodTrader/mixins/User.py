@@ -5,30 +5,58 @@ from ..wrappers import authRequired
 
 
 class User:
-    @authRequired
-    def getInvestmentProfile(self):
-        """
-        Example response:
-        {   'annual_income': '0_25000',
-            'interested_in_options': None,
-            'investment_experience': 'no_investment_exp',
-            'investment_experience_collected': False,
-            'investment_objective': 'cap_preserve_invest_obj',
-            'liquid_net_worth': '0_25000',
-            'liquidity_needs': 'not_important_liq_need',
-            'option_trading_experience': '',
-            'professional_trader': None,
-            'risk_tolerance': 'low_risk_tolerance',
-            'source_of_funds': 'savings_personal_income',
-            'suitability_verified': True,
-            'tax_bracket': '',
-            'time_horizon': 'short_time_horizon',
-            'total_net_worth': '0_25000',
-            'understand_option_spreads': None,
-            'updated_at': '2019-10-13T17:34:12.129384Z',
-            'user': 'api.robinhood.com/user/'}
-        """
+    session: RobinhoodSession
 
+    @authRequired
+    def getUser(self) -> dict:
+        response = self.session.get(api.user(), timeout=15)
+        response.raise_for_status()
+        data = response.json()
+
+        return data
+
+    @authRequired
+    def getUserBasicInfo(self) -> dict:
+        response = self.session.get(api.userBasicInfo(), timeout=15)
+        response.raise_for_status()
+        data = response.json()
+
+        return data
+
+    @authRequired
+    def getUserAdditionalInfo(self) -> dict:
+        response = self.session.get(api.userAdditionalInfo(), timeout=15)
+        response.raise_for_status()
+        data = response.json()
+
+        return data
+
+    @authRequired
+    def getUserCipQuestions(self) -> list:
+        response = self.session.get(api.userCipQuestions(), timeout=15)
+        response.raise_for_status()
+        data = response.json()
+
+        return data
+
+    @authRequired
+    def getUserEmployment(self) -> dict:
+        response = self.session.get(api.userEmployment(), timeout=15)
+        response.raise_for_status()
+        data = response.json()
+
+        return data
+
+    @authRequired
+    def getUserIdentityMismatch(self) -> dict:
+        response = self.session.get(api.userIdentityMismatch(), timeout=15)
+        response.raise_for_status()
+        data = response.json()
+
+        return data
+
+    @authRequired
+    def getUserInvestmentProfile(self) -> dict:
         response = self.session.get(api.userInvestmentProfile(), timeout=15)
         response.raise_for_status()
         data = response.json()

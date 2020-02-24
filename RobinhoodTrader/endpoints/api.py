@@ -36,15 +36,35 @@ def forexHistoricals(symbol, interval=None, span=None, bounds=None):
 
 
 def fundamentals():
-    return api + "fundamentals/?symbols="
+    return api + "fundamentals/"
+
+
+def fundamentalsBySymbol(instrumentSymbol):
+    return fundamentals() + instrumentSymbol + "/"
 
 
 def historicals():
     return api + "quotes/historicals"
 
 
+def instruments():
+    return api + "instruments/"
+
+
+def instrumentBySymbol(instrumentSymbol):
+    return instruments() + "?symbol=" + instrumentSymbol
+
+
+def instrumentById(instrumentId):
+    return instruments() + instrumentId + "/"
+
+
 def markets():
     return api + "markets/"
+
+
+def marketBySymbol(instrumentSymbol):
+    return markets() + instrumentSymbol + "/"
 
 
 def options():
@@ -71,16 +91,20 @@ def portfolios():
     return api + "portfolios/"
 
 
+def positions():
+    return api + "positions/"
+
+
 def quotes():
     return api + "quotes/"
 
 
+def quoteBySymbol(instrumentSymbol: str):
+    return quotes() + instrumentSymbol + "/"
+
+
 def tags():
     return api + "midland/tags/tag/"
-
-
-def instruments():
-    return api + "instruments/"
 
 
 def token():
@@ -109,10 +133,6 @@ def userCipQuestions():
 
 def userEmployment():
     return api + "user/employment/"
-
-
-def userID():
-    return api + "user/id/"
 
 
 def userIdentityMismatch():

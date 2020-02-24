@@ -4,7 +4,7 @@ trader = RobinhoodTrader()
 trader.login()
 
 print("Account:")
-trader.printData(trader.getAccount())
+trader.printData(trader.getCryptoAccount())
 
 print("Positions:")
-trader.printData(trader.getPositions())
+trader.printData(trader.getCryptoHoldings())
