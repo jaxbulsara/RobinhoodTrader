@@ -13,15 +13,6 @@ class InstrumentWatchlists(Instruments):
 
     @authRequired
     def getFirstWatchlistPage(self) -> dict:
-        """
-        Example response:
-        {   'next': None,
-            'previous': None,
-            'results': [   {   'name': 'Default',
-                            'url': 'https://api.robinhood.com/watchlists/Default/',
-                            'user': 'api.robinhood.com/user/'}]} 
-        """
-
         response = self.session.get(api.watchlists(), timeout=15)
         response.raise_for_status()
         data = response.json()
@@ -30,31 +21,6 @@ class InstrumentWatchlists(Instruments):
 
     @authRequired
     def getWatchlist(self, watchlistName: str = "Default") -> dict:
-        """
-        Example response:
-        {   'name': 'Default',
-            'next': None,
-            'previous': None,
-            'results': [   {   'created_at': '2020-02-17T00:31:27.748087Z',
-                            'instrument': 'https://api.robinhood.com/instruments/50810c35-d215-4866-9758-0ada4ac79ffa/',
-                            'url': 'https://api.robinhood.com/watchlists/Default/50810c35-d215-4866-9758-0ada4ac79ffa/',
-                            'watchlist': 'https://api.robinhood.com/watchlists/Default/'},
-                        {   'created_at': '2020-02-16T23:24:48.569037Z',
-                            'instrument': 'https://api.robinhood.com/instruments/450dfc6d-5510-4d40-abfb-f633b7d9be3e/',
-                            'url': 'https://api.robinhood.com/watchlists/Default/450dfc6d-5510-4d40-abfb-f633b7d9be3e/',
-                            'watchlist': 'https://api.robinhood.com/watchlists/Default/'},
-                        {   'created_at': '2020-02-17T01:12:58.590500Z',
-                            'instrument': 'https://api.robinhood.com/instruments/e39ed23a-7bd1-4587-b060-71988d9ef483/',
-                            'url': 'https://api.robinhood.com/watchlists/Default/e39ed23a-7bd1-4587-b060-71988d9ef483/',
-                            'watchlist': 'https://api.robinhood.com/watchlists/Default/'},
-                        {   'created_at': '2020-02-17T01:12:58.736878Z',
-                            'instrument': 'https://api.robinhood.com/instruments/54db869e-f7d5-45fb-88f1-8d7072d4c8b2/',
-                            'url': 'https://api.robinhood.com/watchlists/Default/54db869e-f7d5-45fb-88f1-8d7072d4c8b2/',
-                            'watchlist': 'https://api.robinhood.com/watchlists/Default/'}],
-            'url': 'https://api.robinhood.com/watchlists/Default/',
-            'user': 'api.robinhood.com/user/'}
-            ]
-        """
         watchlistPage = self.getFirstWatchlistPage()
         watchlist = self.searchForRecord(watchlistPage, "name", watchlistName)
         if watchlist is None:
@@ -70,62 +36,8 @@ class InstrumentWatchlists(Instruments):
 
     @authRequired
     def getWatchlistInstruments(
-        self, watchlist: Optional[List[dict]] = None
+        self, watchlist: Optional[dict] = None
     ) -> List[dict]:
-        """
-        Example Output
-        [   {   'bloomberg_unique': 'EQ0010174300001000',
-                'country': 'US',
-                'day_trade_ratio': '0.2500',
-                'default_collar_fraction': '0.05',
-                'fractional_tradability': 'tradable',
-                'fundamentals': 'https://api.robinhood.com/fundamentals/MSFT/',
-                'id': '50810c35-d215-4866-9758-0ada4ac79ffa',
-                'list_date': '1987-09-17',
-                'maintenance_ratio': '0.2500',
-                'margin_initial_ratio': '0.5000',
-                'market': 'https://api.robinhood.com/markets/XNAS/',
-                'min_tick_size': None,
-                'name': 'Microsoft Corporation Common Stock',
-                'quote': 'https://api.robinhood.com/quotes/MSFT/',
-                'rhs_tradability': 'tradable',
-                'simple_name': 'Microsoft',
-                'splits': 'https://api.robinhood.com/instruments/50810c35-d215-4866-9758-0ada4ac79ffa/splits/',
-                'state': 'active',
-                'symbol': 'MSFT',
-                'tradability': 'tradable',
-                'tradable_chain_id': '1ac71e01-0677-42c6-a490-1457980954f8',
-                'tradeable': True,
-                'type': 'stock',
-                'url': 'https://api.robinhood.com/instruments/50810c35-d215-4866-9758-0ada4ac79ffa/'},
-            ...
-            ...
-            ...
-            {   'bloomberg_unique': 'EQ0000000044666717',
-                'country': 'US',
-                'day_trade_ratio': '0.2500',
-                'default_collar_fraction': '0.05',
-                'fractional_tradability': 'tradable',
-                'fundamentals': 'https://api.robinhood.com/fundamentals/GOOGL/',
-                'id': '54db869e-f7d5-45fb-88f1-8d7072d4c8b2',
-                'list_date': '2004-08-19',
-                'maintenance_ratio': '0.2500',
-                'margin_initial_ratio': '0.5000',
-                'market': 'https://api.robinhood.com/markets/XNAS/',
-                'min_tick_size': None,
-                'name': 'Alphabet Inc. Class A Common Stock',
-                'quote': 'https://api.robinhood.com/quotes/GOOGL/',
-                'rhs_tradability': 'tradable',
-                'simple_name': 'Alphabet Class A',
-                'splits': 'https://api.robinhood.com/instruments/54db869e-f7d5-45fb-88f1-8d7072d4c8b2/splits/',
-                'state': 'active',
-                'symbol': 'GOOGL',
-                'tradability': 'tradable',
-                'tradable_chain_id': '9f75b6b7-ef7e-4942-99b9-be7d81db8e6e',
-                'tradeable': True,
-                'type': 'stock',
-                'url': 'https://api.robinhood.com/instruments/54db869e-f7d5-45fb-88f1-8d7072d4c8b2/'}]
-        """
         if watchlist is None:
             watchlist = self.getWatchlist()
         instruments = []
@@ -139,15 +51,8 @@ class InstrumentWatchlists(Instruments):
 
     @authRequired
     def addToWatchlist(
-        self, instrument: dict, watchlist: Optional[List[dict]] = None
+        self, instrument: dict, watchlist: Optional[dict] = None
     ) -> dict:
-        """
-        Example Response Data:
-        {   'created_at': '2020-02-16T22:56:18.685673Z',
-            'instrument': 'https://api.robinhood.com/instruments/f4d089b7-c822-48ac-884d-8ecb312ebb67/',
-            'url': 'https://api.robinhood.com/watchlists/Default/f4d089b7-c822-48ac-884d-8ecb312ebb67/',
-            'watchlist': 'https://api.robinhood.com/watchlists/Default/'}
-        """
         if watchlist is None:
             watchlist = self.getWatchlist()
         try:
@@ -167,19 +72,8 @@ class InstrumentWatchlists(Instruments):
         return data
 
     def addMultipleToWatchlist(
-        self, instruments: List[dict], watchlist: Optional[List[dict]] = None
+        self, instruments: List[dict], watchlist: Optional[dict] = None
     ) -> List[dict]:
-        """
-        Example Response Data:
-        [   {   'created_at': '2020-02-17T01:12:58.590500Z',
-                'instrument': 'https://api.robinhood.com/instruments/e39ed23a-7bd1-4587-b060-71988d9ef483/',
-                'url': 'https://api.robinhood.com/watchlists/Default/e39ed23a-7bd1-4587-b060-71988d9ef483/',
-                'watchlist': 'https://api.robinhood.com/watchlists/Default/'},
-            {   'created_at': '2020-02-17T01:12:58.736878Z',
-                'instrument': 'https://api.robinhood.com/instruments/54db869e-f7d5-45fb-88f1-8d7072d4c8b2/',
-                'url': 'https://api.robinhood.com/watchlists/Default/54db869e-f7d5-45fb-88f1-8d7072d4c8b2/',
-                'watchlist': 'https://api.robinhood.com/watchlists/Default/'}]
-        """
         if watchlist is None:
             watchlist = self.getWatchlist()
         responses = list(
@@ -193,12 +87,8 @@ class InstrumentWatchlists(Instruments):
 
     @authRequired
     def deleteFromWatchlist(
-        self, instrument: dict, watchlist: Optional[List[dict]] = None
+        self, instrument: dict, watchlist: Optional[dict] = None
     ) -> requests.Response:
-        """
-        Example Response Data:
-        <Response [204]>
-        """
         if watchlist is None:
             watchlist = self.getWatchlist()
         try:
@@ -214,12 +104,8 @@ class InstrumentWatchlists(Instruments):
         return response
 
     def deleteMultipleFromWatchlist(
-        self, instruments: List[dict], watchlist: Optional[List[dict]] = None,
+        self, instruments: List[dict], watchlist: Optional[dict] = None,
     ):
-        """
-        Example Response Data:
-        [<Response [204]>, <Response [204]>]
-        """
         if watchlist is None:
             watchlist = self.getWatchlist()
         response = list(
@@ -235,19 +121,17 @@ class InstrumentWatchlists(Instruments):
 
     @authRequired
     def reorderWatchList(
-        self, instruments: List[dict], watchlist: Optional[List[dict]] = None
+        self,
+        reorderedInstruments: List[dict],
+        watchlist: Optional[dict] = None,
     ):
-        """
-        Example Response Data:
-        {}
-        """
         if watchlist is None:
             watchlist = self.getWatchlist()
-        instrumentIds = list(
-            map(lambda instrument: instrument["id"], instruments)
+        reorderedInstrumentIds = list(
+            map(lambda instrument: instrument["id"], reorderedInstruments)
         )
-        uuids = ",".join(instrumentIds)
-        payload = {"uuids": uuids}
+        reorderedUuids = ",".join(reorderedInstrumentIds)
+        payload = {"uuids": reorderedUuids}
 
         response = self.session.post(
             api.watchlistReorder(), data=payload, timeout=15,
