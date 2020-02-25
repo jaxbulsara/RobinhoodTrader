@@ -2,24 +2,42 @@ from __future__ import absolute_import
 from ..RobinhoodSession import RobinhoodSession
 from ..endpoints import api
 from ..wrappers import authRequired
-from .Instruments import Instruments
+import datetime
 
 
-class Markets(Instruments):
+class Markets:
     session: RobinhoodSession
 
     @authRequired
-    def getMarketBySymbol(self, symbol: str) -> dict:
-        response = self.session.get(api.marketBySymbol(symbol), timeout=15)
-        response.raise_for_status()
-        data = response.json()
+    def getFirstMarketPage(self) -> dict:
+        endpoint = api.markets()
+        return self.session.getData(endpoint, timeout=15)
 
-        return data
+    @authRequired
+    def getMarketByIdentifierCode(self, identifierCode: str) -> dict:
+        endpoint = api.marketByIdentifierCode(identifierCode)
+        return self.session.getData(endpoint, timeout=15)
 
     @authRequired
     def getMarketByInstrument(self, instrument: dict) -> dict:
-        response = self.session.get(instrument["market"], timeout=15)
-        response.raise_for_status()
-        data = response.json()
+        endpoint = instrument["market"]
+        return self.session.getData(endpoint, timeout=15)
 
-        return data
+    @authRequired
+    def getMarketHours(self, market: dict):
+        endpoint = market["todays_hours"]
+        return self.session.getData(endpoint, timeout=15)
+
+    @authRequired
+    def getMarketNextDayHours(self, market: dict):
+        marketHours = self.getMarketHours(market)
+        endpoint = marketHours["next_open_hours"]
+        
+        return self.session.getData(endpoint, timeout=15)
+
+    @authRequired
+    def getMarketHoursByDate(self, market: dict, date: datetime.date):
+        dateString = date.strftime("%Y-%m-%d")
+        endpoint = api.marketHoursByDate(market["mic"], dateString)
+
+        return self.session.getData(endpoint, timeout=15)

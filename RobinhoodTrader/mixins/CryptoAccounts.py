@@ -10,11 +10,8 @@ class CryptoAccounts(Cryptocurrencies):
     session: RobinhoodSession
 
     def getFirstCryptoAccountPage(self) -> dict:
-        response = self.session.get(nummus.accounts(), timeout=15)
-        response.raise_for_status()
-        data = response.json()
-
-        return data
+        endpoint = nummus.accounts()
+        return self.session.getData(endpoint, timeout=15)
 
     def getAllCryptoAccounts(self) -> List[dict]:
         page = self.getFirstCryptoAccountPage()
@@ -36,9 +33,6 @@ class CryptoAccounts(Cryptocurrencies):
 
     @authRequired
     def getCryptoHoldings(self) -> dict:
-        response = self.session.get(nummus.holdings(), timeout=15)
-        response.raise_for_status()
-        data = response.json()
-
-        return data
+        endpoint = nummus.holdings()
+        return self.session.getData(endpoint, timeout=15)
 

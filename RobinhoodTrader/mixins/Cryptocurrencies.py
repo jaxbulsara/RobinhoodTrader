@@ -8,11 +8,8 @@ class Cryptocurrencies(Pages):
     session: RobinhoodSession
 
     def getFirstCurrencyPairPage(self) -> dict:
-        response = self.session.get(nummus.currencyPairs(), timeout=15)
-        response.raise_for_status()
-        data = response.json()
-
-        return data
+        endpoint = nummus.currencyPairs()
+        return self.session.getData(endpoint, timeout=15)
 
     def getCurrencyPairBySymbol(self, currencyPairSymbol: str) -> dict:
         page = self.getFirstCurrencyPairPage()

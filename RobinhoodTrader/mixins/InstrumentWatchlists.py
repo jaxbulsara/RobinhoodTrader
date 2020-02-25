@@ -13,11 +13,8 @@ class InstrumentWatchlists(Instruments):
 
     @authRequired
     def getFirstWatchlistPage(self) -> dict:
-        response = self.session.get(api.watchlists(), timeout=15)
-        response.raise_for_status()
-        data = response.json()
-
-        return data
+        endpoint = api.watchlists()
+        return self.session.getData(endpoint, timeout=15)
 
     @authRequired
     def getWatchlist(self, watchlistName: str = "Default") -> dict:
@@ -25,9 +22,10 @@ class InstrumentWatchlists(Instruments):
         watchlist = self.searchForRecord(watchlistPage, "name", watchlistName)
         if watchlist is None:
             watchlist = self.searchForRecord(watchlistPage, "name", "Default")
-        response = self.session.get(watchlist["url"], timeout=15)
-        response.raise_for_status()
-        data = response.json()
+
+        endpoint = watchlist["url"]
+        data = self.session.getData(endpoint, timeout=15)
+
         data["name"] = watchlist["name"]
         data["url"] = watchlist["url"]
         data["user"] = watchlist["user"]
@@ -42,9 +40,8 @@ class InstrumentWatchlists(Instruments):
             watchlist = self.getWatchlist()
         instruments = []
         for instrument in watchlist["results"]:
-            response = self.session.get(instrument["instrument"], timeout=15)
-            response.raise_for_status()
-            data = response.json()
+            endpoint = instrument["instrument"]
+            data = self.session.getData(endpoint, timeout=15)
             instruments.append(data)
 
         return instruments
@@ -133,11 +130,6 @@ class InstrumentWatchlists(Instruments):
         reorderedUuids = ",".join(reorderedInstrumentIds)
         payload = {"uuids": reorderedUuids}
 
-        response = self.session.post(
-            api.watchlistReorder(), data=payload, timeout=15,
-        )
-        response.raise_for_status()
-        data = response.json()
-
-        return data
+        endpoint = api.watchlistReorder()
+        return self.session.postData(endpoint, data=payload, timeout=15,)
 

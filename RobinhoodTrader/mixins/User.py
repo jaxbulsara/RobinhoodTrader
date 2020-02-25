@@ -9,56 +9,35 @@ class User:
 
     @authRequired
     def getUser(self) -> dict:
-        response = self.session.get(api.user(), timeout=15)
-        response.raise_for_status()
-        data = response.json()
-
-        return data
+        endpoint = api.user()
+        return self.session.getData(endpoint, timeout=15)
 
     @authRequired
     def getUserBasicInfo(self) -> dict:
-        response = self.session.get(api.userBasicInfo(), timeout=15)
-        response.raise_for_status()
-        data = response.json()
-
-        return data
+        endpoint = api.userBasicInfo()
+        return self.session.getData(endpoint, timeout=15)
 
     @authRequired
     def getUserAdditionalInfo(self) -> dict:
-        response = self.session.get(api.userAdditionalInfo(), timeout=15)
-        response.raise_for_status()
-        data = response.json()
-
-        return data
+        endpoint = api.userAdditionalInfo()
+        return self.session.getData(endpoint, timeout=15)
 
     @authRequired
     def getUserCipQuestions(self) -> list:
-        response = self.session.get(api.userCipQuestions(), timeout=15)
-        response.raise_for_status()
-        data = response.json()
-
-        return data
+        endpoint = api.userCipQuestions()
+        return self.session.getData(endpoint, timeout=15)
 
     @authRequired
     def getUserEmployment(self) -> dict:
-        response = self.session.get(api.userEmployment(), timeout=15)
-        response.raise_for_status()
-        data = response.json()
-
-        return data
+        endpoint = api.userEmployment()
+        return self.session.getData(endpoint, timeout=15)
 
     @authRequired
     def getUserIdentityMismatch(self) -> dict:
-        response = self.session.get(api.userIdentityMismatch(), timeout=15)
-        response.raise_for_status()
-        data = response.json()
-
-        return data
+        endpoint = api.userIdentityMismatch()
+        return self.session.getData(endpoint, timeout=15)
 
     @authRequired
     def getUserInvestmentProfile(self) -> dict:
-        response = self.session.get(api.userInvestmentProfile(), timeout=15)
-        response.raise_for_status()
-        data = response.json()
-
-        return data
+        endpoint = api.userInvestmentProfile()
+        return self.session.getData(endpoint, timeout=15)

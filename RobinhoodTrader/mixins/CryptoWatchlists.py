@@ -13,11 +13,8 @@ class CryptoWatchlists(Cryptocurrencies):
 
     @authRequired
     def getFirstCryptoWatchlistPage(self) -> dict:
-        response = self.session.get(nummus.watchlists(), timeout=15)
-        response.raise_for_status()
-        data = response.json()
-
-        return data
+        endpoint = nummus.watchlists()
+        return self.session.getData(endpoint, timeout=15)
 
     def getCryptoWatchlist(self, watchlistName: str = "Default") -> dict:
         page = self.getFirstCryptoWatchlistPage()
@@ -55,17 +52,12 @@ class CryptoWatchlists(Cryptocurrencies):
         )
 
         watchlistID = watchlist["id"]
+        endpoint = nummus.watchlistById(watchlistID)
         headers = self.session.headers
         headers["Content-Type"] = "application/json"
+        payload = {"currency_pair_ids": reorderedCurrencyPairIds}
 
-        response = self.session.patch(
-            nummus.watchlistById(watchlistID),
-            json={"currency_pair_ids": reorderedCurrencyPairIds},
-            timeout=15,
-        )
-        response.raise_for_status()
-
-        data = response.json()
+        data = self.session.patchData(endpoint, json=payload, timeout=15,)
 
         return data
 

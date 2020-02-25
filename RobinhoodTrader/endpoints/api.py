@@ -63,8 +63,12 @@ def markets():
     return api + "markets/"
 
 
-def marketBySymbol(instrumentSymbol):
-    return markets() + instrumentSymbol + "/"
+def marketByIdentifierCode(identifierCode):
+    return markets() + identifierCode + "/"
+
+
+def marketHoursByDate(identifierCode, dateString):
+    return markets() + identifierCode + "/hours/" + dateString + "/"
 
 
 def options():

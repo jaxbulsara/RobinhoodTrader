@@ -11,11 +11,8 @@ class Accounts(Instruments):
 
     @authRequired
     def getFirstAccountPage(self) -> dict:
-        response = self.session.get(api.accounts(), timeout=15)
-        response.raise_for_status()
-        data = response.json()
-
-        return data
+        endpoint = api.accounts()
+        return self.session.getData(endpoint, timeout=15)
 
     def getAllAccounts(self) -> List[dict]:
         page = self.getFirstAccountPage()
@@ -39,8 +36,5 @@ class Accounts(Instruments):
 
     @authRequired
     def getPositions(self) -> dict:
-        response = self.session.get(api.positions(), timeout=15)
-        response.raise_for_status()
-        data = response.json()
-
-        return data
+        endpoint = api.positions()
+        return self.session.getData(endpoint, timeout=15)

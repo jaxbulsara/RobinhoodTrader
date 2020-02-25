@@ -19,6 +19,3 @@ teslaQuote = trader.getQuoteByInstrument(teslaInstrument)
 teslaQuote = trader.getQuoteBySymbol("TSLA")
 trader.printData(teslaQuote)
 
-print("Tesla Market:")
-teslaMarket = trader.getMarketByInstrument(teslaInstrument)
-trader.printData(teslaMarket)
