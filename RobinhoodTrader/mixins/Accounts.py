@@ -2,6 +2,7 @@ from __future__ import absolute_import
 from ..RobinhoodSession import RobinhoodSession
 from ..endpoints import api
 from ..wrappers import authRequired
+from ..exceptions import SymbolError
 from .Instruments import Instruments
 from typing import List, Optional
 
@@ -30,7 +31,12 @@ class Accounts(Instruments):
                 page, "account_number", accountNumber
             )
         else:
-            account = page["results"][0]
+            try:
+                account = page["results"][0]
+            except IndexError:
+                raise SymbolError(
+                    f"Could not find account with number {accountNumber}."
+                )
 
         return account
 

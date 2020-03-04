@@ -13,3 +13,6 @@ class CredentialError(RobinhoodException):
 class LoginError(RobinhoodException):
     pass
 
+
+class SymbolError(RobinhoodException):
+    pass

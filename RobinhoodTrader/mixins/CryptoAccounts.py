@@ -27,7 +27,10 @@ class CryptoAccounts(Cryptocurrencies):
         if accountId is not None:
             account = self.searchForRecord(page, "id", accountId)
         else:
-            account = page["results"][0]
+            try:
+                account = page["results"][0]
+            except IndexError:
+                account = None
 
         return account
 

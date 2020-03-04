@@ -9,13 +9,3 @@ teslaInstrument = trader.getInstrumentById(teslaInstrument["id"])
 teslaInstrument = trader.getInstrumentByUrl(teslaInstrument["url"])
 trader.printData(teslaInstrument)
 
-print("Tesla Fundamentals:")
-teslaFundamentals = trader.getFundamentalsByInstrument(teslaInstrument)
-teslaFundamentals = trader.getFundamentalsBySymbol("TSLA")
-trader.printData(teslaFundamentals)
-
-print("Tesla Quote:")
-teslaQuote = trader.getQuoteByInstrument(teslaInstrument)
-teslaQuote = trader.getQuoteBySymbol("TSLA")
-trader.printData(teslaQuote)
-

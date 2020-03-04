@@ -3,6 +3,7 @@ from ..endpoints import api
 from ..RobinhoodSession import RobinhoodSession
 from ..wrappers import authRequired
 from .Pages import Pages
+from typing import Optional
 
 
 class Instruments(Pages):
@@ -12,10 +13,13 @@ class Instruments(Pages):
         endpoint = api.instruments()
         return self.session.getData(endpoint, timeout=15)
 
-    def getInstrumentBySymbol(self, instrumentSymbol: str) -> dict:
+    def getInstrumentBySymbol(self, instrumentSymbol: str) -> Optional[dict]:
         endpoint = api.instrumentBySymbol(instrumentSymbol)
         data = self.session.getData(endpoint, timeout=15)
-        instrument = data["results"][0]
+        try:
+            instrument = data["results"][0]
+        except IndexError:
+            instrument = None
 
         return instrument
 
@@ -27,22 +31,3 @@ class Instruments(Pages):
         endpoint = instrumentUrl
         return self.session.getData(endpoint, timeout=15)
 
-    @authRequired
-    def getFundamentalsByInstrument(self, instrument: dict) -> dict:
-        endpoint = instrument["fundamentals"]
-        return self.session.getData(endpoint, timeout=15)
-
-    @authRequired
-    def getFundamentalsBySymbol(self, symbol: str) -> dict:
-        endpoint = api.fundamentalsBySymbol(symbol)
-        return self.session.getData(endpoint, timeout=15)
-
-    @authRequired
-    def getQuoteByInstrument(self, instrument: dict) -> dict:
-        endpoint = instrument["quote"]
-        return self.session.getData(endpoint, timeout=15)
-
-    @authRequired
-    def getQuoteBySymbol(self, symbol: str) -> dict:
-        endpoint = api.quoteBySymbol(symbol)
-        return self.session.getData(endpoint, timeout=15)

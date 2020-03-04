@@ -69,43 +69,43 @@ class RobinhoodSession(requests.Session):
     def getData(self, *args, **kwargs) -> dict:
         response = self.get(*args, **kwargs)
         response.raise_for_status()
-        data = response.json
+        data = response.json()
         return data
 
     def headData(self, *args, **kwargs) -> dict:
         response = self.head(*args, **kwargs)
         response.raise_for_status()
-        data = response.json
+        data = response.json()
         return data
 
     def postData(self, *args, **kwargs) -> dict:
         response = self.post(*args, **kwargs)
         response.raise_for_status()
-        data = response.json
+        data = response.json()
         return data
 
     def putData(self, *args, **kwargs) -> dict:
         response = self.put(*args, **kwargs)
         response.raise_for_status()
-        data = response.json
+        data = response.json()
         return data
 
     def deleteData(self, *args, **kwargs) -> dict:
         response = self.delete(*args, **kwargs)
         response.raise_for_status()
-        data = response.json
+        data = response.json()
         return data
 
     def optionsData(self, *args, **kwargs) -> dict:
         response = self.options(*args, **kwargs)
         response.raise_for_status()
-        data = response.json
+        data = response.json()
         return data
 
     def patchData(self, *args, **kwargs) -> dict:
         response = self.patch(*args, **kwargs)
         response.raise_for_status()
-        data = response.json
+        data = response.json()
         return data
 
     def _getCredentialsFromUser(self):

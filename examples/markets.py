@@ -9,7 +9,7 @@ markets = trader.getFirstMarketPage()
 trader.printData(markets)
 
 print("New York Stock Exchange")
-nyse = trader.getMarketByIdentifierCode("XNYS")
+nyse = trader.getMarketByIdentifierCode("XNAYS")
 trader.printData(nyse)
 
 print("Market that Tesla is listed in:")

@@ -2,10 +2,12 @@ from __future__ import absolute_import
 from ..RobinhoodSession import RobinhoodSession
 from ..endpoints import api
 from ..wrappers import authRequired
+from .Instruments import Instruments
 import datetime
+import requests
 
 
-class Markets:
+class Markets(Instruments):
     session: RobinhoodSession
 
     @authRequired
@@ -16,7 +18,11 @@ class Markets:
     @authRequired
     def getMarketByIdentifierCode(self, identifierCode: str) -> dict:
         endpoint = api.marketByIdentifierCode(identifierCode)
-        return self.session.getData(endpoint, timeout=15)
+        try:
+            market = self.session.getData(endpoint, timeout=15)
+        except requests.exceptions.HTTPError:
+            market = None
+        return market
 
     @authRequired
     def getMarketByInstrument(self, instrument: dict) -> dict:
@@ -32,7 +38,7 @@ class Markets:
     def getMarketNextDayHours(self, market: dict):
         marketHours = self.getMarketHours(market)
         endpoint = marketHours["next_open_hours"]
-        
+
         return self.session.getData(endpoint, timeout=15)
 
     @authRequired
