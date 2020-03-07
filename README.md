@@ -59,11 +59,14 @@ No additional setup is required to use the SMS code.
 If you selected "Authentication App", you will be shown a QR code to scan into an authentication app.
 You can use Google Authenticator or your favorite authentication app to scan the QR code.
 Setup the new authenticator in the app and make sure the app generates a 6-digit code every thirty seconds.
-Then, click "Can't scan it?" and copy the 16 digit code into config.ini:
+Then, click "Can't scan it?" and copy the 16 digit code into config.ini.
+You can also write in your username and password into config.ini.
 
 ```ini
 [login]
-qrCode = {Your QR code}
+username = [Your username]
+password = [Your password]
+qrCode = [Your QR code]
 ```
 
 Go back to Robinhood and click "Next".
