@@ -158,8 +158,9 @@ def watchlist_by_name(name: str = None):
 
 
 def watchlist_instrument(instrument_id: str, name: str = None):
-    return watchlistByName(name) + f"{instrument_id}/"
+    return watchlist_by_name(name) + f"{instrument_id}/"
 
 
 def watchlist_reorder(name: str = None):
-    return watchlistByName(name) + "reorder/"
+    return watchlist_by_name(name) + "reorder/"
+

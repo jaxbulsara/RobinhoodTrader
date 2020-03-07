@@ -1,11 +1,13 @@
 from __future__ import absolute_import
-from ..RobinhoodSession import RobinhoodSession
-from ..endpoints import nummus
-from ..wrappers import auth_required
+
+from ...RobinhoodSession import RobinhoodSession
+from ...wrappers import auth_required
+from ...endpoints import nummus
+
 from .Cryptocurrencies import Cryptocurrencies
 
 
-class CryptoAccounts(Cryptocurrencies):
+class CryptoHoldings(Cryptocurrencies):
     session: RobinhoodSession
 
     @auth_required

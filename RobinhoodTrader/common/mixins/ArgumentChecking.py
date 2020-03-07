@@ -1,7 +1,19 @@
+from __future__ import absolute_import
+
 import re
 
 
-class ArgumentChecker:
+class ArgumentChecking:
+    def checkArgument(self, argument_name, argument, *required_types):
+        argument_type = type(argument)
+
+        for required_type in required_types:
+            if argument_type == required_type:
+                return True
+
+        message = f"'{argument_name}' must be {required_type.__name__}, not {argument_type.__name__}."
+        raise TypeError(message)
+
     def is_symbol(self, identifier):
         identifier = identifier.upper()
         symbolPattern = "^[A-Z]+$"

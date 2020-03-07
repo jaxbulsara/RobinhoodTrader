@@ -1,10 +1,11 @@
 from __future__ import absolute_import
-from ..RobinhoodSession import RobinhoodSession
-from ..endpoints import api
-from ..wrappers import auth_required
+
+from ...RobinhoodTrader import RobinhoodSession
+from ...wrappers import auth_required
+from ...endpoints import api
 
 
-class User:
+class Users:
     session: RobinhoodSession
 
     @auth_required

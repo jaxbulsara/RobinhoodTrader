@@ -1,11 +1,12 @@
 from __future__ import absolute_import
-from ..RobinhoodSession import RobinhoodSession
-from ..endpoints import api
-from ..wrappers import auth_required
+
+from ...RobinhoodSession import RobinhoodSession
+from ...wrappers import auth_required
+from ...endpoints import api
+
 from .Instruments import Instruments
 
 import requests
-from typing import List, Optional
 
 
 class InstrumentWatchlists(Instruments):

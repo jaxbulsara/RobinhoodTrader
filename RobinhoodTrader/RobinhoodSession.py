@@ -2,7 +2,7 @@ from __future__ import absolute_import
 from .exceptions import CredentialError, LoginError
 from .wrappers import auth_required
 from .endpoints import api
-from .config import get_qr_code
+from .config import get_configuration, get_qr_code
 
 import requests, platform, sys, uuid, time, struct, base64, hmac, hashlib
 from getpass import getpass
@@ -32,6 +32,12 @@ class RobinhoodSession(requests.Session):
         self.account_numbers = None
 
     def login(self, credentials=(None, None)):
+        if None in credentials:
+            config = get_configuration()
+            username = config.get("login", "username", fallback=None)
+            password = config.get("login", "password", fallback=None)
+            credentials = (username, password)
+
         if None in credentials:
             if self.session_is_console:
                 credentials = self._get_credentials_from_user()

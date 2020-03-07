@@ -1,7 +1,9 @@
 from __future__ import absolute_import
-from ..RobinhoodSession import RobinhoodSession
-from ..endpoints import nummus
-from ..wrappers import auth_required
+
+from ...RobinhoodTrader import RobinhoodSession
+from ...wrappers import auth_required
+from ...endpoints import nummus
+
 from .Cryptocurrencies import Cryptocurrencies
 
 
@@ -29,6 +31,7 @@ class CryptoAccounts(Cryptocurrencies):
 
         return allAccounts
 
+    @auth_required
     def _get_first_crypto_account_page(self):
         endpoint = nummus.accounts()
         return self.session.get_data(endpoint, timeout=15)

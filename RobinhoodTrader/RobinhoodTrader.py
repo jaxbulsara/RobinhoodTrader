@@ -1,31 +1,13 @@
 from __future__ import absolute_import
-from .mixins import (
-    User,
-    Accounts,
-    CryptoAccounts,
-    Positions,
-    Markets,
-    Fundamentals,
-    Quotes,
-    InstrumentWatchlists,
-    CryptoWatchlists,
-    Printer,
-)
-from . import RobinhoodSession
+
+from .RobinhoodSession import RobinhoodSession
+from .stocks import StockTrader
+from .crypto import CryptoTrader
+
+import pprint
 
 
-class RobinhoodTrader(
-    User,
-    Accounts,
-    CryptoAccounts,
-    Positions,
-    Markets,
-    Fundamentals,
-    Quotes,
-    InstrumentWatchlists,
-    CryptoWatchlists,
-    Printer,
-):
+class RobinhoodTrader(StockTrader, CryptoTrader):
     def __init__(self):
         self.session = RobinhoodSession()
 
@@ -34,3 +16,6 @@ class RobinhoodTrader(
 
     def logout(self):
         self.session.logout()
+
+    def print_data(self, data):
+        pprint.pprint(data, indent=4)

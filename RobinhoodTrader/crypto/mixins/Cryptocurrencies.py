@@ -1,12 +1,11 @@
 from __future__ import absolute_import
-from ..endpoints import nummus
-from ..RobinhoodSession import RobinhoodSession
-from ..exceptions import CategoryError
-from .Pages import Pages
-from .ArgumentChecker import ArgumentChecker
+from ...common import Common
+from ...RobinhoodSession import RobinhoodSession
+from ...endpoints import nummus
+from ...exceptions import CategoryError
 
 
-class Cryptocurrencies(Pages, ArgumentChecker):
+class Cryptocurrencies(Common):
     session: RobinhoodSession
 
     def get_currency_pair(self, identifier):

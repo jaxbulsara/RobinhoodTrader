@@ -1,8 +1,10 @@
 from __future__ import absolute_import
-from ..RobinhoodSession import RobinhoodSession
-from ..endpoints import api
-from ..wrappers import auth_required
-from ..exceptions import IdentifierError, RecordNotFoundError
+
+from ...RobinhoodSession import RobinhoodSession
+from ...wrappers import auth_required
+from ...endpoints import api
+from ...exceptions import RecordNotFoundError, IdentifierError
+
 from .Instruments import Instruments
 
 

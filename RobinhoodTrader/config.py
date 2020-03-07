@@ -20,7 +20,7 @@ def get_qr_code():
 
 def _check_qr_code(config, qr_code):
     if qr_code:
-        qr_code_pattern = config.get("login", "qr_code_pattern")
+        qr_code_pattern = "^[A-Z0-9]{16}$"
         qr_code_is_valid = re.match(qr_code_pattern, qr_code)
         if qr_code_is_valid:
             qr_code = qr_code

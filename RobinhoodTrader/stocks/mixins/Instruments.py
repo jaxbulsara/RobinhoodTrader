@@ -1,15 +1,15 @@
 from __future__ import absolute_import
-from ..endpoints import api
-from ..RobinhoodSession import RobinhoodSession
-from ..wrappers import auth_required
-from ..exceptions import CategoryError, IdentifierError
-from .Pages import Pages
-from .ArgumentChecker import ArgumentChecker
-import requests
-import re
+
+from ...common import Common
+from ...RobinhoodSession import RobinhoodSession
+from ...wrappers import auth_required
+from ...endpoints import api
+from ...exceptions import IdentifierError, CategoryError
+
+import re, requests
 
 
-class Instruments(Pages, ArgumentChecker):
+class Instruments(Common):
     session: RobinhoodSession
 
     def get_instrument(self, identifier):

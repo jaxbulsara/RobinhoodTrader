@@ -1,11 +1,13 @@
 from __future__ import absolute_import
-from ..RobinhoodSession import RobinhoodSession
-from ..endpoints import api
-from ..wrappers import auth_required
-from ..exceptions import IdentifierError
+
+from ...RobinhoodSession import RobinhoodSession
+from ...wrappers import auth_required
+from ...endpoints import api
+from ...exceptions import IdentifierError
+
 from .Instruments import Instruments
-import datetime
-import requests
+
+import datetime, requests
 
 
 class Markets(Instruments):

@@ -1,14 +1,24 @@
-from ..RobinhoodSession import RobinhoodSession
-from ..exceptions import RecordNotFoundError
+from __future__ import absolute_import
+
+from ...RobinhoodSession import RobinhoodSession
+from ...exceptions import RecordNotFoundError
+from ..data_types import Page
+
+from .ArgumentChecking import ArgumentChecking
+
 import math
 
 
-class Pages:
+class Pages(ArgumentChecking):
     session: RobinhoodSession
 
     def get_pages(
         self, page, start_page_number=0, limit=math.inf,
     ):
+        self.checkArgument("page", page, [Page])
+        self.checkArgument("start_page_number", start_page_number, [int])
+        self.checkArgument("limit", limit, [int, float])
+
         pages = [page]
         start_page_number = start_page_number
         limit = limit
