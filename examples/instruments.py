@@ -4,8 +4,15 @@ trader = RobinhoodTrader()
 trader.login()
 
 print("Tesla Instrument:")
-teslaInstrument = trader.getInstrumentBySymbol("TSLA")
-teslaInstrument = trader.getInstrumentById(teslaInstrument["id"])
-teslaInstrument = trader.getInstrumentByUrl(teslaInstrument["url"])
+
+# by symbol
+teslaInstrument = trader.getInstrument("TSLA")
+
+# by instrument id
+teslaInstrument = trader.getInstrument(teslaInstrument["id"])
+
+# by instrument url
+teslaInstrument = trader.getInstrument(teslaInstrument["url"])
+
 trader.printData(teslaInstrument)
 

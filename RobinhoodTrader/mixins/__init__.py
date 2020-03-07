@@ -2,6 +2,7 @@ from __future__ import absolute_import
 from .User import User
 from .Accounts import Accounts
 from .CryptoAccounts import CryptoAccounts
+from .Positions import Positions
 from .Fundamentals import Fundamentals
 from .Quotes import Quotes
 from .Markets import Markets

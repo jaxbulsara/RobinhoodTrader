@@ -1,7 +1,8 @@
 from __future__ import absolute_import
 from ..RobinhoodSession import RobinhoodSession
 from ..endpoints import api
-from ..wrappers import authRequired
+from ..wrappers import auth_required
+from ..exceptions import IdentifierError
 from .Instruments import Instruments
 import datetime
 import requests
@@ -10,40 +11,85 @@ import requests
 class Markets(Instruments):
     session: RobinhoodSession
 
-    @authRequired
-    def getFirstMarketPage(self) -> dict:
-        endpoint = api.markets()
-        return self.session.getData(endpoint, timeout=15)
+    def get_market(self, identifier):
+        identifierType = type(identifier).__name__
+        if identifierType == "dict":
+            market = self._get_market_by_instrument(identifier)
+        if identifierType == "str":
+            market = self._get_market_by_mic(identifier)
+        else:
+            raise TypeError(
+                f"This method requires an instrument (dict) or market identifier code (str). Got '{identifierType}'"
+            )
 
-    @authRequired
-    def getMarketByIdentifierCode(self, identifierCode: str) -> dict:
-        endpoint = api.marketByIdentifierCode(identifierCode)
-        try:
-            market = self.session.getData(endpoint, timeout=15)
-        except requests.exceptions.HTTPError:
-            market = None
         return market
 
-    @authRequired
-    def getMarketByInstrument(self, instrument: dict) -> dict:
-        endpoint = instrument["market"]
-        return self.session.getData(endpoint, timeout=15)
+    @auth_required
+    def get_market_hours(self, market, date=datetime.datetime.today()):
+        inputType = type(market).__name__
+        if inputType == "dict":
+            market_hours = self._get_market_hours(market, date)
 
-    @authRequired
-    def getMarketHours(self, market: dict):
-        endpoint = market["todays_hours"]
-        return self.session.getData(endpoint, timeout=15)
+        elif inputType == "str":
+            market_hours = self._get_market_hours_by_mic(market, date)
+        else:
+            raise TypeError(
+                f"Argument must be a market (dict) or identifier code (str). Got '{inputType}'."
+            )
 
-    @authRequired
-    def getMarketNextDayHours(self, market: dict):
-        marketHours = self.getMarketHours(market)
-        endpoint = marketHours["next_open_hours"]
+        return market_hours
 
-        return self.session.getData(endpoint, timeout=15)
+    @auth_required
+    def _get_market_by_mic(self, mic):
+        endpoint = api.market_by_mic(mic)
+        try:
+            market = self.session.get_data(endpoint, timeout=15)
+        except requests.exceptions.HTTPError as http_error:
+            if http_error.response.status_code == 404:
+                raise IdentifierError(
+                    f"Could not find market identifier code '{mic}' at endpoint '{endpoint}'."
+                )
+            else:
+                raise http_error
+        return market
 
-    @authRequired
-    def getMarketHoursByDate(self, market: dict, date: datetime.date):
-        dateString = date.strftime("%Y-%m-%d")
-        endpoint = api.marketHoursByDate(market["mic"], dateString)
+    @auth_required
+    def _get_market_by_instrument(self, instrument):
+        try:
+            endpoint = instrument["market"]
+            return self.session.get_data(endpoint, timeout=15)
+        except IndexError:
+            raise ValueError("Argument must be an instrument (dict).")
 
-        return self.session.getData(endpoint, timeout=15)
+    @auth_required
+    def _get_first_market_page(self):
+        endpoint = api.markets()
+        return self.session.get_data(endpoint, timeout=15)
+
+    @auth_required
+    def _get_market_hours(self, market, date):
+        date_type = type(date).__name__
+        if date_type == "datetime.datetime":
+            dateString = date.strftime("%Y-%m-%d")
+            try:
+                endpoint = api.market_hours_by_date(market["mic"], dateString)
+                return self.session.get_data(endpoint, timeout=15)
+
+            except IndexError:
+                raise ValueError("'market' must be a robinhood market (dict).")
+
+        else:
+            raise TypeError(
+                f"'date' must be a (datetime.datetime) object. Got '{date_type}'."
+            )
+
+    def _get_market_hours_by_mic(self, mic, date):
+        mic_type = type(mic).__name__
+        if mic_type == "str":
+            market = self.get_market(mic)
+            return self._get_market_hours(market, date)
+        else:
+            raise TypeError(
+                f"'mic' must be a market identifier code (str). Got '{mic_type}'."
+            )
+

@@ -7,23 +7,23 @@ def accounts():
     return api + "accounts/"
 
 
-def accountByNumber(accountNumber):
+def account_by_number(accountNumber):
     return accounts() + accountNumber + "/"
 
 
-def accountPortfolio(accountNumber):
-    return accountByNumber(accountNumber) + "/portfolio/"
+def account_portfolio(accountNumber):
+    return account_by_number(accountNumber) + "/portfolio/"
 
 
-def accountPositions(accountNumber):
-    return accountByNumber(accountNumber) + "/positions/"
+def account_positions(accountNumber):
+    return account_by_number(accountNumber) + "/positions/"
 
 
-def forexQuotes():
+def forex_quotes():
     return api + "marketdata/forex/quotes/{}"
 
 
-def forexHistoricals(symbol, interval=None, span=None, bounds=None):
+def forex_historicals(symbol, interval=None, span=None, bounds=None):
     endpoint = api + f"marketdata/forex/historicals/{symbol}/"
     if interval:
         endpoint += f"?interval={interval}"
@@ -39,8 +39,8 @@ def fundamentals():
     return api + "fundamentals/"
 
 
-def fundamentalsBySymbol(instrumentSymbol):
-    return fundamentals() + instrumentSymbol + "/"
+def fundamentals_by_symbol(symbol):
+    return fundamentals() + symbol + "/"
 
 
 def historicals():
@@ -51,11 +51,11 @@ def instruments():
     return api + "instruments/"
 
 
-def instrumentBySymbol(instrumentSymbol):
-    return instruments() + "?symbol=" + instrumentSymbol
+def instrument_by_symbol(symbol):
+    return instruments() + "?symbol=" + symbol
 
 
-def instrumentById(instrumentId):
+def instrument_by_id(instrumentId):
     return instruments() + instrumentId + "/"
 
 
@@ -63,27 +63,27 @@ def markets():
     return api + "markets/"
 
 
-def marketByIdentifierCode(identifierCode):
-    return markets() + identifierCode + "/"
+def market_by_mic(identifier_code):
+    return markets() + identifier_code + "/"
 
 
-def marketHoursByDate(identifierCode, dateString):
-    return markets() + identifierCode + "/hours/" + dateString + "/"
+def market_hours_by_date(identifier_code, dateString):
+    return markets() + identifier_code + "/hours/" + dateString + "/"
 
 
 def options():
     return api + "options/"
 
 
-def optionPositions():
+def option_positions():
     return api + "options/positions/"
 
 
-def optionOrders():
+def option_orders():
     return api + "options/orders"
 
 
-def optionInstruments():
+def option_instruments():
     return api + "options/instruments/"
 
 
@@ -103,8 +103,8 @@ def quotes():
     return api + "quotes/"
 
 
-def quoteBySymbol(instrumentSymbol: str):
-    return quotes() + instrumentSymbol + "/"
+def quote_by_symbol(symbol: str):
+    return quotes() + symbol + "/"
 
 
 def tags():
@@ -115,7 +115,7 @@ def token():
     return api + "/oauth2/token/"
 
 
-def revokeToken():
+def revoke_token():
     return api + "/oauth2/revoke_token/"
 
 
@@ -123,27 +123,27 @@ def user():
     return api + "user/"
 
 
-def userAdditionalInfo():
+def user_additional_info():
     return api + "user/additional_info/"
 
 
-def userBasicInfo():
+def user_basic_info():
     return api + "user/basic_info/"
 
 
-def userCipQuestions():
+def user_cip_questions():
     return api + "user/cip_questions/"
 
 
-def userEmployment():
+def user_employment():
     return api + "user/employment/"
 
 
-def userIdentityMismatch():
+def user_identity_mismatch():
     return api + "user/identity_mismatch/"
 
 
-def userInvestmentProfile():
+def user_investment_profile():
     return api + "user/investment_profile/"
 
 
@@ -151,15 +151,15 @@ def watchlists():
     return api + f"watchlists/"
 
 
-def watchlistByName(watchlistName: str = None):
-    if watchlistName is None:
-        watchlistName = "Default"
-    return api + f"watchlists/{watchlistName}/"
+def watchlist_by_name(name: str = None):
+    if name is None:
+        name = "Default"
+    return api + f"watchlists/{name}/"
 
 
-def watchlistInstrument(instrumentID: str, watchlistName: str = None):
-    return watchlistByName(watchlistName) + f"{instrumentID}/"
+def watchlist_instrument(instrument_id: str, name: str = None):
+    return watchlistByName(name) + f"{instrument_id}/"
 
 
-def watchlistReorder(watchlistName: str = None):
-    return watchlistByName(watchlistName) + "reorder/"
+def watchlist_reorder(name: str = None):
+    return watchlistByName(name) + "reorder/"

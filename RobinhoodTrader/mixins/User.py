@@ -1,43 +1,43 @@
 from __future__ import absolute_import
 from ..RobinhoodSession import RobinhoodSession
 from ..endpoints import api
-from ..wrappers import authRequired
+from ..wrappers import auth_required
 
 
 class User:
     session: RobinhoodSession
 
-    @authRequired
-    def getUser(self) -> dict:
+    @auth_required
+    def get_user(self):
         endpoint = api.user()
-        return self.session.getData(endpoint, timeout=15)
+        return self.session.get_data(endpoint, timeout=15)
 
-    @authRequired
-    def getUserBasicInfo(self) -> dict:
-        endpoint = api.userBasicInfo()
-        return self.session.getData(endpoint, timeout=15)
+    @auth_required
+    def get_user_basic_info(self):
+        endpoint = api.user_basic_info()
+        return self.session.get_data(endpoint, timeout=15)
 
-    @authRequired
-    def getUserAdditionalInfo(self) -> dict:
-        endpoint = api.userAdditionalInfo()
-        return self.session.getData(endpoint, timeout=15)
+    @auth_required
+    def get_user_additional_info(self):
+        endpoint = api.user_additional_info()
+        return self.session.get_data(endpoint, timeout=15)
 
-    @authRequired
-    def getUserCipQuestions(self) -> list:
-        endpoint = api.userCipQuestions()
-        return self.session.getData(endpoint, timeout=15)
+    @auth_required
+    def get_user_cip_questions(self):
+        endpoint = api.user_cip_questions()
+        return self.session.get_data(endpoint, timeout=15)
 
-    @authRequired
-    def getUserEmployment(self) -> dict:
-        endpoint = api.userEmployment()
-        return self.session.getData(endpoint, timeout=15)
+    @auth_required
+    def get_user_employment(self):
+        endpoint = api.user_employment()
+        return self.session.get_data(endpoint, timeout=15)
 
-    @authRequired
-    def getUserIdentityMismatch(self) -> dict:
-        endpoint = api.userIdentityMismatch()
-        return self.session.getData(endpoint, timeout=15)
+    @auth_required
+    def get_user_identity_mismatch(self):
+        endpoint = api.user_identity_mismatch()
+        return self.session.get_data(endpoint, timeout=15)
 
-    @authRequired
-    def getUserInvestmentProfile(self) -> dict:
-        endpoint = api.userInvestmentProfile()
-        return self.session.getData(endpoint, timeout=15)
+    @auth_required
+    def get_user_investment_profile(self):
+        endpoint = api.user_investment_profile()
+        return self.session.get_data(endpoint, timeout=15)

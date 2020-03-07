@@ -1,112 +1,107 @@
 from __future__ import absolute_import
 from ..RobinhoodSession import RobinhoodSession
 from ..endpoints import nummus
-from ..wrappers import authRequired
+from ..wrappers import auth_required
 from .Cryptocurrencies import Cryptocurrencies
-
 import requests
-from typing import List, Optional
 
 
 class CryptoWatchlists(Cryptocurrencies):
     session: RobinhoodSession
 
-    @authRequired
-    def getFirstCryptoWatchlistPage(self) -> dict:
-        endpoint = nummus.watchlists()
-        return self.session.getData(endpoint, timeout=15)
-
-    def getCryptoWatchlist(self, watchlistName: str = "Default") -> dict:
-        page = self.getFirstCryptoWatchlistPage()
-        watchlist = self.searchForRecord(page, "name", watchlistName)
+    def get_crypto_watchlist(self, name="Default"):
+        page = self._get_first_crypto_watchlist_page()
+        watchlist = self.find_record(page, "name", name)
 
         return watchlist
 
-    def getCryptoWatchlistCurrencyPairs(
-        self, watchlist: Optional[dict] = None
-    ) -> List[dict]:
+    def get_crypto_watchlist_currency_pairs(self, watchlist=None):
         if watchlist is None:
-            watchlist = self.getCryptoWatchlist()
+            watchlist = self.get_crypto_watchlist()
 
-        currencyPairIds = watchlist["currency_pair_ids"]
-        currencyPairs = list(
+        currency_pair_ids = watchlist["currency_pair_ids"]
+        currency_pairs = list(
             map(
-                lambda currencyPairId: self.getCurrencyPairById(currencyPairId),
-                currencyPairIds,
+                lambda currency_pair_id: self.get_currency_pair(
+                    currency_pair_id
+                ),
+                currency_pair_ids,
             )
         )
 
-        return currencyPairs
+        return currency_pairs
 
-    @authRequired
-    def reorderCryptoWatchlist(
-        self,
-        reorderedCurrencyPairs: List[dict],
-        watchlist: Optional[dict] = None,
-    ) -> dict:
+    @auth_required
+    def reorder_crypto_watchlist(
+        self, reordered_currency_pairs, watchlist=None,
+    ):
         if watchlist is None:
-            watchlist = self.getCryptoWatchlist()
+            watchlist = self.get_crypto_watchlist()
 
-        reorderedCurrencyPairIds = list(
-            map(lambda currencyPair: currencyPair["id"], reorderedCurrencyPairs)
+        reordered_currency_pair_ids = list(
+            map(
+                lambda currency_pair: currency_pair["id"],
+                reordered_currency_pairs,
+            )
         )
 
-        watchlistID = watchlist["id"]
-        endpoint = nummus.watchlistById(watchlistID)
+        watchlist_id = watchlist["id"]
+        endpoint = nummus.watchlist_by_id(watchlist_id)
         headers = self.session.headers
-        headers["Content-Type"] = "application/json"
-        payload = {"currency_pair_ids": reorderedCurrencyPairIds}
+        headers.update({"Content-Type": "application/json"})
+        payload = {"currency_pair_ids": reordered_currency_pair_ids}
 
-        data = self.session.patchData(endpoint, json=payload, timeout=15,)
+        return self.session.patch_data(endpoint, json=payload, timeout=15,)
 
-        return data
+    def add_to_crypto_watchlist(self, currency_pair_to_add, watchlist=None):
+        if watchlist is None:
+            watchlist = self.get_crypto_watchlist()
 
-    def addToCryptoWatchlist(
-        self, currencyPairToAdd: dict, watchlist: Optional[dict] = None
+        currency_pairs = self.get_crypto_watchlist_currency_pairs()
+        currency_pairs.append(currency_pair_to_add)
+
+        return self.reorder_crypto_watchlist(currency_pairs, watchlist)
+
+    def add_multiple_to_crypto_watchlist(
+        self, currency_pairs_to_add, watchlist=None
     ):
         if watchlist is None:
-            watchlist = self.getCryptoWatchlist()
+            watchlist = self.get_crypto_watchlist()
 
-        currencyPairs = self.getCryptoWatchlistCurrencyPairs()
-        currencyPairs.append(currencyPairToAdd)
+        currency_pairs = self.get_crypto_watchlist_currency_pairs()
+        currency_pairs.append(currency_pairs_to_add)
 
-        data = self.reorderCryptoWatchlist(currencyPairs, watchlist)
+        return self.reorder_crypto_watchlist(currency_pairs, watchlist)
 
-        return data
-
-    def addMultipleToCryptoWatchlist(
-        self, currencyPairsToAdd: List[dict], watchlist: Optional[dict],
+    def delete_from_crypto_watchlist(
+        self, currency_pair_to_delete, watchlist=None
     ):
         if watchlist is None:
-            watchlist = self.getCryptoWatchlist()
+            watchlist = self.get_crypto_watchlist()
 
-        currencyPairs = self.getCryptoWatchlistCurrencyPairs()
-        currencyPairs.append(currencyPairsToAdd)
+        currency_pairs = self.get_crypto_watchlist_currency_pairs()
+        try:
+            currency_pairs.remove(currency_pair_to_delete)
+        except ValueError:
+            pass
 
-        data = self.reorderCryptoWatchlist(currencyPairs, watchlist)
+        return self.reorder_crypto_watchlist(currency_pairs, watchlist)
 
-        return data
-
-    def deleteFromCryptoWatchlist(
-        self, currencyPairToDelete: dict, watchlist: Optional[dict],
+    def delete_multiple_from_crypto_watchlist(
+        self, currency_pairs_to_delete, watchlist=None
     ):
         if watchlist is None:
-            watchlist = self.getCryptoWatchlist()
+            watchlist = self.get_crypto_watchlist()
 
-        currencyPairs = self.getCryptoWatchlistCurrencyPairs()
-        currencyPairs.remove(currencyPairToDelete)
-        data = self.reorderCryptoWatchlist(currencyPairs, watchlist)
+        currency_pairs = self.get_crypto_watchlist_currency_pairs()
+        try:
+            currency_pairs.remove(currency_pairs_to_delete)
+        except ValueError:
+            pass
 
-        return data
+        return self.reorder_crypto_watchlist(currency_pairs, watchlist)
 
-    def deleteMultipleFromCryptoWatchlist(
-        self, currencyPairsToDelete: List[dict], watchlist: Optional[dict],
-    ):
-        if watchlist is None:
-            watchlist = self.getCryptoWatchlist()
-
-        currencyPairs = self.getCryptoWatchlistCurrencyPairs()
-        currencyPairs.remove(currencyPairsToDelete)
-        data = self.reorderCryptoWatchlist(currencyPairs, watchlist)
-
-        return data
+    @auth_required
+    def _get_first_crypto_watchlist_page(self):
+        endpoint = nummus.watchlists()
+        return self.session.get_data(endpoint, timeout=15)

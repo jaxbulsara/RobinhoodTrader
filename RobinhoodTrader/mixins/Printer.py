@@ -3,5 +3,5 @@ import pprint
 
 
 class Printer:
-    def printData(self, data):
+    def print_data(self, data):
         pprint.pprint(data, indent=4)

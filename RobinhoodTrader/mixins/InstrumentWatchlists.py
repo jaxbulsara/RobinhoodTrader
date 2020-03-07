@@ -1,7 +1,7 @@
 from __future__ import absolute_import
 from ..RobinhoodSession import RobinhoodSession
 from ..endpoints import api
-from ..wrappers import authRequired
+from ..wrappers import auth_required
 from .Instruments import Instruments
 
 import requests
@@ -11,88 +11,80 @@ from typing import List, Optional
 class InstrumentWatchlists(Instruments):
     session: RobinhoodSession
 
-    @authRequired
-    def getFirstWatchlistPage(self) -> dict:
-        endpoint = api.watchlists()
-        return self.session.getData(endpoint, timeout=15)
-
-    @authRequired
-    def getWatchlist(self, watchlistName: str = "Default") -> dict:
-        watchlistPage = self.getFirstWatchlistPage()
-        watchlist = self.searchForRecord(watchlistPage, "name", watchlistName)
+    @auth_required
+    def get_watchlist(self, watchlist_name="Default"):
+        page = self._get_first_watchlist_page()
+        watchlist = self.find_record(page, "name", watchlist_name)
         if watchlist is None:
-            watchlist = self.searchForRecord(watchlistPage, "name", "Default")
+            watchlist = self.find_record(page, "name", "Default")
 
         endpoint = watchlist["url"]
-        data = self.session.getData(endpoint, timeout=15)
+        data = self.session.get_data(endpoint, timeout=15)
 
-        data["name"] = watchlist["name"]
-        data["url"] = watchlist["url"]
-        data["user"] = watchlist["user"]
+        metadata = {
+            "name": watchlist["name"],
+            "url": watchlist["url"],
+            "user": watchlist["user"],
+        }
+        data.update(metadata)
 
         return data
 
-    @authRequired
-    def getWatchlistInstruments(
-        self, watchlist: Optional[dict] = None
-    ) -> List[dict]:
+    @auth_required
+    def get_watchlist_instruments(self, watchlist=None):
         if watchlist is None:
-            watchlist = self.getWatchlist()
+            watchlist = self.get_watchlist()
+
         instruments = []
         for instrument in watchlist["results"]:
             endpoint = instrument["instrument"]
-            data = self.session.getData(endpoint, timeout=15)
+            data = self.session.get_data(endpoint, timeout=15)
             instruments.append(data)
 
         return instruments
 
-    @authRequired
-    def addToWatchlist(
-        self, instrument: dict, watchlist: Optional[dict] = None
-    ) -> dict:
+    @auth_required
+    def add_to_watchlist(self, instrument, watchlist=None):
         if watchlist is None:
-            watchlist = self.getWatchlist()
+            watchlist = self.get_watchlist()
+
         try:
-            response = self.session.post(
+            data = self.session.post_data(
                 watchlist["url"],
                 data={"instrument": instrument["url"]},
                 timeout=15,
             )
-            response.raise_for_status()
         except requests.exceptions.HTTPError:
             print(
                 f"Cannot add instrument. URL already exists: {watchlist['url'] + instrument['id'] + '/'}"
             )
 
-        data = response.json()
-
         return data
 
-    def addMultipleToWatchlist(
-        self, instruments: List[dict], watchlist: Optional[dict] = None
-    ) -> List[dict]:
+    def add_multiple_to_watchlist(self, instruments, watchlist=None):
         if watchlist is None:
-            watchlist = self.getWatchlist()
+            watchlist = self.get_watchlist()
+
         responses = list(
             map(
-                lambda instrument: self.addToWatchlist(instrument, watchlist),
+                lambda instrument: self.add_to_watchlist(instrument, watchlist),
                 instruments,
             )
         )
 
         return responses
 
-    @authRequired
-    def deleteFromWatchlist(
-        self, instrument: dict, watchlist: Optional[dict] = None
-    ) -> requests.Response:
+    @auth_required
+    def delete_from_watchlist(self, instrument, watchlist=None):
         if watchlist is None:
-            watchlist = self.getWatchlist()
+            watchlist = self.get_watchlist()
+
         try:
             response = self.session.delete(
                 watchlist["url"] + instrument["id"] + "/", timeout=15,
             )
             response.raise_for_status()
+
         except requests.exceptions.HTTPError:
             print(
                 f"Cannot delete instrument. URL does not exist: {watchlist['url'] + instrument['id'] + '/'}"
@@ -100,14 +92,15 @@ class InstrumentWatchlists(Instruments):
 
         return response
 
-    def deleteMultipleFromWatchlist(
-        self, instruments: List[dict], watchlist: Optional[dict] = None,
+    def delete_multiple_from_watchlist(
+        self, instruments, watchlist=None,
     ):
         if watchlist is None:
-            watchlist = self.getWatchlist()
+            watchlist = self.get_watchlist()
+
         response = list(
             map(
-                lambda instrument: self.deleteFromWatchlist(
+                lambda instrument: self.delete_from_watchlist(
                     instrument, watchlist
                 ),
                 instruments,
@@ -116,20 +109,24 @@ class InstrumentWatchlists(Instruments):
 
         return response
 
-    @authRequired
-    def reorderWatchList(
-        self,
-        reorderedInstruments: List[dict],
-        watchlist: Optional[dict] = None,
+    @auth_required
+    def reorder_watchlist(
+        self, reordered_instruments, watchlist=None,
     ):
         if watchlist is None:
-            watchlist = self.getWatchlist()
-        reorderedInstrumentIds = list(
-            map(lambda instrument: instrument["id"], reorderedInstruments)
-        )
-        reorderedUuids = ",".join(reorderedInstrumentIds)
-        payload = {"uuids": reorderedUuids}
+            watchlist = self.get_watchlist()
 
-        endpoint = api.watchlistReorder()
-        return self.session.postData(endpoint, data=payload, timeout=15,)
+        reordered_instrument_ids = list(
+            map(lambda instrument: instrument["id"], reordered_instruments)
+        )
+        reordered_uuids = ",".join(reordered_instrument_ids)
+        payload = {"uuids": reordered_uuids}
+
+        endpoint = api.watchlist_reorder()
+        return self.session.post_data(endpoint, data=payload, timeout=15,)
+
+    @auth_required
+    def _get_first_watchlist_page(self) -> dict:
+        endpoint = api.watchlists()
+        return self.session.get_data(endpoint, timeout=15)
 

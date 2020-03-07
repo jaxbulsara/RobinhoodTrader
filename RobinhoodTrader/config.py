@@ -3,28 +3,28 @@ from configparser import ConfigParser
 import re, os, pathlib
 
 
-def getConfiguration():
-    configParser = ConfigParser()
-    configParser.read("config.ini")
+def get_configuration():
+    config_parser = ConfigParser()
+    config_parser.read("config.ini")
 
-    return configParser
-
-
-def getQrCode():
-    config = getConfiguration()
-    qrCode = config.get("login", "qrCode", fallback=None)
-    qrCode = _checkQrCode(config, qrCode)
-
-    return qrCode
+    return config_parser
 
 
-def _checkQrCode(config, qrCode):
-    if qrCode:
-        qrCodePattern = config.get("login", "qrCodePattern")
-        qrCodeIsValid = re.match(qrCodePattern, qrCode)
-        if qrCodeIsValid:
-            qrCode = qrCode
+def get_qr_code():
+    config = get_configuration()
+    qr_code = config.get("login", "qr_code", fallback=None)
+    qr_code = _check_qr_code(config, qr_code)
+
+    return qr_code
+
+
+def _check_qr_code(config, qr_code):
+    if qr_code:
+        qr_code_pattern = config.get("login", "qr_code_pattern")
+        qr_code_is_valid = re.match(qr_code_pattern, qr_code)
+        if qr_code_is_valid:
+            qr_code = qr_code
         else:
-            qrCode = None
+            qr_code = None
 
-    return qrCode
+    return qr_code

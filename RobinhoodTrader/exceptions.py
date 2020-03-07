@@ -14,5 +14,13 @@ class LoginError(RobinhoodException):
     pass
 
 
-class SymbolError(RobinhoodException):
+class RecordNotFoundError(RobinhoodException):
+    pass
+
+
+class CategoryError(RobinhoodException):
+    pass
+
+
+class IdentifierError(RobinhoodException):
     pass

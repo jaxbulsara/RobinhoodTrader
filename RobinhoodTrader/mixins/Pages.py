@@ -1,99 +1,85 @@
 from ..RobinhoodSession import RobinhoodSession
-from typing import Union, List, Optional
+from ..exceptions import RecordNotFoundError
 import math
 
 
 class Pages:
     session: RobinhoodSession
 
-    def getPages(
-        self,
-        page: dict,
-        startPageNumber: int = 0,
-        limit: Union[int, float] = math.inf,
-    ) -> List[dict]:
-
+    def get_pages(
+        self, page, start_page_number=0, limit=math.inf,
+    ):
         pages = [page]
-        startPageNumber = startPageNumber
+        start_page_number = start_page_number
         limit = limit
-        currentPage = 0
+        current_page = 0
 
-        def _limitNotReached() -> bool:
-            limitNotReached = currentPage < limit + startPageNumber
+        def _limit_not_reached():
+            limit_not_reached = current_page < limit + start_page_number
 
-            return limitNotReached
+            return limit_not_reached
 
-        def _runConditions() -> List[bool]:
-            nextPageExists = self.nextPageExists(page)
-            limitNotReached = _limitNotReached()
+        def _run_conditions():
+            next_page_exists = self.next_page_exists(page)
+            limit_not_reached = _limit_not_reached()
 
-            runConditions = [nextPageExists, limitNotReached]
+            return [next_page_exists, limit_not_reached]
 
-            return runConditions
+        def _page_is_in_range():
+            return current_page >= start_page_number
 
-        def _pageIsInRange() -> bool:
-            pageIsInRange = currentPage >= startPageNumber
+        def _append_next_page():
+            page = self.get_next_page(page)
 
-            return pageIsInRange
-
-        def _appendNextPage() -> None:
-            page = self.getNextData(page)
-
-            if _pageIsInRange():
+            if _page_is_in_range():
                 pages.append(page)
 
-        while False not in _runConditions():
-            _appendNextPage()
-            currentPage += 1
+        while False not in _run_conditions():
+            _append_next_page()
+            current_page += 1
 
         return pages
 
-    def searchForRecord(
-        self, page: dict, searchKey: str, searchValue: str
-    ) -> dict:
+    def find_record(self, page, record_key, record_value):
         page = page
-        searchKey = searchKey
-        searchValue = searchValue
+        record_key = record_key
+        record_value = record_value
 
-        records: List[dict] = None
-        foundRecord: dict = None
+        records = None
+        found_record = None
 
-        def _runConditions() -> List[bool]:
-            nextPageExists = self.nextPageExists(page)
-            recordIsNotFound = foundRecord is None
+        def _run_conditions():
+            next_page_exists = self.next_page_exists(page)
+            record_is_not_found = found_record is None
 
-            runConditions = [nextPageExists, recordIsNotFound]
+            return [next_page_exists, record_is_not_found]
 
-            return runConditions
-
-        def _foundRecordOrNone() -> Optional[dict]:
-            foundRecordOrNone = None
+        def found_record_or_none():
+            found_record_or_none = None
 
             for record in records:
-                if record[searchKey] == searchValue:
-                    foundRecordOrNone = record
+                if record[record_key] == record_value:
+                    found_record_or_none = record
                     break
 
-            return foundRecordOrNone
+            return found_record_or_none
 
         records = page["results"]
-        foundRecord = _foundRecordOrNone()
+        found_record = found_record_or_none()
 
-        while False not in _runConditions():
-            page = self.getNextData(page)
+        while False not in _run_conditions():
+            page = self.get_next_page(page)
             records = page["results"]
-            foundRecord = _foundRecordOrNone()
+            found_record = found_record_or_none()
 
-        return foundRecord
+        if found_record is None:
+            raise RecordNotFoundError()
 
-    def nextPageExists(self, responseData: dict) -> bool:
-        nextPageExists = responseData["next"] is not None
-        return nextPageExists
+        return found_record
 
-    def getNextData(self, page: dict) -> dict:
+    def next_page_exists(self, page):
+        return page["next"] is not None
+
+    def get_next_page(self, page):
         nextUrl = page["next"]
-        response = self.session.get(nextUrl, timeout=15)
-        response.raise_for_status()
-        data = response.json()
-
-        return data
+        return self.session.get_data(nextUrl, timeout=15)

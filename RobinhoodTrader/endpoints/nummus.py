@@ -7,16 +7,16 @@ def accounts():
     return nummus + "accounts/"
 
 
-def accountById(accountId):
+def account_by_id(accountId):
     return accounts() + accountId + "/"
 
 
-def currencyPairs():
+def currency_pairs():
     return nummus + "currency_pairs/"
 
 
-def currencyPairBySymbol(currencyPairSymbol):
-    return currencyPairs() + "?symbol=" + currencyPairSymbol
+def currency_pair_by_symbol(symbol):
+    return currency_pairs() + "?symbol=" + symbol
 
 
 def holdings():
@@ -27,11 +27,11 @@ def orders():
     return nummus + "orders/"
 
 
-def orderStatus():
+def order_status():
     return nummus + "orders/{}"
 
 
-def orderCancel():
+def order_cancel():
     return nummus + "orders/{}/cancel/"
 
 
@@ -43,5 +43,5 @@ def watchlists():
     return nummus + "watchlists/"
 
 
-def watchlistById(watchlistId: str):
-    return watchlists() + watchlistId + "/"
+def watchlist_by_id(id: str):
+    return watchlists() + id + "/"
