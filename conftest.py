@@ -1,6 +1,7 @@
 import pytest, shutil, os, re
 from RobinhoodTrader import RobinhoodTrader
 from RobinhoodTrader.config import get_configuration
+from RobinhoodTrader.exceptions import LoginError
 
 
 @pytest.fixture
@@ -30,7 +31,14 @@ def use_my_config():
 @pytest.fixture(scope="session")
 def trader(use_my_config):
     trader = RobinhoodTrader()
-    trader.login()
+
+    with pytest.raises(LoginError):
+        trader.login(("user", "pass"))
+
+    try:
+        trader.login()
+    except LoginError:
+        trader.login(use_config=False)
 
     assert trader.session.site_auth_token != None
     assert trader.session.refresh_token != None

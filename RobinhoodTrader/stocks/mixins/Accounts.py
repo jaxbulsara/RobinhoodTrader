@@ -4,6 +4,7 @@ from ...RobinhoodSession import RobinhoodSession
 from ...wrappers import auth_required
 from ...endpoints import api
 from ...exceptions import RecordNotFoundError, IdentifierError
+from ...datatypes import Page
 
 from .Instruments import Instruments
 
@@ -43,4 +44,5 @@ class Accounts(Instruments):
     @auth_required
     def _get_first_account_page(self):
         endpoint = api.accounts()
-        return self.session.get_data(endpoint, timeout=15)
+        data = self.session.get_data(endpoint, timeout=15)
+        return Page(data)

@@ -11,8 +11,8 @@ class RobinhoodTrader(StockTrader, CryptoTrader):
     def __init__(self):
         self.session = RobinhoodSession()
 
-    def login(self, credentials=(None, None)):
-        self.session.login(credentials)
+    def login(self, credentials=(None, None), use_config=True):
+        self.session.login(credentials, use_config)
 
     def logout(self):
         self.session.logout()

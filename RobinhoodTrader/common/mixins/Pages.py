@@ -2,7 +2,7 @@ from __future__ import absolute_import
 
 from ...RobinhoodSession import RobinhoodSession
 from ...exceptions import RecordNotFoundError
-from ..data_types import Page
+from ...datatypes import Page
 
 from .ArgumentChecking import ArgumentChecking
 
@@ -15,9 +15,9 @@ class Pages(ArgumentChecking):
     def get_pages(
         self, page, start_page_number=0, limit=math.inf,
     ):
-        self.checkArgument("page", page, [Page])
-        self.checkArgument("start_page_number", start_page_number, [int])
-        self.checkArgument("limit", limit, [int, float])
+        self.check_argument("page", page, (Page))
+        self.check_argument("start_page_number", start_page_number, (int))
+        self.check_argument("limit", limit, int, float)
 
         pages = [page]
         start_page_number = start_page_number

@@ -31,16 +31,22 @@ class RobinhoodSession(requests.Session):
         self.session_is_console = sys.stdout.isatty()
         self.account_numbers = None
 
-    def login(self, credentials=(None, None)):
-        if None in credentials:
+    def login(self, credentials=(None, None), use_config=True):
+        if None in credentials and use_config:
             config = get_configuration()
             username = config.get("login", "username", fallback=None)
             password = config.get("login", "password", fallback=None)
+
+            if username == "None":
+                username = None
+            if password == "None":
+                password = None
+
             credentials = (username, password)
 
         if None in credentials:
             if self.session_is_console:
-                credentials = self._get_credentials_from_user()
+                credentials = self._get_credentials_from_user(credentials)
             else:
                 raise ValueError(
                     "This method is not being called in an interactive console. Must pass a non-null tuple of credentials."
@@ -110,9 +116,14 @@ class RobinhoodSession(requests.Session):
         data = response.json()
         return data
 
-    def _get_credentials_from_user(self):
+    def _get_credentials_from_user(self, credentials):
+        username, password = credentials
+
         print("Press Enter to cancel.")
-        username = input("Username: ")
+        username_exists = credentials[0] is not None
+        if not username_exists:
+            username = input("Username: ")
+
         if username != "":
             password = getpass(prompt="Password: ")
         else:
@@ -139,11 +150,10 @@ class RobinhoodSession(requests.Session):
             login_data = self.post_data(api.token(), data=payload, timeout=15)
             self._extract_login_tokens(login_data)
         except requests.exceptions.HTTPError:
-            print(f"Failed to login.")
             raise LoginError()
         except requests.exceptions.ConnectionError:
             print(
-                f"Failed to connect. Please check your internet and try again."
+                "Failed to connect to robinhood. Please check your internet and try again."
             )
 
     def _generate_payload_for_login(
