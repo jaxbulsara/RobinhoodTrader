@@ -3,7 +3,9 @@ from __future__ import absolute_import
 import requests
 
 
-class DataWrapperMixin(requests.Session):
+class HTTPDataMixin:
+    self: requests.Session
+
     def get_data(self, *args, **kwargs):
         response = self.get(*args, **kwargs)
         response.raise_for_status()
