@@ -1,6 +1,6 @@
 from __future__ import absolute_import
+
 import requests
-from . import exceptions
 
 
 def auth_required(function):  # pylint: disable=E0213
@@ -11,7 +11,7 @@ def auth_required(function):  # pylint: disable=E0213
             session = self.session
 
         if not session.is_logged_in:
-            session.login(session.credentials)
+            session.login()
         return function(self, *args, **kwargs)  # pylint: disable=E1102
 
     return make_user_login

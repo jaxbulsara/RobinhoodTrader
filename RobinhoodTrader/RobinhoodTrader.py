@@ -8,8 +8,8 @@ import pprint
 
 
 class RobinhoodTrader(StockMixins, CryptoMixins):
-    def __init__(self):
-        self.session = RobinhoodSession()
+    def __init__(self, credentials=(None, None)):
+        self.session = RobinhoodSession(credentials)
 
     def login(self, credentials=(None, None), use_config=True):
         self.session.login(credentials, use_config)

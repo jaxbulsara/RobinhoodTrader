@@ -1,6 +1,7 @@
 from __future__ import absolute_import
+
 from ...common import CommonMixins
-from ...RobinhoodSession import RobinhoodSession
+from ...session import RobinhoodSession
 from ...endpoints import nummus
 from ...exceptions import CategoryError
 from ...datatypes import CryptoCurrencyPair, Page

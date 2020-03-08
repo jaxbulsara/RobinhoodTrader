@@ -1,6 +1,6 @@
 from __future__ import absolute_import
 
-from ...RobinhoodSession import RobinhoodSession
+from ...session import RobinhoodSession
 from ...exceptions import RecordNotFoundError
 from ...datatypes import Page
 from ...exceptions import PageError

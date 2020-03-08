@@ -1,6 +1,6 @@
 from __future__ import absolute_import
 
-from ...RobinhoodSession import RobinhoodSession
+from ...session import RobinhoodSession
 from ...wrappers import auth_required
 from ...endpoints import api
 from ...exceptions import RecordNotFoundError, IdentifierError

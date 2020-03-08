@@ -1,7 +1,7 @@
 from __future__ import absolute_import
 
 from ...common import CommonMixins
-from ...RobinhoodSession import RobinhoodSession
+from ...session import RobinhoodSession
 from ...wrappers import auth_required
 from ...endpoints import api
 from ...exceptions import IdentifierError, CategoryError
