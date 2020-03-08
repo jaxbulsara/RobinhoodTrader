@@ -25,7 +25,7 @@ class Cryptocurrencies(Common):
 
         else:
             raise CategoryError(
-                f"The currency_pair identifier must be a crypto symbol or uuid, not {identifier_category}."
+                f"'currency_pair' must be a crypto symbol or uuid, not {identifier_category}."
             )
 
         return currency_pair

@@ -1,6 +1,6 @@
 from RobinhoodTrader import RobinhoodTrader
 from RobinhoodTrader.exceptions import CategoryError
-from RobinhoodTrader.datatypes import CryptoCurrencyPair, Currency
+from RobinhoodTrader.datatypes import CryptoCurrencyPair, Currency, Page
 import pytest
 
 
@@ -9,7 +9,7 @@ def test_get_currency_pair(trader):
 
     with pytest.raises(
         CategoryError,
-        match=r"The currency_pair identifier must be a crypto symbol or uuid, not (\w)+.",
+        match=r"'currency_pair' must be a crypto symbol or uuid, not (\w)+.",
     ):
         trader.get_currency_pair("BTC")
 
@@ -58,4 +58,12 @@ def test_get_currency_pair(trader):
 
     for key in bitcoin.quote_currency.keys():
         assert key in expected_currency_keys
+
+
+def test__get_first_currency_pair_page(trader):
+    trader: RobinhoodTrader
+
+    first_currency_pair_page = trader._get_first_currency_pair_page()
+
+    assert type(first_currency_pair_page) == Page
 
