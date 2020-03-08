@@ -1,8 +1,8 @@
 from __future__ import absolute_import
-from .exceptions import CredentialError, LoginError
-from .wrappers import auth_required
-from .endpoints import api
-from .config import get_configuration, get_qr_code
+from ..exceptions import CredentialError, LoginError
+from ..wrappers import auth_required
+from ..endpoints import api
+from ..config import get_configuration, get_qr_code
 
 import requests, platform, sys, uuid, time, struct, base64, hmac, hashlib
 from getpass import getpass

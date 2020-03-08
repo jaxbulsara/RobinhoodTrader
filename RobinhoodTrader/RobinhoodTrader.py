@@ -1,6 +1,6 @@
 from __future__ import absolute_import
 
-from .RobinhoodSession import RobinhoodSession
+from .session import RobinhoodSession
 from .stocks import StockMixins
 from .crypto import CryptoMixins
 
