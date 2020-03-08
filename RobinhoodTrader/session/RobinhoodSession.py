@@ -1,6 +1,6 @@
 from __future__ import absolute_import
 
-from ..exceptions import CredentialError, LoginError
+from ..exceptions import LoginError
 from ..wrappers import auth_required
 from ..endpoints import api
 from ..config import get_configuration, get_qr_code
@@ -13,12 +13,16 @@ from urllib.request import getproxies
 
 
 class RobinhoodSession(requests.Session, HTTPDataMixin):
-    def __init__(self, credentials=(None, None)):
+    def __init__(self, credentials=(None, None), qr_code=None):
         super(RobinhoodSession, self).__init__()
         self.proxies = getproxies()
         self.device_token = str(uuid.uuid4())
         self.client_id = "c82SH0WZOsabOXGP2sxqcj34FxkvfnWRZBKlBjFS"
         self.credentials = credentials
+        self.qr_code = qr_code
+        self.manual_code = None
+        self.login_data = None
+        self.payload = None
         self.site_auth_token = None
         self.refresh_token = None
         self.headers = {
@@ -36,7 +40,7 @@ class RobinhoodSession(requests.Session, HTTPDataMixin):
         if None not in self.credentials:
             self.login()
 
-    def login(self, credentials=(None, None), use_config=True):
+    def login(self, credentials=(None, None), qr_code=None, use_config=True):
         self.credentials = credentials
         if None in self.credentials and use_config:
             self._get_credentials_from_config()
@@ -53,12 +57,12 @@ class RobinhoodSession(requests.Session, HTTPDataMixin):
 
     def logout(self):
         endpoint = api.revoke_token()
-        payload = {
+        self.payload = {
             "client_id": self.client_id,
             "token": self.refresh_token,
         }
 
-        logout_request = self.post(endpoint, data=payload, timeout=15)
+        logout_request = self.post(endpoint, data=self.payload, timeout=15)
         logout_request.raise_for_status()
 
         self._clear_session_info()
@@ -98,33 +102,36 @@ class RobinhoodSession(requests.Session, HTTPDataMixin):
         self.credentials = (username, password)
 
     def _perform_login(self):
-        qr_code = get_qr_code()
-        payload = self._generate_payload(qr_code=qr_code)
-        self._get_access_token(payload, qr_code)
+        if not self.qr_code:
+            self.qr_code = get_qr_code()
+        self._generate_payload()
+        self._get_access_token()
 
-    def _generate_payload(self, qr_code=None, manual_code=None):
-        if qr_code or manual_code:
-            payload = self._generate_payload_for_login(qr_code, manual_code)
+    def _generate_payload(self):
+        if self.qr_code or self.manual_code:
+            self._generate_payload_for_login()
         else:
-            payload = self._generate_payload_for_manual_challenge()
-            manual_code = self._perform_manual_challenge(payload)
-            payload = self._generate_payload_for_login(qr_code, manual_code)
+            self._generate_payload_for_manual_challenge()
+            self._perform_manual_challenge()
+            self._generate_payload_for_login()
 
-        return payload
-
-    def _get_access_token(self, payload, qr_code):
+    def _get_access_token(self):
         try:
-            login_data = self.post_data(api.token(), data=payload, timeout=15)
-            self._extract_login_tokens(login_data)
+            self.login_data = self.post_data(
+                api.token(), data=self.payload, timeout=15
+            )
+            self._extract_login_tokens()
         except requests.exceptions.HTTPError:
-            raise LoginError()
+            raise LoginError(
+                "Unable to log in. Check your credentials or authentication code and try again."
+            )
         except requests.exceptions.ConnectionError:
             print(
                 "Failed to connect to robinhood. Please check your internet and try again."
             )
 
-    def _generate_payload_for_login(self, qr_code=None, manual_code=None):
-        payload = {
+    def _generate_payload_for_login(self):
+        self.payload = {
             "username": self.credentials[0],
             "password": self.credentials[1],
             "grant_type": "password",
@@ -133,24 +140,18 @@ class RobinhoodSession(requests.Session, HTTPDataMixin):
             "device_token": self.device_token,
         }
 
-        if qr_code:
-            multi_factor_auth_token = self._generate_multi_factor_auth_token(
-                qr_code
-            )
-            payload["mfa_code"] = multi_factor_auth_token
-        elif manual_code:
-            payload["mfa_code"] = manual_code
+        if self.qr_code:
+            multi_factor_auth_token = self._generate_multi_factor_auth_token()
+            self.payload.update({"mfa_code": multi_factor_auth_token})
+        elif self.manual_code:
+            self.payload.update({"mfa_code": self.manual_code})
 
-        return payload
-
-    def _generate_multi_factor_auth_token(
-        self, qr_code, current_time_seed=None
-    ):
+    def _generate_multi_factor_auth_token(self, current_time_seed=None):
         if current_time_seed is None:
             current_time_seed = int(time.time()) // 30
 
         cstruct_seed = struct.pack(">Q", current_time_seed)
-        cstruct_key = base64.b32decode(qr_code, True)
+        cstruct_key = base64.b32decode(self.qr_code, True)
         hmac_object = hmac.new(cstruct_key, cstruct_seed, hashlib.sha1)
         hmac_digest = hmac_object.digest()
         auth_token = self._get_multi_factor_auth_token(hmac_digest)
@@ -170,7 +171,7 @@ class RobinhoodSession(requests.Session, HTTPDataMixin):
         return auth_token
 
     def _generate_payload_for_manual_challenge(self):
-        payload = {
+        self.payload = {
             "username": self.credentials[0],
             "password": self.credentials[1],
             "grant_type": "password",
@@ -181,32 +182,30 @@ class RobinhoodSession(requests.Session, HTTPDataMixin):
             "challenge_type": "sms",
         }
 
-        return payload
-
-    def _perform_manual_challenge(self, payload):
+    def _perform_manual_challenge(self):
         endpoint = api.token()
-        self.post(endpoint, data=payload, timeout=15)
-        manual_code = input("Type in code from SMS or Authenticator app: ")
-        return manual_code
+        self.post(endpoint, data=self.payload, timeout=15)
+        self.manual_code = input("Type in code from SMS or Authenticator app: ")
 
-    def _extract_login_tokens(self, login_data):
-        data_has_access_token = "access_token" in login_data.keys()
-        data_has_refresh_token = "refresh_token" in login_data.keys()
+    def _extract_login_tokens(self):
+        data_has_access_token = "access_token" in self.login_data.keys()
+        data_has_refresh_token = "refresh_token" in self.login_data.keys()
 
         if data_has_access_token and data_has_refresh_token:
-            self.site_auth_token = login_data["access_token"]
-            self.refresh_token = login_data["refresh_token"]
+            self.site_auth_token = self.login_data["access_token"]
+            self.refresh_token = self.login_data["refresh_token"]
             self.headers["Authorization"] = f"Bearer {self.site_auth_token}"
             self.is_logged_in = True
         else:
-            print(
-                "Unable to login. Please enter different credentials and try again."
+            raise LoginError(
+                "Data returned from Robinhood does not contain 'access_token' or 'refresh_token'."
             )
-            self._clear_credentials()
-            self.login(use_config=False)
 
     def _clear_credentials(self):
         self.credentials = (None, None)
+        self.qr_code = None
+        self.manual_code = None
+        self.login_data = None
 
     def _clear_session_info(self):
         self.headers["Authorization"] = None

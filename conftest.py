@@ -32,9 +32,6 @@ def use_my_config():
 def trader(use_my_config):
     trader = RobinhoodTrader()
 
-    with pytest.raises(LoginError):
-        trader.login(("user", "pass"))
-
     try:
         trader.login()
     except LoginError:
@@ -44,6 +41,10 @@ def trader(use_my_config):
     assert trader.session.refresh_token != None
     assert re.match("Bearer .+", trader.session.headers["Authorization"])
     assert trader.session.is_logged_in == True
+    assert trader.session.credentials == (None, None)
+    assert trader.session.qr_code == None
+    assert trader.session.manual_code == None
+    assert trader.session.login_data == None
 
     yield trader
 
