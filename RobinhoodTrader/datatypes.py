@@ -19,8 +19,11 @@ class Account(RobinhoodData):
     pass
 
 
-class Cryptocurrency(RobinhoodData):
-    pass
+class CryptoCurrencyPair(RobinhoodData):
+    def __init__(self, *args, **kwargs):
+        super(CryptoCurrencyPair, self).__init__(*args, **kwargs)
+        self.asset_currency = Currency(self.asset_currency)
+        self.quote_currency = Currency(self.quote_currency)
 
 
 class CryptoAccount(RobinhoodData):
@@ -32,6 +35,10 @@ class CryptoWatchlist(RobinhoodData):
 
 
 class CryptoHoldings(RobinhoodData):
+    pass
+
+
+class Currency(RobinhoodData):
     pass
 
 

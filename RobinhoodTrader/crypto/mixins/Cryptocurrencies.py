@@ -3,32 +3,30 @@ from ...common import Common
 from ...RobinhoodSession import RobinhoodSession
 from ...endpoints import nummus
 from ...exceptions import CategoryError
+from ...datatypes import CryptoCurrencyPair, Page
 
 
 class Cryptocurrencies(Common):
     session: RobinhoodSession
 
     def get_currency_pair(self, identifier):
-        identifierType = type(identifier).__name__
-        if identifierType == "str":
-            currency_pair = self._get_currency_pair_by_category(identifier)
-        else:
-            raise TypeError(
-                f"This method requires an currency pair identifier (str). Got '{identifierType}'"
-            )
+        self.check_argument("identifier", identifier, str)
+        currency_pair = self._get_currency_pair_by_category(identifier)
 
-        return currency_pair
+        return CryptoCurrencyPair(currency_pair)
 
     def _get_currency_pair_by_category(self, identifier):
-        if self.is_symbol(identifier):
+        identifier_category = self.get_category("identifier", identifier)
+        expected_categories = ["crypto_symbol", "uuid"]
+        if identifier_category == "crypto_symbol":
             currency_pair = self._get_currency_pair_by_symbol(identifier)
 
-        elif self.is_uuid(identifier):
+        elif identifier_category == "uuid":
             currency_pair = self._get_currency_pair_by_id(identifier)
 
         else:
             raise CategoryError(
-                f"The currency_pair identifier must be a symbol, robinhood ID, or robinhood URL. Got '{identifier}'."
+                f"The currency_pair identifier must be {expected_categories}, not {identifier_category}."
             )
 
         return currency_pair
@@ -47,4 +45,5 @@ class Cryptocurrencies(Common):
 
     def _get_first_currency_pair_page(self) -> dict:
         endpoint = nummus.currency_pairs()
-        return self.session.get_data(endpoint, timeout=15)
+        data = self.session.get_data(endpoint, timeout=15)
+        return Page(data)
