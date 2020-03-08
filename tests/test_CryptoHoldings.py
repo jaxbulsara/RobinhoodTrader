@@ -2,6 +2,7 @@ from RobinhoodTrader import RobinhoodTrader
 from RobinhoodTrader.datatypes import (
     CryptoHoldings,
     CryptoHolding,
+    CostBases,
     CostBasis,
     Currency,
 )
@@ -25,6 +26,40 @@ def test_get_crypto_holdings(trader):
         "updated_at",
     ]
 
+    assert type(crypto_holdings) == CryptoHoldings
+    for holding in crypto_holdings:
+        assert type(holding) == CryptoHolding
+
+        for attribute in expected_attributes:
+            assert hasattr(holding, attribute)
+
+
+def test_get_crypto_holdings_currency(trader):
+    trader: RobinhoodTrader
+
+    crypto_holdings = trader.get_crypto_holdings()
+
+    expected_currency_keys = [
+        "brand_color",
+        "code",
+        "id",
+        "increment",
+        "name",
+        "type",
+    ]
+
+    for holding in crypto_holdings:
+        assert type(holding.currency) == Currency
+
+        for attribute in expected_currency_keys:
+            assert hasattr(holding.currency, attribute)
+
+
+def test_get_crypto_holdings_cost_bases(trader):
+    trader: RobinhoodTrader
+
+    crypto_holdings = trader.get_crypto_holdings()
+
     expected_cost_basis_attributes = [
         "currency_id",
         "direct_cost_basis",
@@ -36,31 +71,8 @@ def test_get_crypto_holdings(trader):
         "marked_quantity",
     ]
 
-    expected_currency_keys = [
-        "brand_color",
-        "code",
-        "id",
-        "increment",
-        "name",
-        "type",
-    ]
-
-    # CryptoHolding
-    assert type(crypto_holdings) == CryptoHoldings
     for holding in crypto_holdings:
-        assert type(holding) == CryptoHolding
-
-        for attribute in expected_attributes:
-            assert hasattr(holding, attribute)
-
-        # currency
-        assert type(holding.currency) == Currency
-
-        for attribute in expected_currency_keys:
-            assert hasattr(holding.currency, attribute)
-
-        # cost_bases
-        assert type(holding.cost_bases) == list
+        assert type(holding.cost_bases) == CostBases
         for cost_basis in holding.cost_bases:
             assert type(cost_basis) == CostBasis
 

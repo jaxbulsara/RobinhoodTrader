@@ -11,7 +11,6 @@ from .CryptocurrencyMixin import CryptocurrencyMixin
 class CryptoHoldingsMixin(CryptocurrencyMixin):
     session: RobinhoodSession
 
-    @auth_required
     def get_crypto_holdings(self):
         raw_crypto_holdings = self._get_raw_crypto_holdings()
         crypto_holdings = []
@@ -31,6 +30,7 @@ class CryptoHoldingsMixin(CryptocurrencyMixin):
 
         return raw_crypto_holdings
 
+    @auth_required
     def _get_first_crypto_holdings_page(self):
         endpoint = nummus.holdings()
         data = self.session.get_data(endpoint, timeout=15)
