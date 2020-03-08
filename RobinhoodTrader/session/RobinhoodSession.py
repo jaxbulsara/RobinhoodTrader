@@ -126,7 +126,7 @@ class RobinhoodSession(requests.Session, HTTPDataMixin):
                 "Unable to log in. Check your credentials or authentication code and try again."
             )
         except requests.exceptions.ConnectionError:
-            print(
+            raise requests.exceptions.ConnectionError(
                 "Failed to connect to robinhood. Please check your internet and try again."
             )
 
