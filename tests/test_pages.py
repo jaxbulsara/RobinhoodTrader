@@ -9,9 +9,12 @@ def test_Page(trader):
 
     page = trader._get_first_instrument_page()
 
+    expected_attributes = ["previous", "next", "results"]
+
     assert type(page) == Page
-    assert hasattr(page, "next")
-    assert hasattr(page, "results")
+
+    for attribute in expected_attributes:
+        assert hasattr(page, attribute)
 
 
 def test_get_pages(trader):

@@ -1,57 +1,87 @@
 from __future__ import absolute_import
 from collections import UserDict
+from pprint import pformat
 
 
-class Account(UserDict):
+class RobinhoodData(UserDict):
+    def __init__(self, *args, **kwargs):
+        super(RobinhoodData, self).__init__(*args, **kwargs)
+
+        # allow dictionary keys to be called as attributes of this object
+        # eg data["key"] can be called as data.key
+        self.__dict__.update(self.data)
+
+    def __str__(self):
+        return pformat(self.data, indent=4)
+
+
+class Account(RobinhoodData):
     pass
 
 
-class Cryptocurrency(UserDict):
+class Cryptocurrency(RobinhoodData):
     pass
 
 
-class CryptoAccount(UserDict):
+class CryptoAccount(RobinhoodData):
     pass
 
 
-class CryptoWatchlist(UserDict):
+class CryptoWatchlist(RobinhoodData):
     pass
 
 
-class CryptoHoldings(UserDict):
+class CryptoHoldings(RobinhoodData):
     pass
 
 
-class Instrument(UserDict):
+class Instrument(RobinhoodData):
     pass
 
 
-class Watchlist(UserDict):
+class Watchlist(RobinhoodData):
     pass
 
 
-class Fundamentals(UserDict):
+class Fundamentals(RobinhoodData):
     pass
 
 
-class Market(UserDict):
+class Market(RobinhoodData):
     pass
 
 
-class Page(UserDict):
-    def __init__(self, data):
-        super(Page, self).__init__(data)
-        self.next = data["next"]
-        self.results = data["results"]
-
-
-class Positions(UserDict):
+class Page(RobinhoodData):
     pass
 
 
-class User(UserDict):
+class Positions(RobinhoodData):
     pass
 
 
-class Quote(UserDict):
+class User(RobinhoodData):
+    pass
+
+
+class UserBasicInfo(RobinhoodData):
+    pass
+
+
+class UserAdditionalInfo(RobinhoodData):
+    pass
+
+
+class UserCipQuestions(RobinhoodData):
+    pass
+
+
+class UserEmployment(RobinhoodData):
+    pass
+
+
+class UserInvestmentProfile(RobinhoodData):
+    pass
+
+
+class Quote(RobinhoodData):
     pass

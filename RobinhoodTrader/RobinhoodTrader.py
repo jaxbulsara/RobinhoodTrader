@@ -16,6 +16,3 @@ class RobinhoodTrader(StockTrader, CryptoTrader):
 
     def logout(self):
         self.session.logout()
-
-    def print_data(self, data):
-        pprint.pprint(data, indent=4)
