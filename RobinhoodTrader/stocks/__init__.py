@@ -1,1 +1,1 @@
-from .StockTrader import StockTrader
+from .StockMixins import StockMixins

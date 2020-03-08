@@ -1,2 +1,2 @@
-from .Pages import Pages
-from .Users import Users
+from .PageMixin import PageMixin
+from .UserMixin import UserMixin

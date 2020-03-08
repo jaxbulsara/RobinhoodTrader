@@ -4,12 +4,12 @@ from ...RobinhoodSession import RobinhoodSession
 from ...wrappers import auth_required
 from ...endpoints import nummus
 
-from .Cryptocurrencies import Cryptocurrencies
+from .CryptocurrencyMixin import CryptocurrencyMixin
 
 import requests
 
 
-class CryptoWatchlists(Cryptocurrencies):
+class CryptoWatchlistMixin(CryptocurrencyMixin):
     session: RobinhoodSession
 
     def get_crypto_watchlist(self, name="Default"):

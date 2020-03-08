@@ -5,12 +5,12 @@ from ...wrappers import auth_required
 from ...endpoints import api
 from ...datatypes import Page
 
-from .Instruments import Instruments
+from .InstrumentMixin import InstrumentMixin
 
 import requests
 
 
-class InstrumentWatchlists(Instruments):
+class InstrumentWatchlistMixin(InstrumentMixin):
     session: RobinhoodSession
 
     @auth_required

@@ -5,12 +5,12 @@ from ...exceptions import RecordNotFoundError
 from ...datatypes import Page
 from ...exceptions import PageError
 
-from .ArgumentChecking import ArgumentChecking
+from .ArgumentCheckingMixin import ArgumentCheckingMixin
 
 import math, requests
 
 
-class Pages(ArgumentChecking):
+class PageMixin(ArgumentCheckingMixin):
     session: RobinhoodSession
 
     def get_pages(

@@ -1,3 +1,3 @@
-from .CryptoAccounts import CryptoAccounts
-from .CryptoHoldings import CryptoHoldings
-from .CryptoWatchlists import CryptoWatchlists
+from .CryptoAccountMixin import CryptoAccountMixin
+from .CryptoHoldingsMixin import CryptoHoldingsMixin
+from .CryptoWatchlistMixin import CryptoWatchlistMixin

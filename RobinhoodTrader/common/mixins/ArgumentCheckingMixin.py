@@ -5,7 +5,7 @@ from ...exceptions import CategoryError
 import re
 
 
-class ArgumentChecking:
+class ArgumentCheckingMixin:
     def check_argument(self, argument_name, argument, *required_types):
         argument_type = type(argument)
         required_types_message = ""

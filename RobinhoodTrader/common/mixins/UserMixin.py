@@ -14,7 +14,7 @@ from ...datatypes import (
 )
 
 
-class Users:
+class UserMixin:
     session: RobinhoodSession
 
     @auth_required

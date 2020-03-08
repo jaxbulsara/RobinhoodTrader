@@ -4,10 +4,10 @@ from ...RobinhoodSession import RobinhoodSession
 from ...wrappers import auth_required
 from ...endpoints import api
 
-from .Instruments import Instruments
+from .InstrumentMixin import InstrumentMixin
 
 
-class Quotes(Instruments):
+class QuoteMixin(InstrumentMixin):
     session: RobinhoodSession
 
     @auth_required

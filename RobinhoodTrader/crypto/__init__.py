@@ -1,1 +1,1 @@
-from .CryptoTrader import CryptoTrader
+from .CryptoMixins import CryptoMixins

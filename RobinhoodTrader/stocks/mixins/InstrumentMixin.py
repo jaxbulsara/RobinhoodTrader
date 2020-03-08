@@ -1,6 +1,6 @@
 from __future__ import absolute_import
 
-from ...common import Common
+from ...common import CommonMixins
 from ...RobinhoodSession import RobinhoodSession
 from ...wrappers import auth_required
 from ...endpoints import api
@@ -10,7 +10,7 @@ from ...datatypes import Page
 import re, requests
 
 
-class Instruments(Common):
+class InstrumentMixin(CommonMixins):
     session: RobinhoodSession
 
     def get_instrument(self, identifier):

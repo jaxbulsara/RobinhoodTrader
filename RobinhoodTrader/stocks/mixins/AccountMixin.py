@@ -6,10 +6,10 @@ from ...endpoints import api
 from ...exceptions import RecordNotFoundError, IdentifierError
 from ...datatypes import Page
 
-from .Instruments import Instruments
+from .InstrumentMixin import InstrumentMixin
 
 
-class Accounts(Instruments):
+class AccountMixin(InstrumentMixin):
     session: RobinhoodSession
 
     def get_account(self, account_number=None):

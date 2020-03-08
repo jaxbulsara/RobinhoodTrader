@@ -1,13 +1,13 @@
 from __future__ import absolute_import
 
 from .RobinhoodSession import RobinhoodSession
-from .stocks import StockTrader
-from .crypto import CryptoTrader
+from .stocks import StockMixins
+from .crypto import CryptoMixins
 
 import pprint
 
 
-class RobinhoodTrader(StockTrader, CryptoTrader):
+class RobinhoodTrader(StockMixins, CryptoMixins):
     def __init__(self):
         self.session = RobinhoodSession()
 

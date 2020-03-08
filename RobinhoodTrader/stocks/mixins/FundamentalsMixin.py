@@ -5,12 +5,12 @@ from ...wrappers import auth_required
 from ...endpoints import api
 from ...exceptions import IdentifierError
 
-from .Instruments import Instruments
+from .InstrumentMixin import InstrumentMixin
 
 import requests
 
 
-class Fundamentals(Instruments):
+class FundamentalsMixin(InstrumentMixin):
     session: RobinhoodSession
 
     def get_fundamentals(self, instrument):

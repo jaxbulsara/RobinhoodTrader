@@ -6,10 +6,10 @@ from ...endpoints import nummus
 from ...datatypes import Page, CryptoAccount
 from ...exceptions import RecordNotFoundError, IdentifierError, CategoryError
 
-from .Cryptocurrencies import Cryptocurrencies
+from .CryptocurrencyMixin import CryptocurrencyMixin
 
 
-class CryptoAccounts(Cryptocurrencies):
+class CryptoAccountMixin(CryptocurrencyMixin):
     session: RobinhoodSession
 
     def get_crypto_account(self, account_id=None):

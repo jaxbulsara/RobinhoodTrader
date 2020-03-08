@@ -5,12 +5,12 @@ from ...wrappers import auth_required
 from ...endpoints import api
 from ...exceptions import IdentifierError
 
-from .Instruments import Instruments
+from .InstrumentMixin import InstrumentMixin
 
 import datetime, requests
 
 
-class Markets(Instruments):
+class MarketMixin(InstrumentMixin):
     session: RobinhoodSession
 
     def get_market(self, identifier):
