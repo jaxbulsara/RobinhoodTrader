@@ -1,6 +1,6 @@
 from RobinhoodTrader import RobinhoodTrader
 from RobinhoodTrader.datatypes import Page
-from RobinhoodTrader.exceptions import PageError
+from RobinhoodTrader.exceptions import PageError, RecordNotFoundError
 import requests, pytest
 
 
@@ -33,6 +33,10 @@ def test_find_record(trader):
     trader: RobinhoodTrader
 
     page = trader._get_first_watchlist_page()
+
+    with pytest.raises(RecordNotFoundError):
+        trader.find_record(page, "name", "Wrong Name")
+
     record = trader.find_record(page, "name", "Default")
 
     assert type(record) == dict

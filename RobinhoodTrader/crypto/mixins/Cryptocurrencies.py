@@ -17,7 +17,6 @@ class Cryptocurrencies(Common):
 
     def _get_currency_pair_by_category(self, identifier):
         identifier_category = self.get_category("identifier", identifier)
-        expected_categories = ["crypto_symbol", "uuid"]
         if identifier_category == "crypto_symbol":
             currency_pair = self._get_currency_pair_by_symbol(identifier)
 
@@ -26,22 +25,18 @@ class Cryptocurrencies(Common):
 
         else:
             raise CategoryError(
-                f"The currency_pair identifier must be {expected_categories}, not {identifier_category}."
+                f"The currency_pair identifier must be a crypto symbol or uuid, not {identifier_category}."
             )
 
         return currency_pair
 
     def _get_currency_pair_by_symbol(self, currencyPairSymbol: str) -> dict:
         page = self._get_first_currency_pair_page()
-        currencyPair = self.find_record(page, "symbol", currencyPairSymbol)
-
-        return currencyPair
+        return self.find_record(page, "symbol", currencyPairSymbol)
 
     def _get_currency_pair_by_id(self, currencyPairId: str) -> dict:
         page = self._get_first_currency_pair_page()
-        currencyPair = self.find_record(page, "id", currencyPairId)
-
-        return currencyPair
+        return self.find_record(page, "id", currencyPairId)
 
     def _get_first_currency_pair_page(self) -> dict:
         endpoint = nummus.currency_pairs()

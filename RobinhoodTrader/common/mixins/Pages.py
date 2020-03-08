@@ -77,7 +77,7 @@ class Pages(ArgumentChecking):
 
         while False not in _run_conditions():
             page = self.get_next_page(page)
-            records = page.results
+            records = page.results  # pylint: disable=no-member
             found_record = found_record_or_none()
 
         if found_record is None:
