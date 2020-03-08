@@ -3,7 +3,7 @@ from configparser import ConfigParser
 from RobinhoodTrader.config import get_configuration, get_qr_code
 
 
-def test__get_configuration(maintain_config):
+def test_get_configuration(maintain_config):
     config = get_configuration()
 
     assert type(config) == ConfigParser
@@ -13,7 +13,7 @@ def test__get_configuration(maintain_config):
     assert "qr_code" in config["login"].keys()
 
 
-def test__get_qr_code__no_code(maintain_config):
+def test_get_qr_code__no_code(maintain_config):
     config = get_configuration()
     config.remove_option("login", "qr_code")
     with open("config.ini", "w") as configFile:
@@ -24,7 +24,7 @@ def test__get_qr_code__no_code(maintain_config):
     assert qr_code == None
 
 
-def test__get_qr_code__invalid_code(maintain_config):
+def test_get_qr_code__invalid_code(maintain_config):
     config = get_configuration()
     config.set("login", "qr_code", "None")
     with open("config.ini", "w") as configFile:
@@ -36,7 +36,7 @@ def test__get_qr_code__invalid_code(maintain_config):
     assert qr_code == None
 
 
-def test__get_qr_code__valid_code(maintain_config):
+def test_get_qr_code__valid_code(maintain_config):
     config = get_configuration()
     config.set("login", "qr_code", "AAAA1111BBBB2222")
     with open("config.ini", "w") as configFile:

@@ -39,7 +39,10 @@ class Market(UserDict):
 
 
 class Page(UserDict):
-    pass
+    def __init__(self, data):
+        super(Page, self).__init__(data)
+        self.next = data["next"]
+        self.results = data["results"]
 
 
 class Positions(UserDict):

@@ -20,25 +20,28 @@ class ArgumentChecking:
         message = f"'{argument_name}' must be {required_types_message}, not {argument_type.__name__}."
         raise TypeError(message)
 
-    def is_symbol(self, identifier):
-        identifier = identifier.upper()
-        symbol_pattern = "^[A-Z]+$"
-        is_symbol = re.match(symbol_pattern, identifier) is not None
+    def is_symbol(self, symbol):
+        symbol = symbol.upper()
+        symbol_pattern = r"^[A-Z]+$"
+        is_symbol = re.match(symbol_pattern, symbol) is not None
         return is_symbol
 
-    def is_uuid(self, identifier):
-        identifier = identifier.lower()
+    def is_uuid(self, uuid):
+        uuid = uuid.lower()
         id_pattern = (
-            "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+            r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
         )
-        is_id = re.match(id_pattern, identifier) is not None
+        is_id = re.match(id_pattern, uuid) is not None
         return is_id
 
-    def is_instrument_url(self, identifier):
-        identifier = identifier.lower()
-        id_pattern = (
-            "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
-        )
-        url_pattern = f"^https://api.robinhood.com/instruments/{id_pattern}/$"
-        is_url = re.match(url_pattern, identifier) is not None
+    def is_api_url(self, url):
+        url = url.lower()
+        url_pattern = r"^https://api.robinhood.com/(\S)*"
+        is_url = re.match(url_pattern, url) is not None
+        return is_url
+
+    def is_nummus_url(self, url):
+        url = url.lower()
+        url_pattern = r"^https://nummus.robinhood.com/(\S)*"
+        is_url = re.match(url_pattern, url) is not None
         return is_url

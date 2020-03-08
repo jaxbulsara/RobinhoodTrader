@@ -3,6 +3,7 @@ from __future__ import absolute_import
 from ...RobinhoodSession import RobinhoodSession
 from ...wrappers import auth_required
 from ...endpoints import api
+from ...datatypes import Page
 
 from .Instruments import Instruments
 
@@ -129,5 +130,6 @@ class InstrumentWatchlists(Instruments):
     @auth_required
     def _get_first_watchlist_page(self) -> dict:
         endpoint = api.watchlists()
-        return self.session.get_data(endpoint, timeout=15)
+        data = self.session.get_data(endpoint, timeout=15)
+        return Page(data)
 

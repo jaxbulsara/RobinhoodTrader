@@ -24,3 +24,7 @@ class CategoryError(RobinhoodException):
 
 class IdentifierError(RobinhoodException):
     pass
+
+
+class PageError(RobinhoodException):
+    pass

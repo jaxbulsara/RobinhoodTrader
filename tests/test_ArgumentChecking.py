@@ -16,7 +16,7 @@ def test__ArgumentChecking__check_argument(trader):
     assert trader.check_argument("test", 1.0, int, float)
 
 
-def test__ArgumentChecking__is_symbol(trader):
+def test_is_symbol(trader):
     trader: RobinhoodTrader
 
     assert trader.is_symbol("AAPL")
@@ -24,7 +24,7 @@ def test__ArgumentChecking__is_symbol(trader):
     assert not trader.is_symbol("uuid-uuid")
 
 
-def test__ArgumentChecking__is_uuid(trader):
+def test_is_uuid(trader):
     trader: RobinhoodTrader
 
     assert trader.is_uuid(str(uuid.uuid4()))
@@ -32,13 +32,17 @@ def test__ArgumentChecking__is_uuid(trader):
     assert not trader.is_uuid("aapl")
 
 
-def test__ArgumentChecking__is_instrument_url(trader):
+def test_is_api_url(trader):
     trader: RobinhoodTrader
 
-    assert trader.is_instrument_url(
-        f"https://api.robinhood.com/instruments/{str(uuid.uuid4())}/"
-    )
-    assert trader.is_instrument_url(
-        f"https://api.robinhood.com/instruments/{str(uuid.uuid4()).upper()}/"
-    )
-    assert not trader.is_instrument_url("aapl")
+    assert trader.is_api_url("https://api.robinhood.com/instruments/",)
+    assert trader.is_api_url("https://api.robinhood.com/instruments/",)
+    assert not trader.is_api_url("aapl")
+
+
+def test_is_nummus_url(trader):
+    trader: RobinhoodTrader
+
+    assert trader.is_nummus_url("https://nummus.robinhood.com/currency_pairs/")
+    assert trader.is_nummus_url("https://nummus.robinhood.com/currency_pairs/")
+    assert not trader.is_nummus_url("aapl")

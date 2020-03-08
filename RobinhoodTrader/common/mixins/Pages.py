@@ -3,10 +3,11 @@ from __future__ import absolute_import
 from ...RobinhoodSession import RobinhoodSession
 from ...exceptions import RecordNotFoundError
 from ...datatypes import Page
+from ...exceptions import PageError
 
 from .ArgumentChecking import ArgumentChecking
 
-import math
+import math, requests
 
 
 class Pages(ArgumentChecking):
@@ -38,14 +39,11 @@ class Pages(ArgumentChecking):
         def _page_is_in_range():
             return current_page >= start_page_number
 
-        def _append_next_page():
+        while False not in _run_conditions():
             page = self.get_next_page(page)
 
             if _page_is_in_range():
                 pages.append(page)
-
-        while False not in _run_conditions():
-            _append_next_page()
             current_page += 1
 
         return pages
@@ -74,12 +72,12 @@ class Pages(ArgumentChecking):
 
             return found_record_or_none
 
-        records = page["results"]
+        records = page.results
         found_record = found_record_or_none()
 
         while False not in _run_conditions():
             page = self.get_next_page(page)
-            records = page["results"]
+            records = page.results
             found_record = found_record_or_none()
 
         if found_record is None:
@@ -88,8 +86,12 @@ class Pages(ArgumentChecking):
         return found_record
 
     def next_page_exists(self, page):
-        return page["next"] is not None
+        return page.next is not None
 
     def get_next_page(self, page):
-        nextUrl = page["next"]
-        return self.session.get_data(nextUrl, timeout=15)
+        try:
+            nextUrl = page.next
+            data = self.session.get_data(nextUrl, timeout=15)
+            return Page(data)
+        except requests.exceptions.MissingSchema:
+            raise PageError("Next page does not exist.")

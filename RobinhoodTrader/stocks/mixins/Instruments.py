@@ -5,6 +5,7 @@ from ...RobinhoodSession import RobinhoodSession
 from ...wrappers import auth_required
 from ...endpoints import api
 from ...exceptions import IdentifierError, CategoryError
+from ...datatypes import Page
 
 import re, requests
 
@@ -80,5 +81,6 @@ class Instruments(Common):
 
     def _get_first_instrument_page(self):
         endpoint = api.instruments()
-        return self.session.get_data(endpoint, timeout=15)
+        data = self.session.get_data(endpoint, timeout=15)
+        return Page(data)
 
