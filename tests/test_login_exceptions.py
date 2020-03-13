@@ -3,7 +3,7 @@ from RobinhoodTrader.exceptions import LoginError
 import pytest
 
 
-def test_login_not_console_exceptions(monkeypatch):
+def test_login_not_console_exceptions(use_my_config, monkeypatch):
     trader = RobinhoodTrader()
 
     monkeypatch.setattr(trader.session, "session_is_console", False)

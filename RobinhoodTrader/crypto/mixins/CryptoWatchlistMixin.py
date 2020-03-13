@@ -3,6 +3,7 @@ from __future__ import absolute_import
 from ...session import RobinhoodSession
 from ...wrappers import auth_required
 from ...endpoints import nummus
+from ...datatypes import RobinhoodDict, CryptoWatchlists, CryptoWatchlist, Page
 
 from .CryptocurrencyMixin import CryptocurrencyMixin
 
@@ -14,15 +15,26 @@ class CryptoWatchlistMixin(CryptocurrencyMixin):
 
     def get_crypto_watchlist(self, name="Default"):
         page = self._get_first_crypto_watchlist_page()
-        watchlist = self.find_record(page, "name", name)
+        raw_watchlist = self.find_record(page, "name", name)
 
-        return watchlist
+        return CryptoWatchlist(raw_watchlist)
+
+    def get_all_crypto_watchlists(self):
+        page = self._get_first_crypto_watchlist_page()
+        all_pages = self.get_pages(page)
+        all_watchlists = CryptoWatchlists()
+        for page in all_pages:
+            for raw_watchlist in page.results:
+                watchlist = CryptoWatchlist(raw_watchlist)
+                all_watchlists.append(watchlist)
+
+        return all_watchlists
 
     def get_crypto_watchlist_currency_pairs(self, watchlist=None):
         if watchlist is None:
             watchlist = self.get_crypto_watchlist()
 
-        currency_pair_ids = watchlist["currency_pair_ids"]
+        currency_pair_ids = watchlist.currency_pair_ids
         currency_pairs = list(
             map(
                 lambda currency_pair_id: self.get_currency_pair(
@@ -50,8 +62,6 @@ class CryptoWatchlistMixin(CryptocurrencyMixin):
 
         watchlist_id = watchlist["id"]
         endpoint = nummus.watchlist_by_id(watchlist_id)
-        headers = self.session.headers
-        headers.update({"Content-Type": "application/json"})
         payload = {"currency_pair_ids": reordered_currency_pair_ids}
 
         return self.session.patch_data(endpoint, json=payload, timeout=15,)
@@ -107,4 +117,5 @@ class CryptoWatchlistMixin(CryptocurrencyMixin):
     @auth_required
     def _get_first_crypto_watchlist_page(self):
         endpoint = nummus.watchlists()
-        return self.session.get_data(endpoint, timeout=15)
+        data = self.session.get_data(endpoint, timeout=15)
+        return Page(data)

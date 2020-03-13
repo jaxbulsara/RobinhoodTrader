@@ -32,7 +32,7 @@ class RobinhoodSession(requests.Session, HTTPDataMixin):
             "Content-Type": "application/x-www-form-urlencoded; charset=utf-8",
             "X-Robinhood-API-Version": "1.0.0",
             "Connection": "keep-alive",
-            "User-Agent": "Robinhood/823 (iPhone; iOS 7.1.2; Scale/2.00)",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.132 Safari/537.36",
         }
         self.is_logged_in = False
         self.session_is_console = sys.stdout.isatty()

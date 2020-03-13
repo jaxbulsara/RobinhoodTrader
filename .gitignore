@@ -130,3 +130,4 @@ robinhoodTraderWorkspace.code-workspace
 # personal
 .vscode/
 myconfig.ini
+examples/config.ini

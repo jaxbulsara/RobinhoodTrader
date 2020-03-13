@@ -47,8 +47,14 @@ class CryptoAccount(RobinhoodDict):
     pass
 
 
-class CryptoWatchlist(RobinhoodDict):
+class CryptoWatchlists(RobinhoodList):
     pass
+
+
+class CryptoWatchlist(RobinhoodDict):
+    def __init__(self, *args, **kwargs):
+        super(CryptoWatchlist, self).__init__(*args, **kwargs)
+        self.currency_pair_ids = CurrencyPairIdList(self.currency_pair_ids)
 
 
 class CryptoHolding(RobinhoodDict):
@@ -65,6 +71,10 @@ class CryptoHoldings(RobinhoodList):
 
 
 class Currency(RobinhoodDict):
+    pass
+
+
+class CurrencyPairIdList(RobinhoodList):
     pass
 
 

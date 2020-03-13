@@ -71,6 +71,22 @@ def market_hours_by_date(identifier_code, dateString):
     return markets() + identifier_code + "/hours/" + dateString + "/"
 
 
+def midlands():
+    return api + "midlands/"
+
+
+def midlands_lists():
+    return midlands() + "lists/"
+
+
+def midland_list_by_id(list_id):
+    return midlands_lists() + list_id + "/"
+
+
+def midlands_lists_items():
+    return midlands_lists() + "items/"
+
+
 def options():
     return api + "options/"
 
