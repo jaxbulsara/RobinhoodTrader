@@ -32,12 +32,12 @@ def test_get_pages(trader):
 def test_find_record(trader):
     trader: RobinhoodTrader
 
-    page = trader._get_first_watchlist_page()
+    page = trader._get_first_account_page()
 
     with pytest.raises(RecordNotFoundError):
-        trader.find_record(page, "name", "Wrong Name")
+        trader.find_record(page, "user", "wrong_url")
 
-    record = trader.find_record(page, "name", "Default")
+    record = trader.find_record(page, "user", "api.robinhood.com/user/")
 
     assert type(record) == dict
 
@@ -46,10 +46,10 @@ def test_next_page_exists(trader):
     trader: RobinhoodTrader
 
     instrument_page = trader._get_first_instrument_page()
-    watchlist_page = trader._get_first_watchlist_page()
+    account_page = trader._get_first_account_page()
 
     assert instrument_page.next is not None
-    assert watchlist_page.next is None
+    assert account_page.next is None
 
 
 def test_get_next_page(trader):
@@ -60,7 +60,7 @@ def test_get_next_page(trader):
 
     assert type(next_page) == Page
 
-    page = trader._get_first_watchlist_page()
+    page = trader._get_first_account_page()
     with pytest.raises(PageError):
         next_page = trader.get_next_page(page)
 

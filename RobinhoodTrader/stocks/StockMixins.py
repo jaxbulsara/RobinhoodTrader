@@ -3,7 +3,6 @@ from __future__ import absolute_import
 from .mixins import (
     AccountMixin,
     FundamentalsMixin,
-    InstrumentWatchlistMixin,
     MarketMixin,
     PositionsMixin,
     QuoteMixin,
@@ -11,11 +10,6 @@ from .mixins import (
 
 
 class StockMixins(
-    AccountMixin,
-    FundamentalsMixin,
-    InstrumentWatchlistMixin,
-    MarketMixin,
-    PositionsMixin,
-    QuoteMixin,
+    AccountMixin, FundamentalsMixin, MarketMixin, PositionsMixin, QuoteMixin,
 ):
     pass
