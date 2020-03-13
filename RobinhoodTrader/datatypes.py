@@ -25,6 +25,18 @@ class RobinhoodList(UserList):
 
 
 class Account(RobinhoodDict):
+    def __init__(self, *args, **kwargs):
+        super(Account, self).__init__(*args, **kwargs)
+        if hasattr(self, "instant_eligibility"):
+            self.instant_eligibility = InstantEligibility(
+                self.instant_eligibility
+            )
+
+        if hasattr(self, "margin_balances"):
+            self.margin_balances = MarginBalances(self.margin_balances)
+
+
+class AccountList(RobinhoodList):
     pass
 
 
@@ -82,7 +94,15 @@ class CurrencyPairIdList(RobinhoodList):
     pass
 
 
+class InstantEligibility(RobinhoodDict):
+    pass
+
+
 class Instrument(RobinhoodDict):
+    pass
+
+
+class InstrumentList(RobinhoodList):
     pass
 
 
@@ -91,6 +111,14 @@ class Watchlist(RobinhoodDict):
 
 
 class Fundamentals(RobinhoodDict):
+    pass
+
+
+class FundamentalsList(RobinhoodList):
+    pass
+
+
+class MarginBalances(RobinhoodDict):
     pass
 
 

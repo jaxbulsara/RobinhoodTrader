@@ -17,7 +17,7 @@ class ArgumentCheckingMixin:
                 required_types_message += f", {required_type.__name__}"
 
             if argument_type == required_type:
-                return True
+                return argument_type
 
         message = f"'{argument_name}' must be {required_types_message}, not {argument_type.__name__}."
         raise TypeError(message)

@@ -4,7 +4,7 @@ from ...session import RobinhoodSession
 from ...wrappers import auth_required
 from ...endpoints import api
 from ...exceptions import RecordNotFoundError, IdentifierError
-from ...datatypes import Page, Account
+from ...datatypes import Page, Account, AccountList
 
 from .InstrumentMixin import InstrumentMixin
 
@@ -24,7 +24,7 @@ class AccountMixin(InstrumentMixin):
     def get_all_accounts(self):
         page = self._get_first_account_page()
         all_account_pages = self.get_pages(page)
-        all_accounts = []
+        all_accounts = AccountList()
         for accountPage in all_account_pages:
             all_accounts.append(accountPage["results"])
 

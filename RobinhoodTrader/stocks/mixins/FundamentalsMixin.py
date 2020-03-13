@@ -4,6 +4,12 @@ from ...session import RobinhoodSession
 from ...wrappers import auth_required
 from ...endpoints import api
 from ...exceptions import IdentifierError
+from ...datatypes import (
+    Fundamentals,
+    FundamentalsList,
+    Instrument,
+    InstrumentList,
+)
 
 from .InstrumentMixin import InstrumentMixin
 
@@ -14,31 +20,30 @@ class FundamentalsMixin(InstrumentMixin):
     session: RobinhoodSession
 
     def get_fundamentals(self, instrument):
-        instrumentType = type(instrument).__name__
-        if instrumentType == "dict":
-            return self._get_fundamentals_by_instrument(instrument)
+        identifier_type = self.check_argument(
+            "instrument", instrument, Instrument, str
+        )
 
-        elif instrumentType == "str":
-            return self._get_fundamentals_by_symbol(instrument)
+        if identifier_type == Instrument:
+            fundamentals = self._get_fundamentals_by_instrument(instrument)
 
-        else:
-            raise TypeError(
-                f"Argument must be an instrument (dict) or instrument symbol (str). Got '{instrumentType}'."
-            )
+        elif identifier_type == str:
+            identifier_category = self.get_category("instrument", instrument)
+            if identifier_category == "symbol":
+                fundamentals = self._get_fundamentals_by_symbol(instrument)
 
-    def get_multiple_fundamentals(self, instruments):
-        inputType = type(instruments).__name__
-        if inputType == "list":
-            fundamentals = list(
-                map(
-                    lambda instrument: self.get_fundamentals(instrument),
-                    instruments,
-                )
+        return Fundamentals(fundamentals)
+
+    def get_multiple_fundamentals(self, identifier_list):
+        self.check_argument("identifier_list", identifier_list, list)
+        fundamentals_list = list(
+            map(
+                lambda instrument: self.get_fundamentals(instrument),
+                identifier_list,
             )
-        else:
-            raise TypeError(
-                f"Argument must be a list of instruments and/or instrument symbols (list). Got '{inputType}'."
-            )
+        )
+
+        return FundamentalsList(fundamentals_list)
 
     @auth_required
     def _get_fundamentals_by_instrument(self, instrument):

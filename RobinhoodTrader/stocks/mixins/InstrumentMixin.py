@@ -5,7 +5,7 @@ from ...session import RobinhoodSession
 from ...wrappers import auth_required
 from ...endpoints import api
 from ...exceptions import IdentifierError, CategoryError
-from ...datatypes import Page
+from ...datatypes import Page, Instrument, InstrumentList
 
 import re, requests
 
@@ -13,61 +13,68 @@ import re, requests
 class InstrumentMixin(CommonMixins):
     session: RobinhoodSession
 
-    def get_instrument(self, identifier):
-        identifier_type = type(identifier).__name__
-        if identifier_type == "str":
-            instrument = self._get_instrument_by_category(identifier)
-        else:
-            raise TypeError(
-                f"'identifier' must be a (str). Got '{identifier_type}'."
+    def get_instrument(self, instrument_identifier):
+        self.check_argument("instrument_identifier", instrument_identifier, str)
+        instrument = self._get_instrument_by_category(instrument_identifier)
+
+        return Instrument(instrument)
+
+    def get_multiple_instruments(self, instrument_identifier_list):
+        self.check_argument(
+            "instrument_identifier_list", instrument_identifier_list, list
+        )
+        instrument_list = list(
+            map(
+                lambda instrument_identifier: self.get_instrument(
+                    instrument_identifier
+                ),
+                instrument_identifier_list,
             )
-        return instrument
+        )
 
-    def _get_instrument_by_category(self, identifier):
-        if self.is_symbol(identifier):
-            instrument = self._get_instrument_by_symbol(identifier)
+        return InstrumentList(instrument_list)
 
-        elif self.is_uuid(identifier):
-            instrument = self._get_instrument_by_id(identifier)
+    def _get_instrument_by_category(self, instrument_identifier):
+        identifier_category = self.get_category(
+            "instrument_identifier", instrument_identifier
+        )
+        if identifier_category == "symbol":
+            return self._get_instrument_by_symbol(instrument_identifier)
 
-        elif self.is_instrument_url(identifier):
-            instrument = self._get_instrument_by_url(identifier)
+        elif identifier_category == "uuid":
+            return self._get_instrument_by_id(instrument_identifier)
 
-        else:
-            raise CategoryError(
-                f"The instrument identifier must be a symbol, robinhood ID, or robinhood URL. Got '{identifier}'."
-            )
+        elif identifier_category == "api_url":
+            return self._get_instrument_by_url(instrument_identifier)
 
-        return instrument
-
-    def _get_instrument_by_symbol(self, instrumentSymbol):
-        endpoint = api.instrument_by_symbol(instrumentSymbol.upper())
+    def _get_instrument_by_symbol(self, instrument_symbol):
+        endpoint = api.instrument_by_symbol(instrument_symbol.upper())
         data = self.session.get_data(endpoint, timeout=15)
         try:
             instrument = data["results"][0]
         except IndexError:
             raise IdentifierError(
-                f"Could not find instrument symbol '{instrumentSymbol}' at endpoint '{endpoint}'."
+                f"Could not find instrument symbol '{instrument_symbol}' at endpoint '{endpoint}'."
             )
 
         return instrument
 
-    def _get_instrument_by_id(self, instrumentId):
-        endpoint = api.instrument_by_id(instrumentId.lower())
+    def _get_instrument_by_id(self, instrument_id):
+        endpoint = api.instrument_by_id(instrument_id.lower())
         try:
             data = self.session.get_data(endpoint, timeout=15)
         except requests.exceptions.HTTPError as http_error:
             if http_error.response.status_code == 404:
                 raise IdentifierError(
-                    f"Could not find instrument id '{instrumentId}' at endpoint '{endpoint}'."
+                    f"Could not find instrument id '{instrument_id}' at endpoint '{endpoint}'."
                 )
             else:
                 raise http_error
         return data
 
-    def _get_instrument_by_url(self, instrumentUrl):
-        endpoint = instrumentUrl
-        endpoint = instrumentUrl
+    def _get_instrument_by_url(self, instrument_url):
+        endpoint = instrument_url
+        endpoint = instrument_url
         try:
             data = self.session.get_data(endpoint, timeout=15)
         except requests.exceptions.HTTPError as httpError:
