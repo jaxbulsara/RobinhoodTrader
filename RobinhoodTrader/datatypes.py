@@ -28,7 +28,7 @@ class Account(RobinhoodDict):
     pass
 
 
-class CostBases(RobinhoodList):
+class CostBasisList(RobinhoodList):
     pass
 
 
@@ -47,7 +47,7 @@ class CryptoAccount(RobinhoodDict):
     pass
 
 
-class CryptoWatchlists(RobinhoodList):
+class CryptoWatchlistList(RobinhoodList):
     pass
 
 
@@ -57,16 +57,16 @@ class CryptoWatchlist(RobinhoodDict):
         self.currency_pair_ids = CurrencyPairIdList(self.currency_pair_ids)
 
 
-class CryptoHolding(RobinhoodDict):
+class CryptoHoldings(RobinhoodDict):
     def __init__(self, *args, **kwargs):
-        super(CryptoHolding, self).__init__(*args, **kwargs)
-        self.cost_bases = CostBases(
+        super(CryptoHoldings, self).__init__(*args, **kwargs)
+        self.cost_bases = CostBasisList(
             list(map(lambda cost_basis: CostBasis(cost_basis), self.cost_bases))
         )
         self.currency = Currency(self.currency)
 
 
-class CryptoHoldings(RobinhoodList):
+class CryptoHoldingsList(RobinhoodList):
     pass
 
 

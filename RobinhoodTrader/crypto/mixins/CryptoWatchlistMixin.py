@@ -3,7 +3,12 @@ from __future__ import absolute_import
 from ...session import RobinhoodSession
 from ...wrappers import auth_required
 from ...endpoints import nummus
-from ...datatypes import RobinhoodDict, CryptoWatchlists, CryptoWatchlist, Page
+from ...datatypes import (
+    RobinhoodDict,
+    CryptoWatchlistList,
+    CryptoWatchlist,
+    Page,
+)
 
 from .CryptocurrencyMixin import CryptocurrencyMixin
 
@@ -22,7 +27,7 @@ class CryptoWatchlistMixin(CryptocurrencyMixin):
     def get_all_crypto_watchlists(self):
         page = self._get_first_crypto_watchlist_page()
         all_pages = self.get_pages(page)
-        all_watchlists = CryptoWatchlists()
+        all_watchlists = CryptoWatchlistList()
         for page in all_pages:
             for raw_watchlist in page.results:
                 watchlist = CryptoWatchlist(raw_watchlist)

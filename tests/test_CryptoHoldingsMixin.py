@@ -1,8 +1,8 @@
 from RobinhoodTrader import RobinhoodTrader
 from RobinhoodTrader.datatypes import (
+    CryptoHoldingsList,
     CryptoHoldings,
-    CryptoHolding,
-    CostBases,
+    CostBasisList,
     CostBasis,
     Currency,
 )
@@ -26,9 +26,9 @@ def test_get_crypto_holdings(trader):
         "updated_at",
     ]
 
-    assert type(crypto_holdings) == CryptoHoldings
+    assert type(crypto_holdings) == CryptoHoldingsList
     for holding in crypto_holdings:
-        assert type(holding) == CryptoHolding
+        assert type(holding) == CryptoHoldings
 
         for attribute in expected_attributes:
             assert hasattr(holding, attribute)
@@ -72,7 +72,7 @@ def test_get_crypto_holdings_cost_bases(trader):
     ]
 
     for holding in crypto_holdings:
-        assert type(holding.cost_bases) == CostBases
+        assert type(holding.cost_bases) == CostBasisList
         for cost_basis in holding.cost_bases:
             assert type(cost_basis) == CostBasis
 

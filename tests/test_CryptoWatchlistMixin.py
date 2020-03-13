@@ -1,6 +1,6 @@
 from RobinhoodTrader import RobinhoodTrader
 from RobinhoodTrader.datatypes import (
-    CryptoWatchlists,
+    CryptoWatchlistList,
     CryptoWatchlist,
     CurrencyPairIdList,
 )
@@ -35,16 +35,14 @@ def test_get_all_crypto_watchlists(trader):
 
     all_watchlists = trader.get_all_crypto_watchlists()
 
-    assert type(all_watchlists) == CryptoWatchlists
+    assert type(all_watchlists) == CryptoWatchlistList
 
     for watchlist in all_watchlists:
         assert type(watchlist) == CryptoWatchlist
 
 
-def test_create_watchlist(trader):
+def test_get_crypto_watchlist_currency_pairs(trader):
     trader: RobinhoodTrader
 
-    create_data = trader.create_crypto_watchlist("test")
-    print(create_data)
+    watchlist_currency_pairs = trader.get_crypto_watchlist_currency_pairs()
 
-    print(trader.get_all_crypto_watchlists())
