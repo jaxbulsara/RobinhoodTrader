@@ -1,6 +1,6 @@
 from RobinhoodTrader import RobinhoodTrader
 from RobinhoodTrader.exceptions import CategoryError
-from RobinhoodTrader.datatypes import CryptoCurrencyPair, Currency, Page
+from RobinhoodTrader.datatypes import CurrencyPair, Currency, Page
 import pytest
 
 
@@ -19,10 +19,10 @@ def test_get_currency_pair(trader):
         trader.get_currency_pair(0)
 
     bitcoin = trader.get_currency_pair("BTC-USD")
-    assert type(bitcoin) == CryptoCurrencyPair
+    assert type(bitcoin) == CurrencyPair
 
     bitcoin = trader.get_currency_pair("3d961844-d360-45fc-989b-f6fca761d511")
-    assert type(bitcoin) == CryptoCurrencyPair
+    assert type(bitcoin) == CurrencyPair
 
     expected_attributes = [
         "asset_currency",

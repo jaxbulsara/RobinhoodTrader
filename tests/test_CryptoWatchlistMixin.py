@@ -3,6 +3,8 @@ from RobinhoodTrader.datatypes import (
     CryptoWatchlistList,
     CryptoWatchlist,
     CurrencyPairIdList,
+    CurrencyPair,
+    CurrencyPairList,
 )
 
 
@@ -44,5 +46,65 @@ def test_get_all_crypto_watchlists(trader):
 def test_get_crypto_watchlist_currency_pairs(trader):
     trader: RobinhoodTrader
 
-    watchlist_currency_pairs = trader.get_crypto_watchlist_currency_pairs()
+    watchlist_currency_pair_list = (
+        trader.get_crypto_watchlist_currency_pair_list()
+    )
 
+    assert type(watchlist_currency_pair_list) == CurrencyPairList
+
+    for currency_pair in watchlist_currency_pair_list:
+        assert type(currency_pair) == CurrencyPair
+
+
+def test_reorder_crypto_watchlist(trader):
+    trader: RobinhoodTrader
+
+    original_currency_pair_list = (
+        trader.get_crypto_watchlist_currency_pair_list()
+    )
+
+    first_currency_pair = original_currency_pair_list[0]
+    reordered_currency_pair_list = original_currency_pair_list
+    reordered_currency_pair_list.remove(first_currency_pair)
+    reordered_currency_pair_list.append(first_currency_pair)
+
+    trader.reorder_crypto_watchlist(reordered_currency_pair_list)
+
+    reordered_currency_pairs_to_check = (
+        trader.get_crypto_watchlist_currency_pair_list()
+    )
+
+    assert reordered_currency_pair_list == reordered_currency_pairs_to_check
+
+    trader.reorder_crypto_watchlist(original_currency_pair_list)
+
+    original_currency_pair_list_to_check = (
+        trader.get_crypto_watchlist_currency_pair_list()
+    )
+
+    assert original_currency_pair_list == original_currency_pair_list_to_check
+
+
+def test_add_to_remove_from_crypto_watchlist(trader):
+    trader: RobinhoodTrader
+
+    original_currency_pair_list = (
+        trader.get_crypto_watchlist_currency_pair_list()
+    )
+
+    last_currency_pair = original_currency_pair_list[-1]
+
+    expected_currency_list = original_currency_pair_list
+    expected_currency_list.remove(last_currency_pair)
+
+    print(original_currency_pair_list)
+
+    # trader.remove_from_crypto_watchlist(last_currency_pair)
+    # new_currency_pair_list = trader.get_crypto_watchlist_currency_pair_list()
+
+    # assert new_currency_pair_list == expected_currency_list
+
+    # trader.add_to_crypto_watchlist(last_currency_pair)
+    # new_currency_pair_list = trader.get_crypto_watchlist_currency_pair_list()
+
+    # assert new_currency_pair_list == original_currency_pair_list

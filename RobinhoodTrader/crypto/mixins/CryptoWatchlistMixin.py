@@ -8,6 +8,9 @@ from ...datatypes import (
     CryptoWatchlistList,
     CryptoWatchlist,
     Page,
+    CurrencyPairIdList,
+    CurrencyPair,
+    CurrencyPairList,
 )
 
 from .CryptocurrencyMixin import CryptocurrencyMixin
@@ -35,7 +38,7 @@ class CryptoWatchlistMixin(CryptocurrencyMixin):
 
         return all_watchlists
 
-    def get_crypto_watchlist_currency_pairs(self, watchlist=None):
+    def get_crypto_watchlist_currency_pair_list(self, watchlist=None):
         if watchlist is None:
             watchlist = self.get_crypto_watchlist()
 
@@ -49,7 +52,7 @@ class CryptoWatchlistMixin(CryptocurrencyMixin):
             )
         )
 
-        return currency_pairs
+        return CurrencyPairList(currency_pairs)
 
     @auth_required
     def reorder_crypto_watchlist(
@@ -67,15 +70,22 @@ class CryptoWatchlistMixin(CryptocurrencyMixin):
 
         watchlist_id = watchlist["id"]
         endpoint = nummus.watchlist_by_id(watchlist_id)
+        headers = self.session.headers
+        original_content_type = self.session.headers["Content-Type"]
+        self.session.headers.update({"Content-Type": "application/json"})
         payload = {"currency_pair_ids": reordered_currency_pair_ids}
 
-        return self.session.patch_data(endpoint, json=payload, timeout=15,)
+        data = self.session.patch_data(endpoint, json=payload, timeout=15,)
+
+        headers.update({"Content-Type": original_content_type})
+
+        return data
 
     def add_to_crypto_watchlist(self, currency_pair_to_add, watchlist=None):
         if watchlist is None:
             watchlist = self.get_crypto_watchlist()
 
-        currency_pairs = self.get_crypto_watchlist_currency_pairs()
+        currency_pairs = self.get_crypto_watchlist_currency_pair_list()
         currency_pairs.append(currency_pair_to_add)
 
         return self.reorder_crypto_watchlist(currency_pairs, watchlist)
@@ -86,18 +96,18 @@ class CryptoWatchlistMixin(CryptocurrencyMixin):
         if watchlist is None:
             watchlist = self.get_crypto_watchlist()
 
-        currency_pairs = self.get_crypto_watchlist_currency_pairs()
+        currency_pairs = self.get_crypto_watchlist_currency_pair_list()
         currency_pairs.append(currency_pairs_to_add)
 
         return self.reorder_crypto_watchlist(currency_pairs, watchlist)
 
-    def delete_from_crypto_watchlist(
+    def remove_from_crypto_watchlist(
         self, currency_pair_to_delete, watchlist=None
     ):
         if watchlist is None:
             watchlist = self.get_crypto_watchlist()
 
-        currency_pairs = self.get_crypto_watchlist_currency_pairs()
+        currency_pairs = self.get_crypto_watchlist_currency_pair_list()
         try:
             currency_pairs.remove(currency_pair_to_delete)
         except ValueError:
@@ -105,13 +115,13 @@ class CryptoWatchlistMixin(CryptocurrencyMixin):
 
         return self.reorder_crypto_watchlist(currency_pairs, watchlist)
 
-    def delete_multiple_from_crypto_watchlist(
+    def remove_multiple_from_crypto_watchlist(
         self, currency_pairs_to_delete, watchlist=None
     ):
         if watchlist is None:
             watchlist = self.get_crypto_watchlist()
 
-        currency_pairs = self.get_crypto_watchlist_currency_pairs()
+        currency_pairs = self.get_crypto_watchlist_currency_pair_list()
         try:
             currency_pairs.remove(currency_pairs_to_delete)
         except ValueError:

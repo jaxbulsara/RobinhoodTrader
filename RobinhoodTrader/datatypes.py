@@ -36,13 +36,6 @@ class CostBasis(RobinhoodDict):
     pass
 
 
-class CryptoCurrencyPair(RobinhoodDict):
-    def __init__(self, *args, **kwargs):
-        super(CryptoCurrencyPair, self).__init__(*args, **kwargs)
-        self.asset_currency = Currency(self.asset_currency)
-        self.quote_currency = Currency(self.quote_currency)
-
-
 class CryptoAccount(RobinhoodDict):
     pass
 
@@ -71,6 +64,17 @@ class CryptoHoldingsList(RobinhoodList):
 
 
 class Currency(RobinhoodDict):
+    pass
+
+
+class CurrencyPair(RobinhoodDict):
+    def __init__(self, *args, **kwargs):
+        super(CurrencyPair, self).__init__(*args, **kwargs)
+        self.asset_currency = Currency(self.asset_currency)
+        self.quote_currency = Currency(self.quote_currency)
+
+
+class CurrencyPairList(RobinhoodList):
     pass
 
 

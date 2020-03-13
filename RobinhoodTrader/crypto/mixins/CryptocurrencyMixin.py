@@ -4,7 +4,7 @@ from ...common import CommonMixins
 from ...session import RobinhoodSession
 from ...endpoints import nummus
 from ...exceptions import CategoryError
-from ...datatypes import CryptoCurrencyPair, Page
+from ...datatypes import CurrencyPair, Page
 
 
 class CryptocurrencyMixin(CommonMixins):
@@ -14,7 +14,7 @@ class CryptocurrencyMixin(CommonMixins):
         self.check_argument("identifier", identifier, str)
         currency_pair = self._get_currency_pair_by_category(identifier)
 
-        return CryptoCurrencyPair(currency_pair)
+        return CurrencyPair(currency_pair)
 
     def _get_currency_pair_by_category(self, identifier):
         identifier_category = self.get_category("identifier", identifier)
