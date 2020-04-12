@@ -5,7 +5,8 @@ from RobinhoodTrader.datatypes import Market, MarketHours
 def test_get_market(trader):
     trader: RobinhoodTrader
 
-    market = trader.get_market("TSLA")
+    instrument = trader.get_instrument("TSLA")
+    market = instrument.market
     market = trader.get_market(market.mic)
 
     expected_attributes = [
@@ -30,24 +31,23 @@ def test_get_market(trader):
 def test_get_market_hours(trader):
     trader: RobinhoodTrader
 
-    market = trader.get_market("TSLA")
+    instrument = trader.get_instrument("TSLA")
+    market = instrument.market
     hours = trader.get_market_hours(market)
 
     expected_attributes = [
-        "acronym",
-        "city",
-        "country",
-        "mic",
-        "name",
-        "operating_mic",
-        "timezone",
-        "todays_hours",
-        "url",
-        "website",
+        "closes_at",
+        "date",
+        "extended_closes_at",
+        "extended_opens_at",
+        "is_open",
+        "next_open_hours",
+        "opens_at",
+        "previous_open_hours",
     ]
 
-    assert type(market) == Market
+    assert type(hours) == MarketHours
 
     for attribute in expected_attributes:
-        assert hasattr(market, attribute)
+        assert hasattr(hours, attribute)
 
