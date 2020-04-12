@@ -48,7 +48,7 @@ class FundamentalsMixin(InstrumentMixin):
     @auth_required
     def _get_fundamentals_by_instrument(self, instrument):
         try:
-            endpoint = instrument["fundamentals"]
+            endpoint = instrument["_fundamentals"]
             return self.session.get_data(endpoint, timeout=15)
         except IndexError:
             raise ValueError(

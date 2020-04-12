@@ -13,6 +13,7 @@ class CryptocurrencyMixin(CommonMixins):
     def get_currency_pair(self, identifier):
         self.check_argument("identifier", identifier, str)
         currency_pair = self._get_currency_pair_by_category(identifier)
+        currency_pair.update({"trader": self})
 
         return CurrencyPair(currency_pair)
 

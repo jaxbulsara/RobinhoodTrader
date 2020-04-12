@@ -17,6 +17,19 @@ class InstrumentMixin(CommonMixins):
         self.check_argument("instrument_identifier", instrument_identifier, str)
         instrument = self._get_instrument_by_category(instrument_identifier)
 
+        instrument.update(
+            {
+                "trader": self,
+                "_fundamentals": instrument["fundamentals"],
+                "_market": instrument["market"],
+                "_quote": instrument["quote"],
+            }
+        )
+
+        instrument.update(
+            {"fundamentals": None, "market": None, "quote": None,}
+        )
+
         return Instrument(instrument)
 
     def get_multiple_instruments(self, instrument_identifier_list):

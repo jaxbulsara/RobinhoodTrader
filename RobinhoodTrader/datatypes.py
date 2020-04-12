@@ -1,7 +1,10 @@
 from __future__ import absolute_import
 
+from RobinhoodTrader import RobinhoodTrader
+
 from collections import UserDict, UserList
 from pprint import pformat
+import datetime
 
 
 class RobinhoodDict(UserDict):
@@ -52,16 +55,6 @@ class CryptoAccount(RobinhoodDict):
     pass
 
 
-class CryptoWatchlistList(RobinhoodList):
-    pass
-
-
-class CryptoWatchlist(RobinhoodDict):
-    def __init__(self, *args, **kwargs):
-        super(CryptoWatchlist, self).__init__(*args, **kwargs)
-        self.currency_pair_ids = CurrencyPairIdList(self.currency_pair_ids)
-
-
 class CryptoHoldings(RobinhoodDict):
     def __init__(self, *args, **kwargs):
         super(CryptoHoldings, self).__init__(*args, **kwargs)
@@ -84,6 +77,14 @@ class CurrencyPair(RobinhoodDict):
         super(CurrencyPair, self).__init__(*args, **kwargs)
         self.asset_currency = Currency(self.asset_currency)
         self.quote_currency = Currency(self.quote_currency)
+        self.trader: RobinhoodTrader
+
+    # @property
+    # def quote(self):
+    #     if type(self.fundamentals) == str:
+    #         self.fundamentals = self.trader.get_crypto_quote(self)
+
+    #     return self.fundamentals
 
 
 class CurrencyPairList(RobinhoodList):
@@ -99,14 +100,37 @@ class InstantEligibility(RobinhoodDict):
 
 
 class Instrument(RobinhoodDict):
-    pass
+    trader: RobinhoodTrader
+
+    @property
+    def fundamentals(self):
+        # fmt: off
+        if type(self._fundamentals) == str:  # pylint: disable=access-member-before-definition
+        # fmt: on
+            self._fundamentals = self.trader.get_fundamentals(self)
+
+        return self._fundamentals
+
+    @property
+    def market(self):
+        # fmt: off
+        if type(self._market) == str:  # pylint: disable=access-member-before-definition
+        # fmt: on
+            self._market = self.trader.get_market(self)
+
+        return self._market
+
+    @property
+    def quote(self):
+        # fmt: off
+        if type(self._quote) == str:  # pylint: disable=access-member-before-definition
+        # fmt: on
+            self._quote = self.trader.get_quote(self)
+
+        return self._quote
 
 
 class InstrumentList(RobinhoodList):
-    pass
-
-
-class Watchlist(RobinhoodDict):
     pass
 
 
@@ -123,6 +147,19 @@ class MarginBalances(RobinhoodDict):
 
 
 class Market(RobinhoodDict):
+    trader: RobinhoodTrader
+
+    @property
+    def hours(self, date=datetime.datetime.today()):
+        # fmt: off
+        if not hasattr(self, "_hours"):  # pylint: disable=access-member-before-definition
+        # fmt: on
+            self._hours = self.trader.get_market_hours(self, date)
+
+        return self._hours
+
+
+class MarketHours(RobinhoodDict):
     pass
 
 

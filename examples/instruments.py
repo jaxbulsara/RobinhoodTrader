@@ -6,13 +6,13 @@ trader.login()
 print("Tesla Instrument:")
 
 # by symbol
-teslaInstrument = trader.getInstrument("TSLA")
+tesla = trader.get_instrument("TSLA")
 
 # by instrument id
-teslaInstrument = trader.getInstrument(teslaInstrument["id"])
+tesla = trader.get_instrument(tesla.id)
 
 # by instrument url
-teslaInstrument = trader.getInstrument(teslaInstrument["url"])
+tesla = trader.get_instrument(tesla.url)
 
-trader.printData(teslaInstrument)
+print(tesla)
 
