@@ -20,15 +20,15 @@ class InstrumentMixin(CommonMixins):
         instrument.update(
             {
                 "trader": self,
-                "_fundamentals": instrument["fundamentals"],
-                "_market": instrument["market"],
-                "_quote": instrument["quote"],
+                "fundamentals_url": instrument["fundamentals"],
+                "market_url": instrument["market"],
+                "quote_url": instrument["quote"],
             }
         )
 
-        instrument.update(
-            {"fundamentals": None, "market": None, "quote": None,}
-        )
+        instrument.pop("fundamentals")
+        instrument.pop("market")
+        instrument.pop("quote")
 
         return Instrument(instrument)
 

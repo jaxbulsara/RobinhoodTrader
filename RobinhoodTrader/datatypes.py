@@ -102,32 +102,14 @@ class InstantEligibility(RobinhoodDict):
 class Instrument(RobinhoodDict):
     trader: RobinhoodTrader
 
-    @property
     def fundamentals(self):
-        # fmt: off
-        if type(self._fundamentals) == str:  # pylint: disable=access-member-before-definition
-        # fmt: on
-            self._fundamentals = self.trader.get_fundamentals(self)
+        return self.trader.get_fundamentals(self)
 
-        return self._fundamentals
-
-    @property
     def market(self):
-        # fmt: off
-        if type(self._market) == str:  # pylint: disable=access-member-before-definition
-        # fmt: on
-            self._market = self.trader.get_market(self)
+        return self.trader.get_market(self)
 
-        return self._market
-
-    @property
     def quote(self):
-        # fmt: off
-        if type(self._quote) == str:  # pylint: disable=access-member-before-definition
-        # fmt: on
-            self._quote = self.trader.get_quote(self)
-
-        return self._quote
+        return self.trader.get_quote(self)
 
 
 class InstrumentList(RobinhoodList):
@@ -149,14 +131,8 @@ class MarginBalances(RobinhoodDict):
 class Market(RobinhoodDict):
     trader: RobinhoodTrader
 
-    @property
     def hours(self, date=datetime.datetime.today()):
-        # fmt: off
-        if not hasattr(self, "_hours"):  # pylint: disable=access-member-before-definition
-        # fmt: on
-            self._hours = self.trader.get_market_hours(self, date)
-
-        return self._hours
+        return self.trader.get_market_hours(self, date)
 
 
 class MarketHours(RobinhoodDict):
@@ -167,7 +143,19 @@ class Page(RobinhoodDict):
     pass
 
 
-class Positions(RobinhoodDict):
+class Position(RobinhoodDict):
+    trader: RobinhoodTrader
+
+    def account(self):
+        account_number = self.account_url.split("/")[-2]
+        return self.trader.get_account(account_number)
+
+    def instrument(self):
+        instrument_id = self.instrument_url.split("/")[-2]
+        return self.trader.get_instrument(instrument_id)
+
+
+class Positions(RobinhoodList):
     pass
 
 
@@ -196,4 +184,12 @@ class UserInvestmentProfile(RobinhoodDict):
 
 
 class Quote(RobinhoodDict):
+    trader: RobinhoodTrader
+
+    def instrument(self):
+        instrument_id = self.instrument_url.split("/")[-2]
+        return self.trader.get_instrument(instrument_id)
+
+
+class QuoteList(RobinhoodList):
     pass

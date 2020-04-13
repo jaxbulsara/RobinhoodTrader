@@ -6,7 +6,7 @@ def test_get_market(trader):
     trader: RobinhoodTrader
 
     instrument = trader.get_instrument("TSLA")
-    market = instrument.market
+    market = trader.get_market(instrument)
     market = trader.get_market(market.mic)
 
     expected_attributes = [
@@ -32,7 +32,7 @@ def test_get_market_hours(trader):
     trader: RobinhoodTrader
 
     instrument = trader.get_instrument("TSLA")
-    market = instrument.market
+    market = trader.get_market(instrument)
     hours = trader.get_market_hours(market)
 
     expected_attributes = [

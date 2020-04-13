@@ -63,7 +63,7 @@ class MarketMixin(InstrumentMixin):
     @auth_required
     def _get_market_by_instrument(self, instrument):
         try:
-            endpoint = instrument["_market"]
+            endpoint = instrument["market_url"]
             return self.session.get_data(endpoint, timeout=15)
         except IndexError:
             raise ValueError("Argument must be an instrument (dict).")

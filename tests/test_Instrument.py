@@ -15,19 +15,19 @@ def test_instrument(trader):
 
 
 def test_instrument_fundamentals(test_instrument):
-    fundamentals = test_instrument.fundamentals
+    fundamentals = test_instrument.fundamentals()
 
     assert type(fundamentals) == Fundamentals
 
 
 def test_instrument_market(test_instrument):
-    market = test_instrument.market
+    market = test_instrument.market()
 
     assert type(market) == Market
 
 
 def test_instrument_quote(test_instrument):
-    quote = test_instrument.quote
+    quote = test_instrument.quote()
 
     assert type(quote) == Quote
 

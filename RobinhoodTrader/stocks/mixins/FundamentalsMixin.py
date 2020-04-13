@@ -19,18 +19,22 @@ import requests
 class FundamentalsMixin(InstrumentMixin):
     session: RobinhoodSession
 
-    def get_fundamentals(self, instrument):
+    def get_fundamentals(self, identifier):
         identifier_type = self.check_argument(
-            "instrument", instrument, Instrument, str
+            "identifier", identifier, Instrument, str
         )
 
         if identifier_type == Instrument:
-            fundamentals = self._get_fundamentals_by_instrument(instrument)
+            fundamentals = self._get_fundamentals_by_instrument(identifier)
 
         elif identifier_type == str:
-            identifier_category = self.get_category("instrument", instrument)
+            identifier_category = self.get_category("identifier", identifier)
             if identifier_category == "symbol":
-                fundamentals = self._get_fundamentals_by_symbol(instrument)
+                fundamentals = self._get_fundamentals_by_symbol(identifier)
+            elif identifier_category == "uuid":
+                fundamentals = self._get_fundamentals_by_instrument_id(
+                    identifier
+                )
 
         return Fundamentals(fundamentals)
 
@@ -48,7 +52,7 @@ class FundamentalsMixin(InstrumentMixin):
     @auth_required
     def _get_fundamentals_by_instrument(self, instrument):
         try:
-            endpoint = instrument["_fundamentals"]
+            endpoint = instrument["fundamentals_url"]
             return self.session.get_data(endpoint, timeout=15)
         except IndexError:
             raise ValueError(
@@ -68,3 +72,6 @@ class FundamentalsMixin(InstrumentMixin):
             else:
                 raise http_error
 
+    def _get_fundamentals_by_instrument_id(self, instrument_id):
+        instrument = self.get_instrument(instrument_id)
+        return self._get_fundamentals_by_instrument(instrument)
